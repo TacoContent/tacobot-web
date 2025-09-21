@@ -10,6 +10,7 @@ import LogsMongoClient from './libs/mongo/Logs';
 import config from './config';
 import routes from './routes';
 import * as ui from './middleware/ui';
+import { configToHbs } from './middleware/configToHbs';
 import * as FileNotFoundHandler from './libs/express/handlers/FileNotFoundHandler';
 import * as ErrorHandler from './libs/express/handlers/ErrorHandler';
 import MigrationRunner from './libs/migrations';
@@ -57,11 +58,12 @@ console.log('View engine set to hbs');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(configToHbs());
 
 app.use(express.static(path.join(__dirname, 'assets')));
 
 app.get('/', ui.allow, (req: Request, res: Response) => {
-  return res.render('index', { title: 'TacoBot', config });
+  return res.render('index', { title: 'TacoBot' });
 });
 
 app.get('/', (req: Request, res: Response, next: NextFunction) => {

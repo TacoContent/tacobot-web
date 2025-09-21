@@ -62,7 +62,7 @@ window.addEventListener('DOMContentLoaded', function () {
       }
       // SHiFT Code validation
       const codeInput = form.querySelector('input[name="code"]');
-      const codePattern = /^(?:[A-Z0-9-]{5}){4}[A-Z0-9]{5}$/;
+      const codePattern = /^(?:[A-Z0-9]{5}-){4}[A-Z0-9]{5}$/;
       if (!codeInput || !codeInput.value.trim()) {
         valid = false;
         messages.push('SHiFT Code is required.');

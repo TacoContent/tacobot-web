@@ -27,7 +27,11 @@ function buildMongoUrl(): string {
         auth = `${user}:${pass}@`;
       }
       const url = `mongodb://${auth}${host}:${port}/${authSource}`;
-      const urlStripped = `mongodb://**********:**********@${host}:${port}/${authSource}`;
+      const urlStripped = `mongodb://****:****@${host}:${port}/${authSource}`;
+      const database = getEnvVarString('TBW_MONGODB_DATABASE', 'tacobot');
+      if (database) {
+        console.log(`Using Database: ${database}`);
+      }
       console.log(`Building MongoDB URL: ${urlStripped}`);
       return url;
     }
@@ -85,9 +89,17 @@ const config = {
     buildRef: getPackageVar('buildRef', 'unknown'),
     buildDate: getPackageVar('buildDate', 'unknown'),
   },
+  tacobot: {
+    api: {
+      url: getEnvVarString('TBW_TACOBOT_API_URL', 'http://localhost:8931'),
+      token: getEnvVarString('TBW_TACOBOT_API_TOKEN', ''),
+      header: getEnvVarString('TBW_TACOBOT_API_HEADER', 'X-TACOBOT-TOKEN'),
+    },
+    primaryGuildId: getEnvVarString('TBW_PRIMARY_GUILD_ID', ''),
+  },
   log: {
     level: {
-      db: getEnvVarString('TBW_LOG_LEVEL', 'WARN').toUpperCase(),
+      db: getEnvVarString('TBW_LOG_LEVEL_DB', 'FATAL').toUpperCase(),
       console: getEnvVarString('TBW_LOG_LEVEL_CONSOLE', 'DEBUG').toUpperCase(),
     },
   },
@@ -107,6 +119,8 @@ const config = {
     allow: getEnvVarList('TBW_UI_ALLOWED_HOSTS', uiEnabled ? ['*'] : []),
   },
   timezone: getEnvVarString('TZ', getEnvVarString('TBW_TIMEZONE', 'America/Chicago')),
+  language: getEnvVarString('TBW_LANGUAGE', 'en-us'),
+  port: getEnvVarInt('TBW_PORT', 3000),
 };
 
 export default config;

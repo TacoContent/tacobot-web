@@ -1,6 +1,6 @@
 // @ts-nocheck
 import DatabaseMongoClient from './Database';
-import config from '../../config/env';
+import config from '../../config';
 import clc from 'cli-color';
 import { Collection } from 'mongodb';
 

@@ -19,6 +19,7 @@ export default class ShiftCodeEntry {
 	reward: string = '';
 	notes: string = '';
 	source: string = '';
+	source_id: string = '';
 	created_at: number = Date.now();
 	tracked_in: ShiftCodeTrackedIn[] = [];
 

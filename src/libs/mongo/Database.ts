@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { MongoClient, Db, Collection } from 'mongodb';
-import config from '../../config/env';
+import config from '../../config';
 
 let mongoClientInstance: MongoClient | null = null;
 let mongoDbInstance: Db | null = null;
