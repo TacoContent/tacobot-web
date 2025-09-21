@@ -1,0 +1,75 @@
+---
+  - type: link
+    title: Home
+    href: /
+    icon: home
+  - type: separator
+  - type: group
+    title: Tacos
+    id: tacos
+    icon: boxes-stacked
+    children:
+      - type: link
+        title: View Tacos
+        href: /tacos/list
+        icon: list
+      - type: link
+        title: Give Tacos
+        href: /tacos/give
+        icon: plus
+  - type: group
+    title: SHiFT Codes
+    id: shiftcodes
+    icon: key
+    children:
+      - type: link
+        title: View Codes
+        href: /shiftcodes/list
+        icon: list
+      - type: link
+        title: Submit Code
+        href: /shiftcodes/submit
+        icon: plus
+  - type: group
+    title: Game Keys
+    id: gamekeys
+    icon: ticket
+    children:
+      - type: link
+        title: View Keys
+        href: /gamekeys/list
+        icon: list
+      - type: link
+        title: Submit Key
+        href: /gamekeys/submit
+        icon: plus
+  - type: group
+    title: Minecraft
+    id: minecraft
+    icon: cube
+    children:
+      - type: link
+        title: Op List
+        href: /minecraft/ops
+        icon: shield
+      - type: link
+        title: Whitelist
+        href: /minecraft/whitelist
+        icon: users
+      - type: link
+        title: Worlds
+        href: /minecraft/worlds
+        icon: globe
+  - type: group
+    title: Permissions
+    id: permissions
+    icon: user-lock
+    children:
+      - type: link
+        title: View
+        href: /permissions/list
+        icon: list
+  - type: settings
+    title: Settings
+    id: settings
+    icon: cog

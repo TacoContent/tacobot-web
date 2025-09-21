@@ -89,5 +89,39 @@ export default class ShiftCodeController {
     } catch (error) {
       next(error);
     }
-  }
+  };
+
+  public list = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const pageSize = 5;
+    const ShiftCodesMongoClient = (await import('../libs/mongo/ShiftCodes')).default;
+    const client = new ShiftCodesMongoClient();
+    // Get paginated shift codes
+    const shiftCodes = await client.get((page - 1) * pageSize, pageSize);
+    // Get total count
+    const collection = await client.getCollection();
+    const total = await collection.countDocuments();
+    const lastPage = Math.ceil(total / pageSize);
+    // Calculate beforePages and afterPages
+    const beforePages = [];
+    for (let i = page - 2; i < page; i++) {
+      if (i >= 1 && i <= page) beforePages.push(i);
+    }
+    const afterPages = [];
+    for (let i = page + 1; i <= page + 2; i++) {
+      if (i <= lastPage && i >= page) afterPages.push(i);
+    }
+    res.render('shiftcodes/list', {
+      title: 'SHiFT Codes',
+      shiftCodes,
+      lastPage,
+      currentPage: page,
+      prevPage: page > 1 ? page - 1 : 1,
+      nextPage: page < lastPage ? page + 1 : page,
+      hasPrev: page > 1,
+      hasNext: page < lastPage,
+      beforePages,
+      afterPages
+    });
+  };
 };

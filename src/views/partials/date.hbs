@@ -1,0 +1,11 @@
+{{#if date}}
+  <span class="date-text" title="{{unixToDate date 'MMMM D, YYYY HH:mm:ss'}}" aria-label="{{unixToDate date 'MMMM D, YYYY HH:mm:ss'}}">
+    {{unixFromNow date}}
+  </span>
+{{else}}
+  {{#if unknown}}
+    <span class="date-text" title="{{unknown}}" aria-label="{{unknown}}">{{unknown}}</span>
+  {{else}}
+    <span class="date-text" title="N/A" aria-label="N/A">N/A</span>
+  {{/if}}
+{{/if}}

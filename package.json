@@ -11,7 +11,7 @@
     "buildx": "node ./app-build.js --install --clean",
     "startx": "npm run buildx && node ./app/www.js",
     "start": "npm run build && node ./app/www.js",
-    "exec": "npm run build && nodemon ./app/www.js",
+    "live": "npm run build && nodemon ./app/www.js",
     "test": "jest --coverage"
   },
   "dependencies": {
@@ -21,6 +21,7 @@
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "express-handlebars": "^8.0.3",
+    "js-yaml": "^4.1.0",
     "mathjs": "^14.7.0",
     "moment": "^2.30.1",
     "moment-timezone": "^0.6.0",
@@ -30,6 +31,7 @@
     "@types/cli-color": "^2.0.6",
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.5.2",
     "copyfiles": "^2.4.1",
     "jest": "^30.1.3",

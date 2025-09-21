@@ -1,0 +1,32 @@
+
+<!-- Sidebar -->
+<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse border border-0 border-end">
+  <div class="position-sticky pt-3 h-100">
+    <ul class="nav flex-column text-start">
+      <li class="nav-item">
+        <a class="nav-link{{#if (eq currentPath "/")}} active{{/if}}" href="/">
+          <i class="fa fa-home me-2" aria-hidden="true"></i>
+          <strong>Home</strong>
+        </a>
+      </li>
+      <li><hr class="border border-0 border-bottom dropdown-divider"></li>
+      <li class="nav-item">
+        <span class="nav-link text-muted">
+          <strong><i class="fa fa-key me-2" aria-hidden="true"></i> SHiFT Codes</strong>
+        </span>
+        <ul class="nav flex-column ms-3">
+          <li class="nav-item">
+            <a class="nav-link{{#if (eq currentPath "/shiftcodes/submit")}} active{{/if}}" href="/shiftcodes/submit">
+              <strong><i class="fa fa-plus me-2" aria-hidden="true"></i> Submit Code</strong>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{{#if (eq currentPath "/shiftcodes/list")}} active{{/if}}" href="/shiftcodes/list">
+              <strong><i class="fa fa-list me-2" aria-hidden="true"></i> View Codes</strong>
+            </a>
+        </ul>
+      </li>
+      <!-- Add more sidebar items here as needed -->
+    </ul>
+  </div>
+</nav>

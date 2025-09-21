@@ -6,7 +6,8 @@ import Reflection from '../libs/Reflection';
 const logger = new LogsMongoClient();
 const MODULE = 'UiMiddleware';
 
-export async function allow(req: Request, res: Response, next: NextFunction): Promise<void> {
+// export as ui.allow
+export const allow = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const METHOD = Reflection.getCallingMethodName();
   if (!config.ui.enabled) {
     await logger.warn(`${MODULE}.${METHOD}`, 'UI is disabled.');

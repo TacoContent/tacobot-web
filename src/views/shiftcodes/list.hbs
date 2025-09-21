@@ -1,0 +1,55 @@
+<!-- Shift Codes List Page -->
+<div class="container mt-4">
+  <h2>SHiFT Codes</h2>
+  <table class="table">
+    <thead>
+      <tr class="table-active">
+        <th class="text-uppercase">Code</th>
+        <th class="text-uppercase">Games</th>
+        <th class="text-uppercase">Platforms</th>
+        <th class="text-uppercase">Expiry</th>
+        <th class="text-uppercase">Created</th>
+        <th class="text-uppercase"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each shiftCodes}}
+      <tr>
+        <td style="white-space: nowrap;"><code>{{this.code}}</code></td>
+        <td>
+          <ul class="mb-0 ps-3 list-group">
+            {{#each this.games}}
+              <li class="list-group-item">{{this.name}}</li>
+            {{/each}}
+          </ul>
+        </td>
+        <td>
+          <ul class="mb-0 ps-3 list-group">
+            {{#each this.platforms}}
+              <li class="list-group-item">{{this}}</li>
+            {{/each}}
+          </ul>
+        </td>
+        <td style="white-space: nowrap;">{{> date date=this.expiry unknown="UNKNOWN"}}</td>
+        <td style="white-space: nowrap;">{{> date date=this.created_at unknown="UNKNOWN"}}</td>
+        <td style="width: 48px;"><a href="{{this.source}}" target="_blank"><i class="fas fa-external-link-alt"></i></a></td>
+      </tr>
+      {{#if this.reward}}
+      <tr>
+        <th class="text-start text-uppercase table-active" colspan="1">Reward</th>
+        <td colspan="5" class="text-start">{{this.reward}}</td>
+      </tr>
+      {{/if}}
+      {{#if this.notes}}
+      <tr>
+        <th class="text-start text-uppercase table-active" colspan="1">Notes</th>
+        <td colspan="5" class="text-start">{{this.notes}}</td>
+      </tr>
+      {{/if}}
+      {{/each}}
+    </tbody>
+  </table>
+  
+    {{> pager currentPage=currentPage lastPage=lastPage hasPrev=hasPrev hasNext=hasNext prevPage=prevPage nextPage=nextPage beforePages=beforePages afterPages=afterPages}}
+  </nav>
+</div>

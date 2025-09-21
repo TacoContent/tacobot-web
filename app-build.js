@@ -64,8 +64,8 @@ runCommand('npx tsc', 'compile TypeScript');
 
 // Copy migrations data
 runCommand(
-  `npx copyfiles -u 4 ./src/libs/migrations/data/* ${appDir}/libs/migrations/data/`,
-  'copy migrations data'
+  `npx copyfiles -u 1 ./src/.sitemap.yaml ${appDir}/`,
+  `copy ./src/.sitemap.yaml => ${appDir}/.sitemap.yaml`
 );
 
 // Copy assets

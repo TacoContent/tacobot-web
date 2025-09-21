@@ -7,9 +7,10 @@ const router = Router();
 const shiftCodeController = new ShiftCodeController();
 
 // GET /shiftcode/submit
-router.get('/shiftcode/submit', ui.allow, (req: Request, res: Response) => {
+router.get('/shiftcodes/submit', ui.allow, (req: Request, res: Response) => {
   res.render('shiftcodes/submit', { title: 'Submit SHiFT Code', games: Games, now: new Date().toISOString().slice(0,16) });
 });
 
-router.post('/shiftcode/submit', shiftCodeController.submit); 
+router.post('/shiftcodes/submit', shiftCodeController.submit);
+router.get('/shiftcodes/list', shiftCodeController.list);
 export default router;

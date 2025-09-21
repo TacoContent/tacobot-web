@@ -1,53 +1,43 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
-
+import Handlebars from 'handlebars';
 import express from 'express';
 import { Request, Response, NextFunction } from 'express';
 import * as path from 'path';
+import * as fs from 'fs';
 import * as bodyParser from 'body-parser';
 import { engine as hbsEngine } from 'express-handlebars';
 import LogsMongoClient from './libs/mongo/Logs';
 import config from './config';
 import routes from './routes';
-import * as ui from './middleware/ui';
-import { configToHbs } from './middleware/configToHbs';
+import * as middleware from './middleware';
 import * as FileNotFoundHandler from './libs/express/handlers/FileNotFoundHandler';
 import * as ErrorHandler from './libs/express/handlers/ErrorHandler';
 import MigrationRunner from './libs/migrations';
-import moment from 'moment-timezone';
+import helpers from './libs/hbs/helpers';
+
 
 const app = express();
 const logger = new LogsMongoClient();
+
+const partialsDir = path.join(__dirname, 'views/partials');
+for (const file of fs.readdirSync(partialsDir)) {
+  if (file.endsWith('.hbs')) {
+    const partialName = path.basename(file, '.hbs');
+    const partialPath = path.join(partialsDir, file);
+    const partialContent = fs.readFileSync(partialPath, 'utf8');
+    Handlebars.registerPartial(partialName, partialContent);
+  }
+}
 
 app.engine(
   'hbs',
   hbsEngine({
     extname: 'hbs',
     layoutsDir: path.join(__dirname, 'views/layouts'),
-    partialsDir: path.join(__dirname, 'views/partials'),
+    partialsDir: partialsDir,
     helpers: {
-      moment: function(date: string, format: string) {
-        return moment(date).format(format);
-      },
-      section: function (this: any, name: string, context: any): null {
-        if (!this._sections) {
-          this._sections = {};
-        }
-
-        if (!this._sections[name]) {
-          this._sections[name] = [];
-        }
-        this._sections[name].push(context.fn(this));
-        return null;
-      },
-      block: function (this: any, name: string): string {
-        if (!this._sections) {
-          this._sections = {};
-        }
-        const val = (this._sections[name] || []).join('\n');
-        this._sections[name] = [];
-        return val;
-      },
+      ...helpers
     },
   })
 );
@@ -58,11 +48,19 @@ console.log('View engine set to hbs');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(configToHbs());
+
+app.use(middleware.inject.config());
+app.use(middleware.inject.pagePath());
+app.use(middleware.inject.settingsGroups);
+app.use((req, res, next) => {
+  res.locals.sitemap = helpers.getSitemap();
+  next();
+});
+
 
 app.use(express.static(path.join(__dirname, 'assets')));
 
-app.get('/', ui.allow, (req: Request, res: Response) => {
+app.get('/', middleware.ui.allow, (req: Request, res: Response) => {
   return res.render('index', { title: 'TacoBot' });
 });
 

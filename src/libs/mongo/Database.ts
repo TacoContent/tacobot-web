@@ -50,6 +50,16 @@ class DatabaseMongoClient<T> {
     this.client = null;
     this.db = null;
   }
+
+  async getCollection(): Promise<Collection<T>> {
+    if (!this.collection) {
+      await this.connect();
+    }
+    if (!this.collection) {
+      throw new Error("Collection not initialized");
+    }
+    return this.collection;
+  }
 }
 
 export default DatabaseMongoClient;

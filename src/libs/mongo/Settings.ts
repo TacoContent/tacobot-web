@@ -19,6 +19,19 @@ export default class SettingsMongoClient extends DatabaseMongoClient<Setting> {
     this.collectionName = 'settings';
   }
 
+  async getGroups(): Promise<string[]> {
+    const method = 'getGroups';
+    const guild_id = config.tacobot.primaryGuildId;
+    try {
+      await this.connect();
+      const result = await this.collection.distinct('name', { guild_id });
+      return result;
+    } catch (err: any) {
+      await logger.error(`${MODULE}.${method}`, err.message, { stack: err.stack });
+      return [];
+    }
+  }
+
   async list(): Promise<Setting[]> {
     const method = 'list';
     try {
