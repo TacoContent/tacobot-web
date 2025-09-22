@@ -19,7 +19,7 @@ class ShiftCodesMongoClient extends DatabaseMongoClient<ShiftCodeEntry> {
     if (skip < 0) skip = 0;
     if (take <= 0 || take > 100) take = 100;
 
-    return await collection.find({}).skip(skip).limit(take).toArray();
+    return await collection.find({}).skip(skip).limit(take).sort({ created_at: -1 }).toArray();
   }
 
   async findByCode(code: string): Promise<ShiftCodeEntry | null> {

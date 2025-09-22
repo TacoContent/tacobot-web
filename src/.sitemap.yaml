@@ -4,6 +4,11 @@
     href: /
     icon: home
   - type: separator
+  - type: external
+    title: Dashboard
+    href: https://grafana.bit13.local/d/GnSFRx0Vz/tacobot
+    icon: gauge
+  - type: separator
   - type: group
     title: Tacos
     id: tacos
@@ -69,6 +74,23 @@
         title: View
         href: /permissions/list
         icon: list
+      - type: link
+        title: Add Permission
+        href: /permissions/add
+        icon: plus
+  - type: group
+    title: Twitch
+    id: twitch
+    icon: comments
+    children:
+      - type: link
+        title: Channels
+        href: /twitch/channels
+        icon: list
+      - type: link
+        title: Linked Users
+        href: /twitch/linked
+        icon: users-viewfinder
   - type: settings
     title: Settings
     id: settings

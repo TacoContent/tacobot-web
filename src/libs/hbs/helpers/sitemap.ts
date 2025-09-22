@@ -27,14 +27,12 @@ function processItem(item: any, currentPath: string, children: any[]): string {
   }
 
   if (item.type === 'link') {
-    console.log('Processing link item:', JSON.stringify(item));
     const template = Handlebars.compile(sidebarLink);
     html += template({
       ...item,
       active: item.href === currentPath
     });
   } else if (item.type === 'external') {
-    console.log('Processing external link item:', JSON.stringify(item));
     const template = Handlebars.compile(sidebarLink);
     html += template({
       ...item,
@@ -42,7 +40,6 @@ function processItem(item: any, currentPath: string, children: any[]): string {
       active: false
     });
   } else if (item.type === 'settings') {
-    console.log('Processing settings item:', JSON.stringify(item));
     const template = Handlebars.compile(sidebarSettings);
 
     let childrenHtml = '';
@@ -54,11 +51,9 @@ function processItem(item: any, currentPath: string, children: any[]): string {
       children: childrenHtml
     });
   } else if (item.type === 'separator') {
-    console.log('Processing separator item:', JSON.stringify(item));
     const template = Handlebars.compile(sidebarSeparator);
     html += template(item);
   } else if (item.type === 'group') {
-    console.log('Processing group item:', JSON.stringify(item));
     let childrenHtml = '';
     for (const child of item.children) {
       childrenHtml += processItem(child, currentPath, child.children || []); // Pass empty array if no children
@@ -87,7 +82,6 @@ export function renderSidebar(sitemap: any[], currentPath: string, settingsGroup
   for (const item of sitemap) {
     // If item.type === 'settingsGroups', render each group as a link
     if (item.type === 'settings' && Array.isArray(settingsGroups)) {
-      console.log('Rendering settings groups:', settingsGroups);
       let children = []
       for (const group of settingsGroups) {
         children.push({
