@@ -14,6 +14,17 @@ body {
   font-family: Raleway, sans-serif;
 }
 
+code.spoiler {
+  background-color: #000;
+  color: #000;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+code.spoiler:hover {
+  color: #fff;
+}
+
 .c-pointer {
   cursor: pointer;
 }

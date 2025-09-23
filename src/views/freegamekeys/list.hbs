@@ -1,0 +1,54 @@
+<!-- Game Keys List Page -->
+<div class="container mt-4">
+  <h2>Game Keys</h2>
+  <table class="table">
+    <thead>
+      <tr class="table-active">
+        <th class="text-uppercase"></th>
+        <th class="text-uppercase">Title</th>
+        <th class="text-uppercase">Type</th>
+        <th class="text-uppercase">Platforms</th>
+        <th class="text-uppercase">Description</th>
+        <th class="text-uppercase">Instructions</th>
+        <th class="text-uppercase">Published</th>
+        <th class="text-uppercase">Ends</th>
+        <th class="text-uppercase">Worth</th>
+        <th class="text-uppercase"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each items}}
+      <tr>
+        <td>
+          <img src="{{this.thumbnail}}" alt="{{this.title}}" style="max-height: 100px; max-width: 300px;" />
+        </td>
+        <td>{{this.title}}</td>
+        <td>{{this.type}}</td>
+        <td>
+          <ul class="mb-0 ps-3 list-group">
+            {{#each this.platforms}}
+              <li class="list-group-item">{{this}}</li>
+            {{/each}}
+          </ul>
+        </td>
+        <td class="text-start">{{this.description}}</td>
+        <td class="text-start">{{this.instructions}}</td>
+        <td style="white-space: nowrap;">{{> date date=this.published_date unknown="N/A"}}</td>
+        <td style="white-space: nowrap;">{{> date date=this.end_date unknown="N/A"}}</td>
+        <td>{{this.worth}} <span class="currency">USD</span></td>
+        <td style="width: 48px;">
+          {{#if this.open_giveaway_url}}
+          <a href="{{this.open_giveaway_url}}" target="_blank"><i class="fas fa-circle-info me-1"></i></a>
+          {{/if}}
+          {{#if this.image}}
+          <a href="{{this.image}}" target="_blank"><i class="fas fa-image me-1"></i></a>
+          {{/if}}
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  {{> pager this.pager}}
+
+</div>

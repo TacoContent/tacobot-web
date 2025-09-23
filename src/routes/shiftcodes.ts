@@ -12,5 +12,6 @@ router.get('/shiftcodes/submit', ui.allow, (req: Request, res: Response) => {
 });
 
 router.post('/shiftcodes/submit', shiftCodeController.submit);
+router.get('/shiftcodes', shiftCodeController.list);
 router.get('/shiftcodes/list', shiftCodeController.list);
 export default router;

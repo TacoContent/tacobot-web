@@ -1,0 +1,62 @@
+<!-- Game Keys List Page -->
+<div class="container mt-4">
+  <h2>Game Keys</h2>
+  <table class="table">
+    <thead>
+      <tr class="table-active">
+        <th class="text-uppercase text-start">Title</th>
+        <th class="text-uppercase text-start">Platform</th>
+        <th class="text-uppercase text-nowrap text-start">Submitted By</th>
+        <th class="text-uppercase text-start"><i title="Redeemed" class="fas fa-cash-register"></i></th>
+        <th class="text-uppercase text-nowrap text-start">Redeemed By</th>
+        <th class="text-uppercase text-nowrap"><i class="fas fa-clock" title="Redeemed at"></i></th>
+        <th class="text-uppercase text-start">Cost</th>
+        <th class="text-uppercase text-start"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each items}}
+      <tr>
+        <td class="text-start">{{this.title}}</td>
+        <td class="text-start">{{this.type}}</td>
+        <td class="text-start">{{> discord-user id=this.user_owner}}</td>
+        <td class="text-start">{{#if this.redeemed_by}}✅{{else}}❌{{/if}}</td>
+        <td class="text-start">
+          {{#if this.redeemed_by}}
+            {{> discord-user id=this.redeemed_by}}
+          {{else}}
+            N/A
+          {{/if}}
+        </td>
+        <td class="text-nowrap">{{> date date=this.redeemed_timestamp unknown="N/A"}}</td>
+        <td>{{this.cost}} <span class="currency">🌮</span></td>
+        <td style="width: 48px;">
+          {{#if this.info_link}}
+          <a href="{{this.info_link}}" target="_blank"><i class="fas fa-circle-info me-1"></i></a>
+          {{/if}}
+          {{#if this.download_link}}
+          <a href="{{this.download_link}}" target="_blank"><i class="fas fa-cloud-arrow-down me-1"></i></a>
+          {{/if}}
+          {{#if this.help_link}}
+          <a href="{{this.help_link}}" target="_blank"><i class="fas fa-circle-question"></i></a>
+          {{/if}}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="8">
+          <table>
+            <tr>
+              <th class="text-start text-uppercase pe-3">Key</th>
+              <td class="text-nowrap p-1" style="width: 100%">{{> code value=this.key copy=true spoiler=true class="fs-2 mw-100" }}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      {{/each}}
+    </tbody>
+  </table>
+
+  {{> pager this.pager}}
+
+</div>

@@ -16,7 +16,9 @@ export default class ScriptsController {
       // Copy to another object and remove sensitive data
       const settings = JSON.parse(JSON.stringify(configs));
       delete settings.mongo;
-      delete settings.ui.allow;
+      delete settings.ui;
+      delete settings.tacobot.api;
+      delete settings.openai;
 
       res.setHeader('Content-Type', 'application/javascript');
       res
@@ -43,6 +45,8 @@ export default class ScriptsController {
         'templates.js',
         'on-ready.js',
         'form-validator.js',
+        'user-loader.js',
+        'code-field.js',
       ];
 
       res.setHeader('Content-Type', 'application/javascript');

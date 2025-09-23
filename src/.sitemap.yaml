@@ -29,7 +29,7 @@
     children:
       - type: link
         title: View Codes
-        href: /shiftcodes/list
+        href: /shiftcodes
         icon: list
       - type: link
         title: Submit Code
@@ -41,13 +41,17 @@
     icon: ticket
     children:
       - type: link
-        title: View Keys
-        href: /gamekeys/list
+        title: View Rewards
+        href: /gamekeys
         icon: list
       - type: link
-        title: Submit Key
+        title: Submit Reward Key
         href: /gamekeys/submit
         icon: plus
+      - type: link
+        title: Free Game Keys
+        href: /freegames
+        icon: gift
   - type: group
     title: Minecraft
     id: minecraft

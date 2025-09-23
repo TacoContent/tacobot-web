@@ -107,7 +107,7 @@ const config = {
     url: buildMongoUrl(),
     database: getEnvVarString('TBW_MONGODB_DATABASE', 'tacobot'),
   },
-  chatgpt: {
+  openai: {
     apiKey: getEnvVarString('TBW_OPENAI_API_KEY', ''),
     apiUrl: getEnvVarString('TBW_OPENAI_API_URL', 'https://api.openai.com/v1/chat/completions'),
     model: getEnvVarString('TBW_OPENAI_MODEL', 'gpt-4o'),

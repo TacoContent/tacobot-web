@@ -13,9 +13,9 @@
       </tr>
     </thead>
     <tbody>
-      {{#each shiftCodes}}
+      {{#each items}}
       <tr>
-        <td style="white-space: nowrap;"><code>{{this.code}}</code></td>
+        <td class="text-nowrap p-1">{{> code value=this.code copy=true spoiler=false }}</td>
         <td>
           <ul class="mb-0 ps-3 list-group">
             {{#each this.games}}
@@ -30,9 +30,9 @@
             {{/each}}
           </ul>
         </td>
-        <td style="white-space: nowrap;">{{> date date=this.expiry unknown="UNKNOWN"}}</td>
-        <td style="white-space: nowrap;">{{> date date=this.created_at unknown="UNKNOWN"}}</td>
-        <td style="width: 48px;"><a href="{{this.source}}" target="_blank"><i class="fas fa-external-link-alt"></i></a></td>
+        <td class="text-nowrap">{{> date date=this.expiry unknown="UNKNOWN"}}</td>
+        <td class="text-nowrap">{{> date date=this.created_at unknown="UNKNOWN"}}</td>
+        <td class="text-nowrap"><a href="{{this.source}}" target="_blank"><i class="fas fa-external-link-alt"></i></a></td>
       </tr>
       {{#if this.reward}}
       <tr>
@@ -50,6 +50,5 @@
     </tbody>
   </table>
   
-    {{> pager currentPage=currentPage lastPage=lastPage hasPrev=hasPrev hasNext=hasNext prevPage=prevPage nextPage=nextPage beforePages=beforePages afterPages=afterPages}}
-  </nav>
+    {{> pager this.pager}}
 </div>

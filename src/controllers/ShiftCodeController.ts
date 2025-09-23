@@ -5,6 +5,7 @@ import LogsMongoClient from '../libs/mongo/Logs';
 import Games from '../libs/consts/SHiFTCodes/Games';
 import axios from 'axios';
 import ShiftCodeEntry from '../models/ShiftCodeEntry';
+import Pager from '../models/Pager';
 
 
 export default class ShiftCodeController {
@@ -32,16 +33,16 @@ export default class ShiftCodeController {
     // get expiry date as unix timestamp converted from the provided date string
     let expiry: number | null = null;
     if (req.body.expiry) {
-      const m = moment.utc(req.body.expiry);
+      const m = moment.utc(req.body.expiry) ;
       if (m.isValid()) {
-        expiry = m.valueOf();
+        expiry = m.valueOf() / 1000;
       }
     }
-    let createdAt: number = moment.utc().valueOf();
+    let createdAt: number = moment.utc().valueOf() / 1000;
     if (req.body.created_at) {
       const m = moment.utc(req.body.created_at);
       if (m.isValid()) {
-        createdAt = m.valueOf();
+        createdAt = m.valueOf() / 1000;
       }
     }
 
@@ -85,7 +86,7 @@ export default class ShiftCodeController {
       });
       console.log('Tacobot API response:', result.data);
       console.log('Response status:', result.status);
-      res.redirect('/shiftcode/submit');
+      res.redirect('/shiftcodes');
     } catch (error) {
       next(error);
     }
@@ -111,17 +112,23 @@ export default class ShiftCodeController {
     for (let i = page + 1; i <= page + 2; i++) {
       if (i <= lastPage && i >= page) afterPages.push(i);
     }
-    res.render('shiftcodes/list', {
-      title: 'SHiFT Codes',
-      shiftCodes,
-      lastPage,
+
+    const pager = new Pager({
+      totalItems: total,
       currentPage: page,
+      pageSize: pageSize,
+      afterPages: afterPages,
+      beforePages: beforePages,
+      lastPage: lastPage,
       prevPage: page > 1 ? page - 1 : 1,
       nextPage: page < lastPage ? page + 1 : page,
       hasPrev: page > 1,
       hasNext: page < lastPage,
-      beforePages,
-      afterPages
+    });
+    res.render('shiftcodes/list', {
+      title: 'SHiFT Codes',
+      items: shiftCodes,
+      pager: pager,
     });
   };
 };
