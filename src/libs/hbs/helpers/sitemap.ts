@@ -17,10 +17,10 @@ export function getSitemap() {
 
 function processItem(item: any, currentPath: string, children: any[]): string {
   let html = '';
-  const sidebarLink = Handlebars.partials['sidebar-link'] || '';
-  const sidebarGroup = Handlebars.partials['sidebar-group'] || '';
-  const sidebarSeparator = Handlebars.partials['sidebar-separator'] || '';
-  const sidebarSettings = Handlebars.partials['sidebar-settings'] || '';
+  const sidebarLink = Handlebars.partials['sidebar/link'] || '';
+  const sidebarGroup = Handlebars.partials['sidebar/group'] || '';
+  const sidebarSeparator = Handlebars.partials['sidebar/separator'] || '';
+  const sidebarSettings = Handlebars.partials['sidebar/settings'] || '';
   if (typeof sidebarLink !== 'string' || typeof sidebarGroup !== 'string') {
     console.error('Sidebar link or group partials are not defined correctly.');
     return html;

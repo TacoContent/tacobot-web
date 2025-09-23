@@ -19,11 +19,11 @@
       <tr>
         <td class="text-start">{{this.title}}</td>
         <td class="text-start">{{this.type}}</td>
-        <td class="text-start">{{> discord-user id=this.user_owner}}</td>
+        <td class="text-start">{{> discord/user id=this.user_owner}}</td>
         <td class="text-start">{{#if this.redeemed_by}}✅{{else}}❌{{/if}}</td>
         <td class="text-start">
           {{#if this.redeemed_by}}
-            {{> discord-user id=this.redeemed_by}}
+            {{> discord/user id=this.redeemed_by}}
           {{else}}
             N/A
           {{/if}}

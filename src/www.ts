@@ -20,15 +20,36 @@ import helpers from './libs/hbs/helpers';
 const app = express();
 const logger = new LogsMongoClient();
 
-const partialsDir = path.join(__dirname, 'views/partials');
-for (const file of fs.readdirSync(partialsDir)) {
-  if (file.endsWith('.hbs')) {
-    const partialName = path.basename(file, '.hbs');
-    const partialPath = path.join(partialsDir, file);
-    const partialContent = fs.readFileSync(partialPath, 'utf8');
-    Handlebars.registerPartial(partialName, partialContent);
+function registerPartials(partialDir: string) {
+  const files = fs.readdirSync(partialDir);
+  // get everything after the last "partials" in the path
+  const basePath = partialDir.split('partials').pop();
+  for (const file of files) {
+    if (file.endsWith('.hbs')) {
+      // combine basePath and file to get partial name
+      // replace backslashes with forward slashes for consistency
+      const partialName = path.join(basePath || '', path.basename(file, '.hbs')).replace(/\\/g, '/');
+      // remove leading slash if present
+      const partialNameClean = partialName.startsWith('/') ? partialName.slice(1) : partialName;
+      // read the file and register the partial with its full path name
+      // e.g. sidebar/link, sidebar/group, etc.
+      //
+      const partialPath = path.join(partialDir, file);
+      const partialContent = fs.readFileSync(partialPath, 'utf8');
+      console.log(`Registering partial: ${partialNameClean}`);
+      Handlebars.registerPartial(partialNameClean, partialContent);
+      continue;
+    }
+    // if file is directory, recurse
+    const fullPath = path.join(partialDir, file);
+    if (fs.lstatSync(fullPath).isDirectory()) {
+      registerPartials(fullPath);
+    }
   }
 }
+
+const partialsDir = path.join(__dirname, 'views/partials');
+registerPartials(partialsDir);
 
 app.engine(
   'hbs',

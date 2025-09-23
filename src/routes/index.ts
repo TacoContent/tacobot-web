@@ -5,6 +5,7 @@ import ShiftCodesRouter from './shiftcodes';
 import ScriptsRouter from './scripts';
 import GameKeysRouter from './gamekeys';
 import FreeGameKeysRouter from './freegames';
+import MinecraftUsersRouter from './minecraft';
 
 import ApiV1UsersRouter from './api/v1/users';
 
@@ -18,6 +19,7 @@ router.use('/', ScriptsRouter);
 router.use('/', ShiftCodesRouter);
 router.use('/', GameKeysRouter);
 router.use('/', FreeGameKeysRouter);
+router.use('/', MinecraftUsersRouter);
 
 router.use('/', ApiV1UsersRouter);
 
