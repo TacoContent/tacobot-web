@@ -6,8 +6,8 @@
         <th class="text-uppercase">User</th>
         <th class="text-uppercase">Minecraft</th>
         <th class="text-uppercase">Whitelisted</th>
-        <th class="text-uppercase">Op Level</th>
-        <th class="text-uppercase">Bypass Player Limit</th>
+        <th class="text-uppercase">Level</th>
+        <th class="text-uppercase"><span title="Bypasses Player Limit">BPL</span></th>
         <th class="text-uppercase"></th>
       </tr>
     </thead>
@@ -17,7 +17,7 @@
         <td class="text-nowrap p-1">{{> discord/user id=this.user_id}}</td>
         <td class="text-nowrap p-1">{{> minecraft/user uuid=this.uuid username=this.username}}</td>
         <td class="text-nowrap">{{#if this.whitelist}}✅{{else}}❌{{/if}}</td>
-        <td class="text-nowrap">{{this.op.level}}</td>
+        <td class="text-nowrap">{{> minecraft/op-level level=this.op.level}}</td>
         <td class="text-nowrap">{{#if this.op.bypassesPlayerLimit}}✅{{else}}❌{{/if}}</td>
         <td class="text-nowrap"><a href="{{this.source}}" target="_blank"><i class="fas fa-external-link-alt"></i></a></td>
       {{/each}}

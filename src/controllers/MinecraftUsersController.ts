@@ -12,7 +12,7 @@ export default class MinecraftUsersController {
     const METHOD = Reflection.getCallingMethodName();
     try {
       const page = Math.max(1, parseInt(req.query.page as string) || 1);
-      const pageSize = 5;
+      const pageSize = 10;
 
       const client = new MinecraftUsersMongoClient();
       const pagedResults = await client.getOps((page - 1) * pageSize, pageSize);
@@ -35,7 +35,7 @@ export default class MinecraftUsersController {
     const METHOD = Reflection.getCallingMethodName();
     try {
       const page = Math.max(1, parseInt(req.query.page as string) || 1);
-      const pageSize = 5;
+      const pageSize = 10;
 
       const client = new MinecraftUsersMongoClient();
       const pagedResults = await client.getNonOps((page - 1) * pageSize, pageSize);

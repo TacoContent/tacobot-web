@@ -57,6 +57,7 @@ export default class ScriptsController {
 
       scripts.forEach((s) => {
         script += fs.readFileSync(path.join(basePath, s), 'utf-8');
+        script += '\n';
       });
 
       res.status(200).send(script).end();

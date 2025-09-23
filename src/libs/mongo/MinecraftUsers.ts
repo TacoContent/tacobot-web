@@ -23,9 +23,21 @@ export default class MinecraftUsersMongoClient extends DatabaseMongoClient<Minec
 
     // select when op.enabled is true
 
-    const items = await collection.find({ "op.enabled": true, op: { $ne: null }, guild_id: config.tacobot.primaryGuildId }).skip(skip).limit(take).sort({ username: 1 }).toArray();
+    const items = await collection.find({
+      "$or": [{ local: false, local: { $exists: false } }],
+      "op.enabled": true,
+      op: { $ne: null },
+      guild_id: config.tacobot.primaryGuildId
+    }).skip(skip).limit(take).sort({ username: 1 }).toArray();
 
-    const totalItems = await collection.countDocuments({ "op.enabled": true, op: { $ne: null }, guild_id: config.tacobot.primaryGuildId });
+    console.log(clc.cyanBright(`[MongoDB] [${this.constructor.name}] Retrieved ${items.length} ops (skip: ${skip}, take: ${take})`));
+
+    const totalItems = await collection.countDocuments({
+      "$or": [{ local: false, local: { $exists: false } }],
+      "op.enabled": true,
+      op: { $ne: null },
+      guild_id: config.tacobot.primaryGuildId
+    });
     const lastPage = Math.ceil(totalItems / take);
 
     const beforePages = [];
