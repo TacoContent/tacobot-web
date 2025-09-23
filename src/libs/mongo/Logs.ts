@@ -1,10 +1,9 @@
-// @ts-nocheck
 import DatabaseMongoClient from './Database';
 import config from '../../config';
 import clc from 'cli-color';
-import { Collection } from 'mongodb';
+import { Collection, Document } from 'mongodb';
 
-interface LogData {
+interface LogData extends Document {
   [key: string]: any;
 }
 
@@ -81,11 +80,12 @@ export default class LogsMongoClient extends DatabaseMongoClient<LogData> {
       const dbLogLevel = this._logLevels()[config.log.level.db];
       const consoleLogLevel = this._logLevels()[config.log.level.console];
       const reqLogLevel = this._logLevels()[level];
+      const collection = await this.getCollection();
 
       var result;
       if (reqLogLevel >= dbLogLevel) {
         if (typeof data === 'object') {
-          result = await this.collection.insertOne({
+          result = await collection.insertOne({
             timestamp,
             level,
             source,
@@ -93,7 +93,7 @@ export default class LogsMongoClient extends DatabaseMongoClient<LogData> {
             ...data,
           });
         } else {
-          result = await this.collection.insertOne({
+          result = await collection.insertOne({
             timestamp,
             level,
             source,

@@ -1,3 +1,5 @@
+import { Document } from 'mongodb';
+
 
 export interface ShiftCodeGame {
 	id: string;
@@ -10,7 +12,7 @@ export interface ShiftCodeTrackedIn {
 	message_id: string;
 }
 
-export default class ShiftCodeEntry {
+export default class ShiftCodeEntry implements Document {
 	_id?: string = undefined;
 	games: ShiftCodeGame[] = [];
 	code: string = '';

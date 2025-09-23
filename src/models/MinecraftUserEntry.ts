@@ -1,12 +1,16 @@
+import { Document } from 'mongodb';
+
+
 export interface MinecraftUserOpEntry {
   enabled: boolean;
   level: number;
   bypassesPlayerLimit: boolean;
 }
 
-export default class MinecraftUserEntry {
+export default class MinecraftUserEntry implements Document {
   _id?: string = undefined;
   user_id: string = '';
+  guild_id: string = '';
   username: string = '';
   uuid: string = '';
   whitelisted: boolean = false;

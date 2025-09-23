@@ -1,6 +1,8 @@
 import moment from 'moment-timezone';
+import { Document } from 'mongodb';
 
-export default class MigrationEntry {
+export default class MigrationEntry implements Document{
+  _id?: string = undefined;
   id: string;
   timestamp: number;
   ran: boolean;

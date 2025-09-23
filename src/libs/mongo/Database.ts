@@ -1,11 +1,10 @@
-// @ts-nocheck
-import { MongoClient, Db, Collection } from 'mongodb';
+import { MongoClient, Db, Collection, Document } from 'mongodb';
 import config from '../../config';
 
 let mongoClientInstance: MongoClient | null = null;
 let mongoDbInstance: Db | null = null;
 
-class DatabaseMongoClient<T> {
+class DatabaseMongoClient<T extends Document> {
   private database: string;
   private url: string;
   private client: MongoClient | null;
@@ -51,14 +50,18 @@ class DatabaseMongoClient<T> {
     this.db = null;
   }
 
-  async getCollection(): Promise<Collection<T>> {
-    if (!this.collection) {
+  async getCollection(collectionName: string | undefined | null = undefined): Promise<Collection<T>> {
+    if (!this.db) {
       await this.connect();
     }
-    if (!this.collection) {
-      throw new Error("Collection not initialized");
+    if (!this.db) {
+      throw new Error("Database not initialized");
     }
-    return this.collection;
+    if (collectionName) {
+      return this.db.collection(collectionName);
+    }
+
+    return this.db.collection(this.collectionName);
   }
 }
 

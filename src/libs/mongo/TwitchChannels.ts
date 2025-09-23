@@ -2,23 +2,24 @@ import DatabaseMongoClient from './Database'
 import config from '../../config';
 import clc from 'cli-color';
 import { Collection, InsertManyResult, InsertOneResult } from 'mongodb';
-import moment from 'moment-timezone';
-import FreeGameKeyEntry from '../../models/FreeGameKeyEntry';
 import PagedResults from '../../models/PagedResults';
+import TwitchChannelEntry from '../../models/TwitchChannelEntry';
+import TwitchUserEntry from '../../models/TwitchUserEntry';
 
-class FreeGameKeysMongoClient extends DatabaseMongoClient<FreeGameKeyEntry> {
+export default class TwitchChannelsMongoClient extends DatabaseMongoClient<TwitchChannelEntry> {
   constructor() {
     super();
-    this.collectionName = 'free_game_keys';
-    console.log("FreeGameKeysMongoClient initialized");
+    this.collectionName = 'twitch_channels';
+    console.log("TwitchChannelsMongoClient initialized");
   }
 
-  async get(skip: number = 0, take: number = 100): Promise<PagedResults<FreeGameKeyEntry>> {
+  async get(skip: number = 0, take: number = 100): Promise<PagedResults<TwitchChannelEntry>> {
     const collection = await this.getCollection();
 
     if (skip < 0) skip = 0;
     if (take <= 0 || take > 100) take = 100;
-    const items = await collection.find({}).skip(skip).limit(take).sort({ published_date: 1, end_date: 1 }).toArray();
+
+    const items = await collection.find({}).skip(skip).limit(take).sort({ timestamp: -1 }).toArray();
 
     const totalItems = await collection.countDocuments({});
 
@@ -30,5 +31,3 @@ class FreeGameKeysMongoClient extends DatabaseMongoClient<FreeGameKeyEntry> {
     });
   }
 }
-
-export default FreeGameKeysMongoClient;

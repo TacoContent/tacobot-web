@@ -2,41 +2,45 @@
 $(() => {
   const discordUserLoader = new DiscordUserLoader();
   const duElements = $('[data-discord-user]');
-  discordUserLoader.renderUsers(duElements);
+  discordUserLoader.renderBatch(duElements);
+
+  const discordGuildLoader = new DiscordGuildLoader();
+  const dgElements = $('[data-discord-guild]');
+  discordGuildLoader.renderBatch(dgElements);
 });
 
-class UserLoader {
+class TemplateLoader {
   constructor() {
-    this.userCache = new Map();
+    this.cache = new Map();
   }
 
-  async fetchUser(userId) {
-    throw new Error('fetchUser method not implemented');
+  async fetch(id) {
+    throw new Error('fetch method not implemented');
   }
 
-  async fetchUsers(userIds) {
-    throw new Error('fetchUsers method not implemented');
+  async fetchBatch(ids) {
+    throw new Error('fetchBatch method not implemented');
   }
 
-  async renderUser(element, userId) {
-    throw new Error('renderUser method not implemented');
+  async render(element, id) {
+    throw new Error('render method not implemented');
   }
 
-  async renderUsers(elements) {
-    throw new Error('renderUsers method not implemented');
+  async renderBatch(elements) {
+    throw new Error('renderBatch method not implemented');
   }
 }
 
-class DiscordUserLoader extends UserLoader {
+class DiscordUserLoader extends TemplateLoader {
   constructor() {
     super();
     console.log('Initialized DiscordUserLoader');
   }
 
-  async fetchUser(userId) {
-    userId = userId.toString().trim();
-    if (this.userCache.has(userId)) {
-      return this.userCache.get(userId);
+  async fetch(id) {
+    const userId = id.toString().trim();
+    if (this.cache.has(userId)) {
+      return this.cache.get(userId);
     }
 
     const response = await $.ajax({
@@ -45,12 +49,12 @@ class DiscordUserLoader extends UserLoader {
       contentType: 'application/json',
     });
 
-    this.userCache.set(userId, response);
+    this.cache.set(userId, response);
     return response;
   }
 
-  async fetchUsers(userIds) {
-    const uncachedIds = userIds.filter(id => !this.userCache.has(id));
+  async fetchBatch(ids) {
+    const uncachedIds = ids.filter(id => !this.cache.has(id));
     if (uncachedIds.length > 0) {
       const response = await $.ajax({
         url: `/api/v1/users/batch/`,
@@ -60,15 +64,17 @@ class DiscordUserLoader extends UserLoader {
       });
 
       response.forEach(user => {
-        this.userCache.set(user.user_id.toString().trim(), user);
+        if (user && user.user_id) {
+          this.cache.set(user.user_id.toString().trim(), user);
+        }
       });
     }
 
-    return userIds.map(id => this.userCache.get(id.toString().trim()));
+    return ids.map(id => this.cache.get(id.toString().trim()));
   }
 
-  async renderUser(element, userId) {
-    const user = await this.fetchUser(userId);
+  async render(element, id) {
+    const user = await this.fetch(id);
     if (user) {
       $(element).empty();
       Templates.render($(element), 'discord-user', user);
@@ -76,12 +82,12 @@ class DiscordUserLoader extends UserLoader {
     }
   }
 
-  async renderUsers(elements) {
+  async renderBatch(elements) {
     const userIds = [];
     elements.each((index, element) => {
       const userId = $(element).data('discord-user');
       if (userId) {
-        userIds.push(userId);
+        userIds.push(userId.toString().trim());
       }
     });
 
@@ -89,10 +95,10 @@ class DiscordUserLoader extends UserLoader {
       return;
     }
 
-    const users = await this.fetchUsers(userIds);
+    const users = await this.fetchBatch(userIds);
     elements.each((index, element) => {
       const userId = $(element).data('discord-user').toString().trim();
-      const user = users.find(u => u.user_id.toString().trim() === userId.toString());
+      const user = users.find(u => u && u.user_id && u.user_id.toString().trim() === userId.toString());
       if (user) {
         $(element).empty();
         Templates.render($(element), 'discord-user', user);
@@ -100,4 +106,93 @@ class DiscordUserLoader extends UserLoader {
       }
     });
   }
+}
+
+class DiscordGuildLoader extends TemplateLoader {
+  constructor() {
+    super();
+    console.log('Initialized DiscordGuildLoader');
+  }
+
+  async fetch(id) {
+    const guildId = id.toString().trim();
+    if (this.cache.has(guildId)) {
+      return this.cache.get(guildId);
+    }
+
+    const response = await $.ajax({
+      url: `/api/v1/guild/lookup/${guildId}`,
+      method: 'GET',
+      contentType: 'application/json',
+    });
+
+    this.cache.set(guildId, response);
+    return response;
+  }
+
+  async fetchBatch(ids) {
+    const uncachedIds = ids.filter(id => !this.cache.has(id));
+    if (uncachedIds.length > 0) {
+      const response = await $.ajax({
+        url: `/api/v1/guilds/lookup/batch/`,
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(uncachedIds),
+      });
+
+      response.forEach(guild => {
+        if (guild && guild.guild_id) {
+          this.cache.set(guild.guild_id.toString().trim(), guild);
+        }
+      });
+    }
+
+    return ids.map(id => this.cache.get(id.toString().trim()));
+  }
+
+  async render(element, id) {
+    const guild = await this.fetch(id);
+    if (guild) {
+      $(element).empty();
+      Templates.render($(element), 'discord-guild', guild);
+      ImageErrorHandler.register($('img[data-img-error]', element));
+    }
+  }
+
+  async renderBatch(elements) {
+    const guildIds = [];
+    elements.each((index, element) => {
+      const guildId = $(element).data('discord-guild');
+      if (guildId) {
+        guildIds.push(guildId);
+      }
+    });
+
+    if (guildIds.length === 0) {
+      return;
+    }
+
+    const guilds = await this.fetchBatch(guildIds);
+    elements.each((index, element) => {
+      const guildId = $(element).data('discord-guild').toString().trim();
+      const guild = guilds.find(u => u && u.guild_id && u.guild_id.toString().trim() === guildId.toString());
+      if (guild) {
+        $(element).empty();
+        Templates.render($(element), 'discord-guild', guild);
+        ImageErrorHandler.register($('img[data-img-error]', element));
+      }
+    });
+  }
+}
+
+class TwitchUserLoader extends TemplateLoader {
+  constructor() {
+    super();
+    console.log('Initialized TwitchUserLoader');
+  }
+  // http://decapi.me/twitch/avatar/<username>
+  async fetch(id) {}
+  async fetchBatch(ids) {}
+  async render(element, id) {}
+  async renderBatch(elements) {}
 }

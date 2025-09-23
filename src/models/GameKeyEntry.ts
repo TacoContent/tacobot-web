@@ -1,4 +1,7 @@
-export default class GameKeyEntry {
+import { Document } from 'mongodb';
+
+
+export default class GameKeyEntry implements Document {
   _id?: string = undefined;
   title: string = '';
   key: string = '';

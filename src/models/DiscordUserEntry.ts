@@ -1,4 +1,7 @@
-export default class DiscordUserEntry {
+import { Document } from 'mongodb';
+
+
+export default class DiscordUserEntry implements Document {
   _id?: string = undefined;
   user_id: string = '';
   guild_id: string = ''
