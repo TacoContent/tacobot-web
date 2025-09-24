@@ -1,4 +1,3 @@
-
 $(() => {
   const discordUserLoader = new DiscordUserLoader();
   const duElements = $('[data-discord-user]');
@@ -64,8 +63,9 @@ class DiscordUserLoader extends TemplateLoader {
       });
 
       response.forEach(user => {
-        if (user && user.user_id) {
-          this.cache.set(user.user_id.toString().trim(), user);
+        if (user && user.user_id && user.guild_id) {
+          const key = `${user.guild_id}/${user.user_id}`;
+          this.cache.set(key, user);
         }
       });
     }
@@ -74,20 +74,35 @@ class DiscordUserLoader extends TemplateLoader {
   }
 
   async render(element, id) {
-    const user = await this.fetch(id);
-    if (user) {
-      $(element).empty();
-      Templates.render($(element), 'discord-user', user);
-      ImageErrorHandler.register($('img[data-img-error]', element));
+    let user = await this.fetch(id);
+    const userId = $(element).data('discord-user')?.toString().trim();
+    let guildId = $(element).data('discord-user-guild')?.toString().trim();
+    if (!guildId) {
+      guildId = window.TBW_CONFIG.tacobot.primaryGuildId;
     }
+
+    $(element).empty();
+    if (!user) {
+      user = new DiscordUnknownUserEntry({
+        user_id: userId,
+        guild_id: guildId,
+      });
+    }
+    Templates.render($(element), 'discord-user', user);
+    ImageErrorHandler.register($('img[data-img-error]', element));
   }
 
   async renderBatch(elements) {
     const userIds = [];
     elements.each((index, element) => {
-      const userId = $(element).data('discord-user');
+      const userId = $(element).data('discord-user')?.toString().trim();
+      let guildId = $(element).data('discord-user-guild')?.toString().trim();
+      if (!guildId) {
+        guildId = window.TBW_CONFIG.tacobot.primaryGuildId;
+      }
       if (userId) {
-        userIds.push(userId.toString().trim());
+        // userIds.push(userId.toString().trim());
+        userIds.push(`${guildId}/${userId}`);
       }
     });
 
@@ -96,15 +111,47 @@ class DiscordUserLoader extends TemplateLoader {
     }
 
     const users = await this.fetchBatch(userIds);
+    console.log(users);
     elements.each((index, element) => {
-      const userId = $(element).data('discord-user').toString().trim();
-      const user = users.find(u => u && u.user_id && u.user_id.toString().trim() === userId.toString());
-      if (user) {
-        $(element).empty();
-        Templates.render($(element), 'discord-user', user);
-        ImageErrorHandler.register($('img[data-img-error]', element));
+      const userId = $(element).data('discord-user')?.toString().trim();
+      let guildId = $(element).data('discord-user-guild')?.toString().trim();
+      if (!guildId) {
+        guildId = window.TBW_CONFIG.tacobot.primaryGuildId;
       }
+      console.log({ userId, guildId });
+      let user = users.find(u => u?.user_id?.toString().trim() === userId.toString() && u?.guild_id?.toString().trim() === guildId.toString());
+      $(element).empty().removeClass('loading');
+      if (!user) {
+        user = new DiscordUnknownUserEntry({
+          user_id: userId,
+          guild_id: guildId,
+        });
+      }
+      Templates.render($(element), 'discord-user', user);
+      ImageErrorHandler.register($('img[data-img-error]', element));
     });
+  }
+}
+
+class DiscordUnknownUserEntry {
+  constructor(data = {}) {
+    this._id = undefined;
+    this.user_id = '';
+    this.guild_id = '';
+    this.avatar = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+    this.bot = false;
+    this.system = false;
+    this.created = 0;
+    this.timestamp = 0;
+    this.status = undefined;
+    this.displayname = 'Unknown User';
+    this.username = 'unknown';
+    this.discriminator = '0000';
+    Object.assign(this, data);
+  }
+
+  link() {
+    return `https://discord.com/users/${this.user_id}`;
   }
 }
 
@@ -191,8 +238,8 @@ class TwitchUserLoader extends TemplateLoader {
     console.log('Initialized TwitchUserLoader');
   }
   // http://decapi.me/twitch/avatar/<username>
-  async fetch(id) {}
-  async fetchBatch(ids) {}
-  async render(element, id) {}
-  async renderBatch(elements) {}
+  async fetch(id) { }
+  async fetchBatch(ids) { }
+  async render(element, id) { }
+  async renderBatch(elements) { }
 }

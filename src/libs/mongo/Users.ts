@@ -5,6 +5,11 @@ import DiscordUserEntry from '../../models/DiscordUserEntry';
 import { Collection, InsertManyResult, InsertOneResult } from 'mongodb';
 import moment from 'moment-timezone';
 
+interface IGuildUserPair {
+  guildId: string;
+  userId: string;
+}
+
 class DiscordUsersMongoClient extends DatabaseMongoClient<DiscordUserEntry> {
   constructor() {
     super();
@@ -21,15 +26,15 @@ class DiscordUsersMongoClient extends DatabaseMongoClient<DiscordUserEntry> {
     return await collection.find({}).skip(skip).limit(take).sort({ created_at: -1 }).toArray();
   }
 
-  async findById(guild_id: string, id: string): Promise<DiscordUserEntry | null> {
+  async findById(id: IGuildUserPair): Promise<DiscordUserEntry | null> {
     const collection = await this.getCollection();
-    return await collection.findOne({ user_id: id, guild_id: guild_id });
+    return await collection.findOne({ user_id: id.userId });
   }
 
-  async findByIds(guild_id: string, ids: string[]): Promise<DiscordUserEntry[]> {
+  async findByIds(ids: IGuildUserPair[]): Promise<DiscordUserEntry[]> {
     const collection = await this.getCollection();
-    return await collection.find({ user_id: { $in: ids }, guild_id: guild_id }).toArray();
-  } 
+    return await collection.find({ $or: ids.map(({ guildId, userId }) => ({ guild_id: guildId, user_id: userId })) }).toArray();
+  }
 
 }
 

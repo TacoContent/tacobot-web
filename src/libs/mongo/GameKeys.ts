@@ -20,11 +20,11 @@ class GameKeysMongoClient extends DatabaseMongoClient<GameKeyEntry> {
     if (take <= 0 || take > 100) take = 100;
 
     const items = await collection.find({
-      guild_id: config.tacobot.primaryGuildId
+      
     }).skip(skip).limit(take).sort({ redeemed_timestamp: 1, title: 1 }).toArray();
 
     const totalItems = await collection.countDocuments({
-      guild_id: config.tacobot.primaryGuildId
+      
     });
 
     return new PagedResults({

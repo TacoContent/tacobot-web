@@ -15,33 +15,46 @@ export default class UsersController {
     const METHOD = Reflection.getCallingMethodName();
     try {
       const guildId: string = req.query.guildId as string || configs.tacobot.primaryGuildId as string;
-      let userIds: string[] = [];
+      let ids: string[] = [];
       
       if (req.query.userIds) {
         // comma separated list in query param
-        userIds = (req.query.userIds as string).split(',').map(id => id.trim());
+        ids = (req.query.userIds as string).split(',').map(id => id.trim());
       } else if (req.body.userIds) {
         // array in body
         if (Array.isArray(req.body.userIds)) {
-          userIds = req.body.userIds.map((id: any) => String(id).trim());
+          ids = req.body.userIds.map((id: any) => String(id).trim());
         }
       } else if (req.body && Array.isArray(req.body)) {
         // array in body without key
-        userIds = req.body.map((id: any) => String(id).trim());
+        ids = req.body.map((id: any) => String(id).trim());
       }
 
       // remove empty ids and duplicates
-      userIds = Array.from(new Set(userIds.filter(id => id.length > 0)));
+      ids = Array.from(new Set(ids.filter(id => id.length > 0)));
 
-      if (userIds.length === 0) {
+      if (ids.length === 0) {
         res.status(400).send('No user IDs provided').end();
         return;
       }
 
+      // take ids and split each by `/`. 
+      // create array of objects with guildId and userId
+      // if no guildId provided, use the one from query param or default
+      // e.g. ["123/456", "789"] => [{guildId: "123", userId: "456"}, {guildId: "default", userId: "789"}]
+
+      const userIdObjects = ids.map(id => {
+        const parts = id.split('/');
+        return {
+          guildId: parts.length === 2 ? parts[0].trim() : guildId,
+          userId: parts[1] ? parts[1].trim() : parts[0].trim()
+        };
+      });
+
       const DiscordUsersMongoClient = (await import('../../../libs/mongo/Users')).default;
       const client = new DiscordUsersMongoClient();
 
-      const users: DiscordUserEntry[] = await client.findByIds(guildId, userIds);
+      const users: DiscordUserEntry[] = await client.findByIds(userIdObjects);
 
       res.status(200).send(users).end();
     } catch (err: any) {
@@ -65,7 +78,7 @@ export default class UsersController {
       const DiscordUsersMongoClient = (await import('../../../libs/mongo/Users')).default;
       const client = new DiscordUsersMongoClient();
 
-      const user: DiscordUserEntry | null = await client.findById(guildId, userId);
+      const user: DiscordUserEntry | null = await client.findById({ guildId, userId });
       if (!user) {
         res.status(404).send('User not found').end();
         return;

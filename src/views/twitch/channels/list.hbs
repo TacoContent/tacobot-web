@@ -3,9 +3,9 @@
   <table class="table">
     <thead>
       <tr class="table-active">
-        <th class="text-uppercase">Guild</th>
-        <th class="text-uppercase">Channel</th>
-        <th class="text-uppercase"><i class="fas fa-clock" title="Added / Updated"></i></th>
+        <th class="text-uppercase text-start">Guild</th>
+        <th class="text-uppercase text-start">Channel</th>
+        <th class="text-uppercase text-end"><i class="fas fa-clock" title="Added / Updated"></i></th>
         <th class="text-uppercase"></th>
       </tr>
     </thead>
@@ -14,7 +14,7 @@
       <tr>
         <td class="text-nowrap p-1 text-start">{{> discord/guild id=this.guild_id}}</td>
         <td class="text-nowrap p-1 text-start">{{> twitch/user username=this.channel}}</td>
-        <td class="text-nowrap p-1 text-start">{{> date date=this.timestamp unknown="UNKNOWN"}}</td>
+        <td class="text-nowrap p-1 text-end me-1">{{> date date=this.timestamp unknown="UNKNOWN"}}</td>
         <td class="text-nowrap"></td>
       {{/each}}
     </tbody>

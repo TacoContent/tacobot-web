@@ -3,9 +3,9 @@
   <table class="table">
     <thead>
       <tr class="table-active">
-        <th class="text-uppercase">Guild</th>
-        <th class="text-uppercase">User</th>
-        <th class="text-uppercase">Count</th>
+        <th class="text-uppercase text-start">Guild</th>
+        <th class="text-uppercase text-start">User</th>
+        <th class="text-uppercase text-end">Count</th>
         <th class="text-uppercase"></th>
       </tr>
     </thead>
@@ -13,8 +13,8 @@
       {{#each items}}
       <tr>
         <td class="text-nowrap p-1 text-start">{{> discord/guild id=this.guild_id}}</td>
-        <td class="text-nowrap p-1 text-start">{{> discord/user id=this.user_id}}</td>
-        <td class="text-nowrap p-1 text-start">{{> taco count=this.count}}</td>
+        <td class="text-nowrap p-1 text-start">{{> discord/user user_id=this.user_id guild_id=this.guild_id}}</td>
+        <td class="text-nowrap p-1 text-end me-1">{{> taco count=this.count}}</td>
         <td class="text-nowrap"></td>
       {{/each}}
     </tbody>
