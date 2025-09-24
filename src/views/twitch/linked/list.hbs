@@ -11,7 +11,7 @@
     <tbody>
       {{#each items}}
       <tr>
-        <td class="text-nowrap p-1 text-start">{{> discord/user id=this.user_id}}</td>
+        <td class="text-nowrap p-1 text-start">{{> discord/user user_id=this.user_id guild_id=this.guild_id}}</td>
         <td class="text-nowrap p-1 text-start">{{> twitch/user username=this.twitch_name}}</td>
         <td class="text-nowrap"></td>
       {{/each}}
