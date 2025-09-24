@@ -7,6 +7,7 @@
         <th class="text-uppercase text-start">Title</th>
         <th class="text-uppercase text-start">Platform</th>
         <th class="text-uppercase text-nowrap text-start">Submitted By</th>
+        <th class="text-uppercase text-start">Guild</th>
         <th class="text-uppercase text-start"><i title="Redeemed" class="fas fa-cash-register"></i></th>
         <th class="text-uppercase text-nowrap text-start">Redeemed By</th>
         <th class="text-uppercase text-nowrap"><i class="fas fa-clock" title="Redeemed at"></i></th>
@@ -20,6 +21,7 @@
         <td class="text-start">{{this.title}}</td>
         <td class="text-start">{{this.type}}</td>
         <td class="text-start">{{> discord/user user_id=this.user_owner guild_id=this.guild_id }}</td>
+        <td class="text-start">{{> discord/guild id=this.guild_id}}</td>
         <td class="text-start">{{> yes-no value=this.redeemed_by}}</td>
         <td class="text-start">
           {{#if this.redeemed_by}}
