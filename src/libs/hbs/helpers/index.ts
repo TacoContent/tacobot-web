@@ -3,13 +3,15 @@ import sections from './sections';
 import operators from './operators';
 import * as sitemap from './sitemap';
 import uuid from './uuid';
+import numbers from './numbers';
 
 const helpers = {
   ...dates,
   ...sections,
   ...operators,
   ...sitemap,
-  ...uuid
+  ...uuid,
+  ...numbers,
 };
 
 export default helpers;

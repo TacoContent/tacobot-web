@@ -1,10 +1,9 @@
-
-// import config from '../config';
 import { Router, Request, Response } from 'express';
+import { ui } from '../middleware';
 
 const router: Router = Router();
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', ui.allow, async (req: Request, res: Response) => {
   res.render("index", { title: 'Home' });
 });
 

@@ -20,7 +20,7 @@
         <td class="text-start">{{this.title}}</td>
         <td class="text-start">{{this.type}}</td>
         <td class="text-start">{{> discord/user id=this.user_owner}}</td>
-        <td class="text-start">{{#if this.redeemed_by}}✅{{else}}❌{{/if}}</td>
+        <td class="text-start">{{> yes-no value=this.redeemed_by}}</td>
         <td class="text-start">
           {{#if this.redeemed_by}}
             {{> discord/user id=this.redeemed_by}}
@@ -29,7 +29,7 @@
           {{/if}}
         </td>
         <td class="text-nowrap">{{> date date=this.redeemed_timestamp unknown="N/A"}}</td>
-        <td>{{this.cost}} <span class="currency">🌮</span></td>
+        <td>{{> taco count=this.cost}}</td>
         <td style="width: 48px;">
           {{#if this.info_link}}
           <a href="{{this.info_link}}" target="_blank"><i class="fas fa-circle-info me-1"></i></a>

@@ -7,6 +7,7 @@ import GameKeysRouter from './gamekeys';
 import FreeGameKeysRouter from './freegames';
 import MinecraftUsersRouter from './minecraft';
 import TwitchRouter from './twitch';
+import TacosRouter from './tacos';
 
 import ApiV1UsersRouter from './api/v1/users';
 import ApiV1GuildsRouter from './api/v1/guilds';
@@ -23,6 +24,7 @@ router.use('/', ShiftCodesRouter);
 router.use('/', GameKeysRouter);
 router.use('/', FreeGameKeysRouter);
 router.use('/', MinecraftUsersRouter);
+router.use('/', TacosRouter);
 router.use('/', TwitchRouter);
 
 router.use('/', ApiV1UsersRouter);

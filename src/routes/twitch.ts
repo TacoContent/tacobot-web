@@ -5,7 +5,7 @@ import TwitchController from '../controllers/TwitchController';
 const router = Router();
 const twitchController = new TwitchController();
 
-router.get('/twitch/channels/', twitchController.listChannels);
-router.get('/twitch/linked/', twitchController.listLinkedUsers);
+router.get('/twitch/channels/', ui.allow, twitchController.listChannels);
+router.get('/twitch/linked/', ui.allow, twitchController.listLinkedUsers);
 
 export default router;

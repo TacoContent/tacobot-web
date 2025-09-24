@@ -11,7 +11,6 @@ router.get('/shiftcodes/submit', ui.allow, (req: Request, res: Response) => {
   res.render('shiftcodes/submit', { title: 'Submit SHiFT Code', games: Games, now: new Date().toISOString().slice(0,16) });
 });
 
-router.post('/shiftcodes/submit', shiftCodeController.submit);
-router.get('/shiftcodes', shiftCodeController.list);
-router.get('/shiftcodes/list', shiftCodeController.list);
+router.post('/shiftcodes/submit', ui.allow, shiftCodeController.submit);
+router.get('/shiftcodes', ui.allow, shiftCodeController.list);
 export default router;

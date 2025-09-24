@@ -20,7 +20,6 @@ export default class TwitchUsersMongoClient extends DatabaseMongoClient<TwitchUs
     if (take <= 0 || take > 100) take = 100;
 
     const items = await collection.find({}).skip(skip).limit(take).sort({ twitch_name: -1 }).toArray();
-    console.log("Items fetched:", items);
     const totalItems = await collection.countDocuments({});
 
     return new PagedResults({

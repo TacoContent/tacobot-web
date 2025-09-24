@@ -16,7 +16,7 @@
     children:
       - type: link
         title: View Tacos
-        href: /tacos/list
+        href: /tacos
         icon: list
       - type: link
         title: Give Tacos

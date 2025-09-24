@@ -18,9 +18,9 @@
         <td class="text-nowrap p-1 text-start">{{> discord/guild id=this.guild_id}}</td>
         <td class="text-nowrap p-1 text-start">{{> discord/user id=this.user_id}}</td>
         <td class="text-nowrap p-1 text-start">{{> minecraft/user uuid=this.uuid username=this.username}}</td>
-        <td class="text-nowrap">{{#if this.whitelist}}✅{{else}}❌{{/if}}</td>
+        <td class="text-nowrap">{{> yes-no value=this.whitelist}}</td>
         <td class="text-nowrap">{{> minecraft/op-level level=this.op.level}}</td>
-        <td class="text-nowrap">{{#if this.op.bypassesPlayerLimit}}✅{{else}}❌{{/if}}</td>
+        <td class="text-nowrap">{{> yes-no value=this.op.bypassesPlayerLimit}}</td>
         <td class="text-nowrap"></td>
       {{/each}}
     </tbody>
