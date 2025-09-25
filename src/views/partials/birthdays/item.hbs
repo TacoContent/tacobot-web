@@ -1,0 +1,35 @@
+<div class="card">
+  <div class="card-header text-muted">
+    <h5 class="card-title">
+      {{#if (isToday month=this.month day=this.day)}}
+        <span class="badge bg-success text-bg-success text-uppercase float-start">Today!</span>
+      {{else}}
+        <span class="badge bg-secondary text-bg-secondary text-uppercase float-start">{{until this.month this.day}}</span>
+      {{/if}}
+      <div class="fs-2 text-truncate ms-4 me-4 ps-2 pe-2" title="{{padNumber this.month 2}}/{{padNumber this.day 2}}"><i class="fas fa-calendar-alt me-1"></i>{{padNumber this.month 2}}/{{padNumber this.day 2}}</div>
+    </h5>
+    {{#if (isToday month=this.month day=this.day)}}
+    <h6 class="card-subtitle mb-2 mt-2 text-body-secondary">
+      <span class="text-uppercase me-1 text-muted">Happy Birthday! 🍰</span>
+    </h6>
+    {{/if}}
+    <div class="clearfix"><!-- --></div>
+  </div>
+
+  <div class="card-body">
+    <div class="row card-text ms-2 me-2">
+      <div class="col border-bottom">
+        <div class="card-header text-uppercase">Guild</div>
+        <div class="list-group-item mt-1 mb-2 text-nowrap">{{> discord/guild id=this.guild_id}}</div>
+      </div>
+      <div class="col border-bottom">
+        <div class="card-header text-uppercase">User</div>
+        <div class="list-group-item mt-1 mb-2 text-nowrap">{{> discord/user user_id=this.user_id guild_id=this.guild_id}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-footer text-muted text-end">
+    <small class="text-muted">Added {{unixFromNow this.timestamp}}</small>
+  </div>
+</div>

@@ -10,6 +10,19 @@
     icon: gauge
   - type: separator
   - type: group
+    title: Birthdays
+    id: birthdays
+    icon: cake
+    children:
+      - type: link
+        title: View Birthdays
+        href: /birthdays
+        icon: list
+      - type: link
+        title: Add Birthday
+        href: /birthdays/add
+        icon: plus
+  - type: group
     title: Tacos
     id: tacos
     icon: boxes-stacked

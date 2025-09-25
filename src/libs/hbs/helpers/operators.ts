@@ -23,5 +23,11 @@ export default {
   },
   or: function (this: any, a: any, b: any): boolean {
     return a || b;
+  },
+  not: function (this: any, a: any): boolean {
+    return !a;
+  },
+  in: function (this: any, a: any, b: any[]): boolean {
+    return b.indexOf(a) > -1;
   }
 }

@@ -12,5 +12,11 @@ export default {
     }
   ): string {
     return new Intl.NumberFormat(locals, options).format(number);
+  },
+  padNumber: function (this: any, number: number, length: number): string {
+    return new Intl.NumberFormat('en-US', {
+      minimumIntegerDigits: length,
+      useGrouping: false,
+    }).format(number);
   }
 }
