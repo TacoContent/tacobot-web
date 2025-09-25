@@ -1,6 +1,6 @@
 <nav aria-label="Page navigation">
 <ul class="pagination">
-    {{#if (notEq currentPage 1)}}
+    {{#if (neq currentPage 1)}}
       <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
     {{else}}
       <li class="page-item disabled"><span class="page-link">First</span></li>
@@ -30,8 +30,12 @@
       <li class="page-item disabled"><span class="page-link">Next</span></li>
     {{/if}}
 
-    {{#if (notEq currentPage lastPage)}}
-      <li class="page-item"><a class="page-link" href="?page={{lastPage}}">Last</a></li>
+    {{#if (neq currentPage lastPage)}}
+      {{#if (neq lastPage 0)}}
+        <li class="page-item"><a class="page-link" href="?page={{lastPage}}">Last</a></li>
+      {{else}}
+        <li class="page-item disabled"><span class="page-link">Last</span></li>
+      {{/if}}
     {{else}}
       <li class="page-item disabled"><span class="page-link">Last</span></li>
     {{/if}}

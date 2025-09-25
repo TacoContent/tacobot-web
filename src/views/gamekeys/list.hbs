@@ -1,7 +1,22 @@
 <!-- Game Keys List Page -->
-<div class="container mt-4">
+<div class="container-x mt-4">
   <h2>Game Keys</h2>
-  <table class="table">
+  <div class="d-flex justify-content-center">
+  {{> pager this.pager}}
+  </div>
+
+  <div class="row">
+    {{#each items}}
+      <div class="col-md-6 mb-4">
+        {{> gamekeys/item}}
+      </div>
+    {{/each}}
+  </div>
+
+  <div class="d-flex justify-content-center">
+  {{> pager this.pager}}
+  </div>
+  {{!-- <table class="table">
     <thead>
       <tr class="table-active">
         <th class="text-uppercase text-start">Title</th>
@@ -57,8 +72,5 @@
 
       {{/each}}
     </tbody>
-  </table>
-
-  {{> pager this.pager}}
-
+  </table> --}}
 </div>

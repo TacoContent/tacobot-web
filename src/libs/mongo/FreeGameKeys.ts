@@ -18,7 +18,7 @@ class FreeGameKeysMongoClient extends DatabaseMongoClient<FreeGameKeyEntry> {
 
     if (skip < 0) skip = 0;
     if (take <= 0 || take > 100) take = 100;
-    const items = await collection.find({}).skip(skip).limit(take).sort({ published_date: 1, end_date: 1 }).toArray();
+    const items = await collection.find({}).skip(skip).limit(take).sort({ published_date: -1, end_date: 1 }).toArray();
 
     const totalItems = await collection.countDocuments({});
 

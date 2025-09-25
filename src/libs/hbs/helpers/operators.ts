@@ -1,35 +1,27 @@
 
 export default {
-  notEq: function (this: any, a: any, b: any): boolean {
+  neq: function (this: any, a: any, b: any): boolean {
     return a !== b;
   },
   eq: function (this: any, a: any, b: any): boolean {
     return a === b;
   },
-  xif: function (this: any, v1: any, operator: string, v2: any, context: any) {
-    switch (operator) {
-      case '==':
-        return (v1 == v2) ? context.fn(this) : context.inverse(this);
-      case '===':
-        return (v1 === v2) ? context.fn(this) : context.inverse(this);
-      case '!=':
-        return (v1 != v2) ? context.fn(this) : context.inverse(this);
-      case '!==':
-        return (v1 !== v2) ? context.fn(this) : context.inverse(this);
-      case '<':
-        return (v1 < v2) ? context.fn(this) : context.inverse(this);
-      case '<=':
-        return (v1 <= v2) ? context.fn(this) : context.inverse(this);
-      case '>':
-        return (v1 > v2) ? context.fn(this) : context.inverse(this);
-      case '>=':
-        return (v1 >= v2) ? context.fn(this) : context.inverse(this);
-      case '&&':
-        return (v1 && v2) ? context.fn(this) : context.inverse(this);
-      case '||':
-        return (v1 || v2) ? context.fn(this) : context.inverse(this);
-      default:
-        return context.inverse(this);
-    }
+  lt: function (this: any, a: any, b: any): boolean {
+    return a < b;
+  },
+  lte: function (this: any, a: any, b: any): boolean {
+    return a <= b;
+  },
+  gt: function (this: any, a: any, b: any): boolean {
+    return a > b;
+  },
+  gte: function (this: any, a: any, b: any): boolean {
+    return a >= b;
+  },
+  and: function (this: any, a: any, b: any): boolean {
+    return a && b;
+  },
+  or: function (this: any, a: any, b: any): boolean {
+    return a || b;
   }
 }

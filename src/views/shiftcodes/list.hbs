@@ -1,54 +1,18 @@
 <!-- Shift Codes List Page -->
-<div class="container mt-4">
+<div class="container-x mt-4">
   <h2>SHiFT Codes</h2>
-  <table class="table">
-    <thead>
-      <tr class="table-active">
-        <th class="text-uppercase">Code</th>
-        <th class="text-uppercase">Games</th>
-        <th class="text-uppercase">Platforms</th>
-        <th class="text-uppercase">Expiry</th>
-        <th class="text-uppercase">Created</th>
-        <th class="text-uppercase"></th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#each items}}
-      <tr>
-        <td class="text-nowrap p-1">{{> code value=this.code copy=true spoiler=false }}</td>
-        <td>
-          <ul class="mb-0 ps-3 list-group">
-            {{#each this.games}}
-              <li class="list-group-item">{{this.name}}</li>
-            {{/each}}
-          </ul>
-        </td>
-        <td>
-          <ul class="mb-0 ps-3 list-group">
-            {{#each this.platforms}}
-              <li class="list-group-item">{{this}}</li>
-            {{/each}}
-          </ul>
-        </td>
-        <td class="text-nowrap">{{> date date=this.expiry unknown="UNKNOWN"}}</td>
-        <td class="text-nowrap">{{> date date=this.created_at unknown="UNKNOWN"}}</td>
-        <td class="text-nowrap"><a href="{{this.source}}" target="_blank"><i class="fas fa-external-link-alt"></i></a></td>
-      </tr>
-      {{#if this.reward}}
-      <tr>
-        <th class="text-start text-uppercase table-active" colspan="1">Reward</th>
-        <td colspan="5" class="text-start">{{this.reward}}</td>
-      </tr>
-      {{/if}}
-      {{#if this.notes}}
-      <tr>
-        <th class="text-start text-uppercase table-active" colspan="1">Notes</th>
-        <td colspan="5" class="text-start">{{this.notes}}</td>
-      </tr>
-      {{/if}}
-      {{/each}}
-    </tbody>
-  </table>
-  
-    {{> pager this.pager}}
+  <div class="d-flex justify-content-center">
+  {{> pager this.pager}}
+  </div>
+
+  <div class="row">
+  {{#each items}}
+      <div class="col-md-6 mb-4">
+        {{> shiftcodes/item}}
+      </div>
+  {{/each}}
+  </div>
+  <div class="d-flex justify-content-center">
+  {{> pager this.pager}}
+  </div>
 </div>

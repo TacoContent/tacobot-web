@@ -66,6 +66,8 @@ class DiscordUserLoader extends TemplateLoader {
         if (user && user.user_id && user.guild_id) {
           const key = `${user.guild_id}/${user.user_id}`;
           this.cache.set(key, user);
+          // Also cache by user_id only for global lookups
+          this.cache.set(user.user_id.toString().trim(), user);
         }
       });
     }
@@ -77,9 +79,9 @@ class DiscordUserLoader extends TemplateLoader {
     let user = await this.fetch(id);
     const userId = $(element).data('discord-user')?.toString().trim();
     let guildId = $(element).data('discord-user-guild')?.toString().trim();
-    if (!guildId) {
-      guildId = window.TBW_CONFIG.tacobot.primaryGuildId;
-    }
+    // if (!guildId) {
+    //   guildId = window.TBW_CONFIG.tacobot.primaryGuildId;
+    // }
 
     $(element).empty();
     if (!user) {
@@ -97,12 +99,13 @@ class DiscordUserLoader extends TemplateLoader {
     elements.each((index, element) => {
       const userId = $(element).data('discord-user')?.toString().trim();
       let guildId = $(element).data('discord-user-guild')?.toString().trim();
-      if (!guildId) {
-        guildId = window.TBW_CONFIG.tacobot.primaryGuildId;
-      }
       if (userId) {
         // userIds.push(userId.toString().trim());
-        userIds.push(`${guildId}/${userId}`);
+        if (!guildId) {
+          userIds.push(`${userId}`);
+        } else {
+          userIds.push(`${guildId}/${userId}`);
+        }
       }
     });
 
@@ -115,11 +118,12 @@ class DiscordUserLoader extends TemplateLoader {
     elements.each((index, element) => {
       const userId = $(element).data('discord-user')?.toString().trim();
       let guildId = $(element).data('discord-user-guild')?.toString().trim();
+      let user = null;
       if (!guildId) {
-        guildId = window.TBW_CONFIG.tacobot.primaryGuildId;
+        user = users.find(u => u?.user_id?.toString().trim() === userId.toString());
+      } else {
+        user = users.find(u => u?.user_id?.toString().trim() === userId.toString() && u?.guild_id?.toString().trim() === guildId?.toString());
       }
-      console.log({ userId, guildId });
-      let user = users.find(u => u?.user_id?.toString().trim() === userId.toString() && u?.guild_id?.toString().trim() === guildId.toString());
       $(element).empty().removeClass('loading');
       if (!user) {
         user = new DiscordUnknownUserEntry({

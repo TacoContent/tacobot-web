@@ -1,0 +1,45 @@
+<div class="card">
+  <div class="card-header text-muted">
+    <h5 class="card-title">
+      <span class="badge bg-primary text-bg-primary text-uppercase float-start">{{this.type}}</span>
+      <span class="float-end badge bg-success text-bg-success">{{> taco count=this.cost}}</span>
+      <div class="fs-2 text-truncate ms-4 me-4 ps-2 pe-2" title="{{this.title}}">{{this.title}}</div>
+    </h5>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col">
+        <div class="card-header text-uppercase"><span class="mb-1">Guild</span></div>
+        <div class="mt-1">{{> discord/guild id=this.guild_id}}</div>
+      </div>
+      <div class="col">
+        <div class="card-header text-uppercase"><span class="mb-1">Submitter</span></div>
+        <div class="mt-1">{{> discord/user user_id=this.user_owner guild_id=this.guild_id }}</div>
+      </div>
+      <div class="col">
+        <div class="card-header text-uppercase"><span class="me-2">Redeemed</span>{{> yes-no value=this.redeemed_by}}</div>
+        {{#if this.redeemed_by}}
+        <div class="mt-2">
+          <span>{{> discord/user user_id=this.redeemed_by guild_id=this.guild_id}}</span>
+          <div class="text-muted ms-1 mt-2"><i class="fas fa-clock me-1"></i> {{> date date=this.redeemed_timestamp unknown="UNKNOWN"}}</div>
+        </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    {{> code value=this.key copy=true spoiler=true class="fs-2 mw-100" }}
+  </div>
+
+  <div class="card-footer text-muted text-end">
+    {{#if this.info_link}}
+    <a href="{{this.info_link}}" class="btn btn-success" target="_blank"><i class="fas fa-circle-info me-1"></i> Information</a>
+    {{/if}}
+    {{#if this.download_link}}
+    <a href="{{this.download_link}}" class="btn btn-primary" target="_blank"><i class="fas fa-cloud-arrow-down me-1"></i> Download</a>
+    {{/if}}
+    {{#if this.help_link}}
+    <a href="{{this.help_link}}" class="btn btn-secondary" target="_blank"><i class="fas fa-circle-question me-1"></i> Help</a>
+    {{/if}}
+  </div>
+</div>

@@ -1,7 +1,22 @@
 <!-- Game Keys List Page -->
-<div class="container mt-4">
+<div class="container-x mt-4">
   <h2>Game Keys</h2>
-  <table class="table">
+  <div class="d-flex justify-content-center">
+  {{> pager this.pager}}
+  </div>
+
+  <div class="row">
+    {{#each items}}
+      <div class="col-md-6 mb-4">
+        {{> freegamekeys/item}}
+      </div>
+    {{/each}}
+  </div>
+
+  <div class="d-flex justify-content-center">
+  {{> pager this.pager}}
+  </div>
+  {{!-- <table class="table">
     <thead>
       <tr class="table-active">
         <th class="text-uppercase"></th>
@@ -35,7 +50,7 @@
         <td class="text-start">{{this.instructions}}</td>
         <td style="white-space: nowrap;">{{> date date=this.published_date unknown="N/A"}}</td>
         <td style="white-space: nowrap;">{{> date date=this.end_date unknown="N/A"}}</td>
-        <td>{{this.worth}} <span class="currency">USD</span></td>
+        <td>{{> currency value=this.worth symbol="USD"}}</td>
         <td style="width: 48px;">
           {{#if this.open_giveaway_url}}
           <a href="{{this.open_giveaway_url}}" target="_blank"><i class="fas fa-circle-info me-1"></i></a>
@@ -49,6 +64,6 @@
     </tbody>
   </table>
 
-  {{> pager this.pager}}
+  {{> pager this.pager}} --}}
 
 </div>

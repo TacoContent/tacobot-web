@@ -33,7 +33,16 @@ class DiscordUsersMongoClient extends DatabaseMongoClient<DiscordUserEntry> {
 
   async findByIds(ids: IGuildUserPair[]): Promise<DiscordUserEntry[]> {
     const collection = await this.getCollection();
-    return await collection.find({ $or: ids.map(({ guildId, userId }) => ({ guild_id: guildId, user_id: userId })) }).toArray();
+    // if guildId is not provided, match only by userId
+    // if guildId is provided, match by both guildId and userId
+
+    const userIds = ids.map(id => id.userId);
+    const guildIds = ids.map(id => id.guildId).filter(Boolean);
+    if (guildIds.length > 0) {
+      return await collection.find({ user_id: { $in: userIds }, guild_id: { $in: guildIds } }).toArray();
+    }
+    return await collection.find({ user_id: { $in: userIds } }).toArray();
+    
   }
 
 }
