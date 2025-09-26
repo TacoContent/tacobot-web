@@ -14,6 +14,9 @@ export default {
     const now = moment(); // use local time instead of utc here
     return now.month() + 1 === month && now.date() === day;
   },
+  thisYear: function (this: any): number {
+    return moment().year();
+  },
   until: function (this: any, month: number, day: number): string {
     const now = moment();
     // calculate the number of days until the next occurrence of month/day

@@ -96,6 +96,7 @@ const config = {
       header: getEnvVarString('TBW_TACOBOT_API_HEADER', 'X-TACOBOT-TOKEN'),
     },
     primaryGuildId: getEnvVarString('TBW_PRIMARY_GUILD_ID', ''),
+    ownerUserId: getEnvVarString('TBW_OWNER_USER_ID', '262031734260891648'),
   },
   log: {
     level: {

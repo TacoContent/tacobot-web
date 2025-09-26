@@ -89,7 +89,7 @@
     children:
       - type: link
         title: View
-        href: /permissions/list
+        href: /permissions/
         icon: list
       - type: link
         title: Add Permission

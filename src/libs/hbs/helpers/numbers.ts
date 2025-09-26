@@ -18,5 +18,8 @@ export default {
       minimumIntegerDigits: length,
       useGrouping: false,
     }).format(number);
+  },
+  length: function (this: any, list: any[] | undefined | null): number {
+    return list ? list.length : 0;
   }
 }
