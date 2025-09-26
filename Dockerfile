@@ -11,7 +11,7 @@ ENV BUILD_VERSION=${BUILD_VERSION}
 ENV BUILD_SHA=${BUILD_SHA}
 ENV BUILD_DATE=${BUILD_DATE}
 # Set the working directory inside the builder
-WORKDIR /glucose-monitor
+WORKDIR /tacobot-web
 
 # Copy the entire project into the builder
 COPY . .
