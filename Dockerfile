@@ -32,7 +32,7 @@ ENV NODE_ENV=production
 WORKDIR /app
 
 # Copy only the generated `app` directory from the builder stage
-COPY --from=builder /glucose-monitor/app /app
+COPY --from=builder /tacobot-web/app /app
 
 # Copy all files if any exist
 COPY files/certificates/ /tmp/ca-certificates/
