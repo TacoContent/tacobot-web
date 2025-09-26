@@ -22,5 +22,14 @@ export default {
       thisYear.add(1, 'year');
     }
     return thisYear.from(now);
-  }
+  },
+  within: function (this: any, timeframe: number, unit: string, month: number, day: number): boolean {
+    const now = moment();
+    let targetDate = moment({ year: now.year(), month: month - 1, day: day });
+    if (targetDate.isBefore(now, 'day')) {
+      targetDate.add(1, 'year');
+    }
+    const diff = targetDate.diff(now, unit as moment.unitOfTime.Diff);
+    return diff <= timeframe;
+  } 
 }
