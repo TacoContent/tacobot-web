@@ -1,0 +1,23 @@
+<div class="container mt-4">
+  <h2>Minecraft Worlds</h2>
+  <table class="table">
+    <thead>
+      <tr class="table-active">
+        <th class="text-uppercase">Guild</th>
+        <th class="text-uppercase">Name</th>
+        <th class="text-uppercase"><i class="fas fa-earth-americas" title="Active"></i></th>
+        <th class="text-uppercase"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each items}}
+      <tr>
+        <td class="text-nowrap p-1 text-start">{{> discord/guild id=this.guild_id}}</td>
+        <td class="text-nowrap p-1 text-start">{{this.name}}</td>
+        <td class="text-nowrap">{{#if this.active}}✅{{else}}❌{{/if}}</td>
+        <td class="text-nowrap"></td>
+      {{/each}}
+    </tbody>
+  </table>
+  {{> pager this.pager}}
+</div>

@@ -1,0 +1,114 @@
+---
+  - type: link
+    title: Home
+    href: /
+    icon: home
+  - type: separator
+  - type: external
+    title: Dashboard
+    href: https://grafana.bit13.local/d/GnSFRx0Vz/tacobot
+    icon: gauge
+  - type: separator
+  - type: group
+    title: Birthdays
+    id: birthdays
+    icon: cake
+    children:
+      - type: link
+        title: View Birthdays
+        href: /birthdays
+        icon: list
+      - type: link
+        title: Add Birthday
+        href: /birthdays/add
+        icon: plus
+  - type: group
+    title: Tacos
+    id: tacos
+    icon: boxes-stacked
+    children:
+      - type: link
+        title: View Tacos
+        href: /tacos
+        icon: list
+      - type: link
+        title: Give Tacos
+        href: /tacos/give
+        icon: plus
+  - type: group
+    title: SHiFT Codes
+    id: shiftcodes
+    icon: key
+    children:
+      - type: link
+        title: View Codes
+        href: /shiftcodes
+        icon: list
+      - type: link
+        title: Submit Code
+        href: /shiftcodes/submit
+        icon: plus
+  - type: group
+    title: Game Keys
+    id: gamekeys
+    icon: ticket
+    children:
+      - type: link
+        title: View Rewards
+        href: /gamekeys
+        icon: list
+      - type: link
+        title: Submit Reward Key
+        href: /gamekeys/submit
+        icon: plus
+      - type: link
+        title: Free Game Keys
+        href: /freegames
+        icon: gift
+  - type: group
+    title: Minecraft
+    id: minecraft
+    icon: cube
+    children:
+      - type: link
+        title: Op List
+        href: /minecraft/ops
+        icon: shield
+      - type: link
+        title: Whitelist
+        href: /minecraft/whitelist
+        icon: users
+      - type: link
+        title: Worlds
+        href: /minecraft/worlds
+        icon: globe
+  - type: group
+    title: Permissions
+    id: permissions
+    icon: user-lock
+    children:
+      - type: link
+        title: View
+        href: /permissions/
+        icon: list
+      - type: link
+        title: Add Permission
+        href: /permissions/add
+        icon: plus
+  - type: group
+    title: Twitch
+    id: twitch
+    icon: comments
+    children:
+      - type: link
+        title: Channels
+        href: /twitch/channels
+        icon: list
+      - type: link
+        title: Linked Users
+        href: /twitch/linked
+        icon: users-viewfinder
+  - type: settings
+    title: Settings
+    id: settings
+    icon: cog

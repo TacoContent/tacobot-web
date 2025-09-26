@@ -1,0 +1,18 @@
+<!-- Shift Codes List Page -->
+<div class="container-x mt-4">
+  <h2>SHiFT Codes</h2>
+  <div class="d-flex justify-content-center">
+  {{> pager this.pager}}
+  </div>
+
+  <div class="row">
+  {{#each items}}
+      <div class="col-md-6 mb-4">
+        {{> shiftcodes/item}}
+      </div>
+  {{/each}}
+  </div>
+  <div class="d-flex justify-content-center">
+  {{> pager this.pager}}
+  </div>
+</div>

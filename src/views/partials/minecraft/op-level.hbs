@@ -1,0 +1,13 @@
+<div class="minecraft-op-level">
+  {{#if (gte level 4)}}
+    <span>Full Admin</span><span class="ms-2 badge bg-danger" title="Level 4 - Full Admin">4</span>
+  {{else if (eq level 3)}}
+    <span>Moderator</span><span class="ms-2 badge bg-warning text-dark" title="Level 3 - Moderator">3</span>
+  {{else if (eq level 2)}}
+    <span>Helper</span><span class="ms-2 badge bg-info text-dark" title="Level 2 - Helper">2</span>
+  {{else if (eq level 1)}}
+    <span>Regular</span><span class="ms-2 badge bg-secondary" title="Level 1 - Regular">1</span>
+  {{else}}
+    <span>No Special Permissions</span><span class="ms-2badge bg-light text-dark" title="Level 0 - No Special Permissions">0</span>
+  {{/if}}
+</div>

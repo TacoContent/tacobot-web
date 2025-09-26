@@ -1,0 +1,21 @@
+<div class="container mt-4">
+  <h2>TACO Linked Twitch Users</h2>
+  <table class="table">
+    <thead>
+      <tr class="table-active">
+        <th class="text-uppercase text-start">Discord</th>
+        <th class="text-uppercase text-start">Twitch</th>
+        <th class="text-uppercase"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each items}}
+      <tr>
+        <td class="text-nowrap p-1 text-start">{{> discord/user user_id=this.user_id guild_id=this.guild_id}}</td>
+        <td class="text-nowrap p-1 text-start">{{> twitch/user username=this.twitch_name}}</td>
+        <td class="text-nowrap"></td>
+      {{/each}}
+    </tbody>
+  </table>
+  {{> pager this.pager}}
+</div>

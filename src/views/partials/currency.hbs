@@ -1,0 +1,7 @@
+{{#if this.value}}
+  {{#if (neq this.value "N/A")}}
+    <span class="currency">{{this.value}}</span><span class="currency-symbol ms-1">{{#if this.symbol}}{{this.symbol}}{{else}}USD{{/if}}</span>
+  {{else}}
+    <span class="currency">{{this.value}}</span>
+  {{/if}}
+{{/if}}

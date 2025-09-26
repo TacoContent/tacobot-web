@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html data-bs-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="TacoBot UI.">
+    <meta name="author" content="TacoBot">
+    <meta name="keywords" content="">
+    <meta name="robots" content="index, no-follow">
+
+    <!-- define application icons -->
+    <link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/images/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/images/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/images/android-chrome-512x512.png" sizes="512x512">
+
+    <!-- define application icons for apple devices -->
+    <link rel="apple-touch-icon" type="image/png" href="/images/.png" sizes="180x180" >
+
+    <!-- define android application icons -->
+    <link rel="android" type="image/png" href="/images/android-chrome-192x192.png" sizes="192x192">
+    <link rel="android" type="image/png" href="/images/android-chrome-512x512.png" sizes="512x512">
+
+    <!-- define application theme -->
+    <meta name="theme-color" content="#ffffff">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/images/favicon-144x144.png">
+
+    <title>{{title}}</title>
+    <!-- fontawesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastr/build/toastr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
+    <link href="/css/styles.css" rel="stylesheet">
+
+    {{{block 'head'}}}
+  </head>
+
+  <body class="g-0">
+    {{> navbar}}
+    <div class="container-fluid">
+      <div class="row">
+        {{> sidebar/sidebar }}
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+          <div class="site-wrapper-inner">
+            <div class="main-container">
+              {{{body}}}
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+    <footer class="bg-dark-subtle text-center text-lg-start">
+      <!-- Copyright -->
+      <div class="float-start ms-3 p-3">
+        <i class="fas fa-copyright me-1" title="©"></i>{{thisYear}} Copyright<a class="text-body" href="https://darthminos.com/">{{> discord/user guild_id=config.tacobot.primaryGuildId user_id=config.tacobot.ownerUserId}}</a>All rights reserved.
+      </div>
+      <div class="float-end me-3 p-3">Version: {{ config.app.version }} - <a href="https://github.com/camalot/glucose-monitor/commit/{{ config.app.buildSha }}">{{ config.app.buildSha }}</a></div>
+      <!-- Copyright -->
+      <div class="clearfix"></div>
+    </footer>
+
+    {{> templates/discord-user }}
+    {{> templates/discord-guild }}
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/js/all.min.js" data-auto-replace-svg="nest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastr/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
+    <script src="/javascript/config.js"></script>
+    <script src="/javascript/scripts.js"></script>
+
+    <script>
+      $(function() {
+        toastr.options = {
+          "escapeHtml": true,
+          "closeButton": true,
+          "debug": false,
+          "newestOnTop": false,
+          "progressBar": false,
+          "positionClass": "toast-top-center",
+          "preventDuplicates": true,
+          "showDuration": "300",
+          "hideDuration": "5000",
+          "timeOut": "10000",
+          "extendedTimeOut": "1000",
+          "showEasing": "swing",
+          "hideEasing": "linear",
+          "showMethod": "fadeIn",
+          "hideMethod": "fadeOut"
+        };
+      {{#if message}}
+        {{#each message}}
+        toastr["error"]("{{this}}");
+        {{/each}}
+      {{/if}}
+      });
+    </script>
+
+    {{{block 'scripts'}}}
+  </body>
+</html>

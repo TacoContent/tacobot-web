@@ -1,0 +1,12 @@
+<li class="nav-item">
+  <span class="nav-link text-muted p-0">
+    <a class="nav-link text-muted" href="#{{id}}" data-bs-toggle="collapse" aria-expanded="false" aria-controls="{{id}}">
+      <strong><i class="fa fa-{{icon}} me-2" aria-hidden="true"></i> {{title}}</strong>
+    </a>
+  </span>
+  <div class="collapse" id="{{id}}">
+    <ul class="nav flex-column ms-3">
+      {{{children}}}
+    </ul>
+  </div>
+</li>

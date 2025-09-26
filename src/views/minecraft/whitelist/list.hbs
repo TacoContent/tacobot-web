@@ -1,0 +1,25 @@
+<div class="container mt-4">
+  <h2>Minecraft Whitelist</h2>
+  <table class="table">
+    <thead>
+      <tr class="table-active">
+        <th class="text-uppercase">Guild</th>
+        <th class="text-uppercase">User</th>
+        <th class="text-uppercase">Minecraft</th>
+        <th class="text-uppercase"><i class="fas fa-users" title="Whitelisted"></i></th>
+        <th class="text-uppercase"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each items}}
+      <tr>
+        <td class="text-nowrap p-1 text-start">{{> discord/guild id=this.guild_id}}</td>
+        <td class="text-nowrap p-1 text-start">{{> discord/user id=this.user_id}}</td>
+        <td class="text-nowrap p-1 text-start">{{> minecraft/user uuid=this.uuid username=this.username}}</td>
+        <td class="text-nowrap">{{> yes-no value=this.whitelist}}</td>
+        <td class="text-nowrap"></td>
+      {{/each}}
+    </tbody>
+  </table>
+  {{> pager this.pager}}
+</div>

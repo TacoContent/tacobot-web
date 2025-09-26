@@ -1,0 +1,133 @@
+*:focus, *:hover {
+  outline: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+html,
+body {
+  overflow-y: auto;
+}
+
+body {
+  text-align: center;
+  font-family: Raleway, sans-serif;
+}
+
+code.spoiler {
+  background-color: var(--bs-dark, #212529);
+  color: var(--bs-dark, #212529);
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+code {
+  background-color: var(--bs-dark, #212529);
+  color: var(--bs-body-color, #dee2e6);
+}
+
+/*code.spoiler:hover {
+  color: #fff;
+}*/
+
+.c-pointer {
+  cursor: pointer;
+}
+
+.mt-6 {
+  margin-top: 3.6rem !important;
+}
+
+/*.btn {
+  border: none;
+  padding: 10px 20px;
+  color: #ddd;
+}*/
+
+
+/*.btn:hover,
+.btn:focus,
+.btn:active,
+.btn.active {
+  border: none;
+  color: #fff;
+}
+
+.btn.btn-card-top-right {
+  z-index: 2 !important;
+  margin-top: -.5rem !important;
+  margin-right: -.5rem !important;
+}
+
+.btn.btn-card-bottom-right {
+  z-index: 2 !important;
+  margin-bottom: -.5rem !important;
+  margin-right: -.5rem !important;
+}
+
+.loader-spinner.fade.fade-out {
+  -webkit-animation: fadeout 300ms linear forwards;
+  animation: fadeout 300ms linear forwards;
+}
+
+.loader-spinner.fade {
+  -webkit-animation: fadein 300ms linear forwards;
+  animation: fadein 300ms linear forwards;
+}
+
+.main-container {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.inner {
+  padding: 0 30px 30px;
+}
+
+.inner h4 {
+  padding-bottom: 30px;
+}*/
+
+
+.inner h1 {
+  margin-top: 5px;
+}
+
+a, .btn-link {
+  text-decoration: none !important;
+  color: #ccc;
+}
+
+@keyframes fadein {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@-webkit-keyframes fadein {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes fadeout {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@-webkit-keyframes fadeout {
+    0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/*
+@media (min-width: 768px) {
+  .main-container {
+    width: 100%;
+  }
+}
+
+@media (min-width: 992px) {
+  .main-container {
+    width: 800px;
+  }
+}
+*/

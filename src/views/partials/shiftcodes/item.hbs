@@ -1,0 +1,44 @@
+<div class="card">
+  <div class="card-header text-muted">
+    <h5 class="card-title">{{this.reward}}</h5>
+    {{#if this.notes}}
+    <h6 class="card-subtitle mb-2 text-body-secondary">{{this.notes}}</h6>
+    {{/if}}
+    <h6 class="card-subtitle mb-2 text-body-secondary">
+      <span class="float-end">
+        <span class="text-uppercase me-1 text-muted">Expires:</span>{{> date date=this.expiry unknown="UNKNOWN"}}
+      </span>
+      <span class="float-start">
+        <span class="text-uppercase me-1 text-muted">Posted:</span>{{> date date=this.created_at unknown="UNKNOWN"}}
+      </span>
+    </h6>
+  </div>
+  <div class="card-body">
+    {{> code value=this.code copy=true spoiler=false }}
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col">
+        <div class="card-header">Games</div>
+        <ul class="mb-0 ps-3 list-group list-group-flush">
+          {{#each this.games}}
+            <li class="list-group-item">{{this.name}}</li>
+          {{/each}}
+        </ul>
+      </div>
+      <div class="col">
+        <div class="card-header">Platforms</div>
+        <ul class="mb-0 ps-3 list-group list-group-flush">
+          {{#each this.platforms}}
+            <li class="list-group-item">{{this}}</li>
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+    
+  </div>
+  <div class="card-footer text-muted text-end">
+    <a href="{{this.source}}" target="_blank" class="btn btn-primary"><i class="fas fa-external-link-alt"></i> Source</a>
+    <a href="https://shift.gearbox.com/rewards" target="_blank" class="btn btn-secondary"><i class="fas fa-ticket"></i> Redeem</a>
+  </div>
+</div>

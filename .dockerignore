@@ -1,0 +1,16 @@
+.git
+.vscode
+
+.env
+.env/
+.env.*
+
+node_modules
+npm-debug.log
+nodemon.json
+Dockerfile
+.dockerignore
+
+run.sh
+
+/app/node_modules

@@ -1,0 +1,88 @@
+<!-- SubmitShiftCode View - Bootstrap Form for ShiftCodePayload -->
+<div class="container mt-4">
+  <h2>Submit SHiFT Code</h2>
+  <form method="POST" action="/shiftcodes/submit">
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="SHiFT Code"><i class="fa fa-ticket" aria-hidden="true"></i></span>
+        <div class="form-floating">
+          <input type="text" class="form-control" id="code" name="code" required pattern="^(?:[A-Z0-9]{5}-){4}[A-Z0-9]{5}$" placeholder="SHiFT Code" />
+          <label for="code">SHiFT Code</label>
+        </div>
+      </div>
+      <div class="form-text">Enter the SHiFT code exactly as provided (e.g. XXXXX-XXXXX-XXXXX-XXXXX-XXXXX).</div>
+    </div>
+    <div class="mb-3">
+      <div class="mb-1">
+        <div class="form-check ps-3">
+          <input type="checkbox" id="check-all-games" class="form-check-input ms-0" title="Check/Uncheck All Games" />
+          <label class="form-check-label" for="check-all-games">Games</label>
+        </div>
+      </div>
+      <div>
+        <ul class="list-group">
+          {{#each games}}
+            <li class="list-group-item">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="games" id="game-{{this.id}}" value="{{this.id}}" />
+                <label class="form-check-label text-start w-100" for="game-{{this.id}}">{{this.name}}</label>
+              </div>
+            </li>
+          {{/each}}
+        </ul>
+      </div>
+      <div class="form-text">Check one or more games.</div>
+    </div>
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="Expiry Date/Time">
+          <i class="fa fa-calendar" aria-hidden="true"></i>
+        </span>
+        <div class="form-floating">
+          <input type="datetime-local" class="form-control" id="expiry" name="expiry" placeholder="Expiry Date/Time" />
+          <label for="expiry">Expiry Date/Time</label>
+        </div>
+      </div>
+      <div class="form-text">Leave blank if unknown or not applicable.</div>
+    </div>
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="Reward"><i class="fa fa-gift" aria-hidden="true"></i></span>
+        <div class="form-floating">
+          <input type="text" class="form-control" id="reward" name="reward" placeholder="Reward" />
+          <label for="reward">Reward</label>
+        </div>
+      </div>
+    </div>
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="Notes"><i class="fa fa-sticky-note" aria-hidden="true"></i></span>
+        <div class="form-floating flex-grow-1">
+          <textarea class="form-control" id="notes" name="notes" placeholder="Notes" style="height: 80px; min-height: 80px;"></textarea>
+          <label for="notes">Notes</label>
+        </div>
+      </div>
+    </div>
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="Created At"><i class="fa fa-clock" aria-hidden="true"></i></span>
+        <div class="form-floating">
+          <input type="datetime-local" class="form-control" id="created_at" name="created_at" value="{{now}}" placeholder="Created At" required />
+          <label for="created_at">Created At</label>
+        </div>
+      </div>
+      <div class="form-text">Defaults to current date/time.</div>
+    </div>
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="Source URL"><i class="fa fa-link" aria-hidden="true"></i></span>
+        <div class="form-floating">
+          <input type="url" class="form-control" id="source" name="source" placeholder="Source URL" required />
+          <label for="source">Source URL</label>
+        </div>
+      </div>
+    </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+  <script src="/javascript/shiftcodes-submit.js"></script>
+  </form>
+</div>
