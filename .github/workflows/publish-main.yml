@@ -14,16 +14,24 @@ env:
   GH_IMAGE_REGISTRY: "ghcr.io"
   BUILD_TAGS: ""
   BUILD_DATE: ""
+
+permissions: {}
 jobs:
   version:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      # To report GitHub Actions status checks
+      statuses: write
     outputs:
       app_version: ${{ steps.semvers.outputs.patch }} # set the app_version to be the PATCH updated version
       tag: ${{ steps.semvers.outputs.v_patch }} # set the tag to be the PATCH updated version.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          presist-credentials: false
       # Get the current tag
       - name: 'Get Previous tag'
         id: previoustag
@@ -39,11 +47,20 @@ jobs:
       - run: echo "app_version ${{ steps.semvers.outputs.patch }}"
   docker:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      pull-requests: write
+      issues: write
+      # To report GitHub Actions status checks
+      statuses: write
+
     needs: version
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: Setup ROOT CA File
         run: |
           # if the ROOT_CA_FILE secret is set, write it to a file
@@ -105,12 +122,22 @@ jobs:
           tags: "${{ env.BUILD_TAGS }}"
   merge:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      packages: read
+      issues: write
+      # To report GitHub Actions status checks
+      statuses: write
     needs:
       - docker
       - version
     steps:
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
       - name: Merge develop -> main
         uses: devmasx/merge-branch@1.4.0
         with:
