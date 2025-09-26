@@ -1,0 +1,87 @@
+---
+name: Lint Project
+"on": # quoted to avoid YAML lint 'truthy' warning
+  push:
+    branches:
+      - "**" # All branches
+      - "!gh-pages" # Except gh-pages
+      - '!develop' # Except develop
+      - '!main' # Except main
+      - "!master" # Except master
+  pull_request:
+    types:
+      - synchronize
+      - opened
+      - edited
+      - ready_for_review
+      - reopened
+      - unlocked
+
+permissions: { }
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      # To report GitHub Actions status checks
+      statuses: write
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Super-Linter
+        uses: super-linter/super-linter/slim@v8
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          DEFAULT_BRANCH: develop
+          VALIDATE_BASH_EXEC: false
+          VALIDATE_SHELL_SHFMT: false
+          GITHUB_TOKEN: ${{ github.token }}
+          VALIDATE_CHECKOV: false
+          # REENABLE 
+          VALIDATE_JAVASCRIPT_ES: true
+          VALIDATE_JAVASCRIPT_PRETTIER: false
+          VALIDATE_JAVASCRIPT_STANDARD: true
+          
+          VALIDATE_TYPESCRIPT_ES: true
+          VALIDATE_TYPESCRIPT_PRETTIER: false
+          VALIDATE_TYPESCRIPT_STANDARD: true
+
+          VALIDATE_JSON_PRETTIER: false
+          VALIDATE_CSS_PRETTIER: false
+          VALIDATE_YAML_PRETTIER: false
+  # test:
+  #   name: Test
+  #   needs: 
+  #     - lint
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'pull_request'
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '22'
+  #     - name: Install dependencies
+  #       run: npm install
+  #     - name: Run tests
+  #       run: npm test && cat coverage/lcov.info
+  #     - name: Setup LCOV
+  #       uses: hrishikesh-kadam/setup-lcov@v1
+  #     - name: test output
+  #       run: genhtml coverage/lcov.info --ignore-errors source
+  #     - name: Report code coverage
+  #       uses: zgosalvez/github-actions-report-lcov@v4
+  #       with:
+  #         coverage-files: coverage/lcov.info
+  #         minimum-coverage: 0
+  #         artifact-name: code-coverage-report
+  #         github-token: ${{ github.token }}
+  #         update-comment: true
