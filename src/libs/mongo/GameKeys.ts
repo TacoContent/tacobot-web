@@ -13,19 +13,34 @@ class GameKeysMongoClient extends DatabaseMongoClient<GameKeyEntry> {
     console.log("GameKeysMongoClient initialized");
   }
 
-  async get(skip: number = 0, take: number = 100): Promise<PagedResults<GameKeyEntry>> {
+  async get(skip: number = 0, take: number = 100, search: string | null | undefined): Promise<PagedResults<GameKeyEntry>> {
     const collection = await this.getCollection();
 
     if (skip < 0) skip = 0;
     if (take <= 0 || take > 100) take = 100;
+    let filter: any = { };
 
-    const items = await collection.find({
-      
-    }).skip(skip).limit(take).sort({ redeemed_timestamp: 1, title: 1 }).toArray();
+    if (!search) {
+      filter = {};
+    } else {
+      search = search.trim();
+      if (search.length === 0) {
+        filter = {};
+      } else {
+        filter = {
+          $or: [
+            { title: { "$regex": search, $options: 'i' } },
+            { user_owner: { "$regex": search, $options: 'i' } },
+            { key: { "$regex": search, $options: 'i' } },
+            { type: { "$regex": search, $options: 'i' } },
+          ],
+        };
+      }
+    }
 
-    const totalItems = await collection.countDocuments({
-      
-    });
+    const items = await collection.find(filter).skip(skip).limit(take).sort({ redeemed_timestamp: 1, title: 1 }).toArray();
+
+    const totalItems = await collection.countDocuments(filter);
 
     return new PagedResults({
       items,

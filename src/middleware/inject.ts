@@ -3,18 +3,15 @@ import siteConfig from '../config';
 import SettingsMongoClient from '../libs/mongo/Settings';
 
 
-const config = () => {
-  return (req: Request, res: Response, next: NextFunction) =>  {
-    res.locals.config = siteConfig;
-    next();
-  };
+const config = async (req: Request, res: Response, next: NextFunction) =>  {
+  res.locals.config = siteConfig;
+  next();
 };
 
-const pagePath = () => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    res.locals.currentPath = req.path;
-    next();
-  };
+
+const pagePath = async(req: Request, res: Response, next: NextFunction) => {
+  res.locals.currentPath = req.path;
+  next();
 };
 
 const settingsGroups = async (req: Request, res: Response, next: NextFunction) => {
@@ -28,5 +25,13 @@ const settingsGroups = async (req: Request, res: Response, next: NextFunction) =
   }
 };
 
-export default { config, pagePath, settingsGroups };
-export { config, pagePath, settingsGroups };
+const searchQuery = async (req: Request, res: Response, next: NextFunction) => {
+  if (req.query.search) {
+    console.log('Injecting search query:', req.query.search);
+    res.locals.search = req.query.search || '';
+  }
+  next();
+};
+
+export default { config, pagePath, settingsGroups, searchQuery };
+export { config, pagePath, settingsGroups, searchQuery };

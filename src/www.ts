@@ -70,8 +70,9 @@ console.log('View engine set to hbs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(middleware.inject.config());
-app.use(middleware.inject.pagePath());
+app.use(middleware.inject.config);
+app.use(middleware.inject.pagePath);
+app.use(middleware.inject.searchQuery);
 app.use(middleware.inject.settingsGroups);
 app.use((req, res, next) => {
   res.locals.sitemap = helpers.getSitemap();
