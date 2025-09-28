@@ -38,6 +38,21 @@ code {
   margin-top: 3.6rem !important;
 }
 
+.search-form .search-clear {
+  position: absolute;
+  right: 34px;
+  top: 4px;
+  z-index: 100 !important;
+  border: 0;
+  background: transparent;
+  color: var(--bs-text-secondary, #6c757d);
+}
+
+.search-form .search-clear:hover {
+  color: light-dark(var(--bs-text), var(--bs-text-dark));
+  text-decoration: none;
+}
+
 /*.btn {
   border: none;
   padding: 10px 20px;
