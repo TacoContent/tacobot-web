@@ -13,12 +13,12 @@ export default class MinecraftUsersController {
     try {
       const page = Math.max(1, parseInt(req.query.page as string) || 1);
       const pageSize = 10;
-
+      const search: string | undefined = (req.query.search as string) || undefined;
       const client = new MinecraftUsersMongoClient();
-      const pagedResults = await client.getOps((page - 1) * pageSize, pageSize);
-      
+      const pagedResults = await client.getOps((page - 1) * pageSize, pageSize, search);
 
       res.render('minecraft/ops/list', {
+        ...res.locals,
         title: 'Minecraft Ops',
         items: pagedResults.items,
         pager: pagedResults.getPager(),
@@ -36,11 +36,13 @@ export default class MinecraftUsersController {
     try {
       const page = Math.max(1, parseInt(req.query.page as string) || 1);
       const pageSize = 10;
+      const search: string | undefined = (req.query.search as string) || undefined;
 
       const client = new MinecraftUsersMongoClient();
-      const pagedResults = await client.getWhitelist((page - 1) * pageSize, pageSize);
+      const pagedResults = await client.getWhitelist((page - 1) * pageSize, pageSize, search);
 
       res.render('minecraft/whitelist/list', {
+        ...res.locals,
         title: 'Minecraft Whitelist',
         items: pagedResults.items,
         pager: pagedResults.getPager(),
@@ -58,10 +60,12 @@ export default class MinecraftUsersController {
     try {
       const page = Math.max(1, parseInt(req.query.page as string) || 1);
       const pageSize = 10;
+      const search: string | undefined = (req.query.search as string) || undefined;
 
       const client = new MinecraftWorldsMongoClient();
-      const pagedResults = await client.getWorlds((page - 1) * pageSize, pageSize);
+      const pagedResults = await client.getWorlds((page - 1) * pageSize, pageSize, search);
       res.render('minecraft/worlds/list', {
+        ...res.locals,
         title: 'Minecraft Worlds',
         items: pagedResults.items,
         pager: pagedResults.getPager(),

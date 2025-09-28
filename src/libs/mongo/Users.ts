@@ -17,13 +17,29 @@ class DiscordUsersMongoClient extends DatabaseMongoClient<DiscordUserEntry> {
     console.log("DiscordUsersMongoClient initialized");
   }
 
-  async get(skip: number = 0, take: number = 100): Promise<DiscordUserEntry[]> {
+  async get(search?: string): Promise<DiscordUserEntry[]> {
     const collection = await this.getCollection();
 
-    if (skip < 0) skip = 0;
-    if (take <= 0 || take > 100) take = 100;
+    let filter: any = {};
 
-    return await collection.find({}).skip(skip).limit(take).sort({ created_at: -1 }).toArray();
+    if (!search) {
+      filter = {};
+    } else {
+      search = search.trim();
+      if (search.length === 0) {
+        filter = {};
+      } else {
+        filter = {
+          $or: [
+            { username: { "$regex": search, $options: 'i' } },
+            { discriminator: { "$regex": search, $options: 'i' } },
+            { displayname: { "$regex": search, $options: 'i' } },
+            { user_id: { "$regex": search, $options: 'i' } },
+          ]
+        };
+      }
+    }
+    return await collection.find(filter).sort({ created_at: -1 }).toArray();
   }
 
   async findById(id: IGuildUserPair): Promise<DiscordUserEntry | null> {

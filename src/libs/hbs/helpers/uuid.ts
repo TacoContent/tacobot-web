@@ -1,3 +1,5 @@
+import Reflection from "../../Reflection";
+
 export default {
   /**
    * Formats a UUID string according to the specified format.
@@ -11,7 +13,8 @@ export default {
    * - '+d' or 'dashes': Add dashes to a 32-character UUID.
    * - 's' or 'short': Return the first 8 characters of the UUID without dashes.
    **/
-  uuidFormat: function (this: any, uuid: string, format: string) {
+  uuidFormat: function (this: any, ...args: any[]): string {
+    let [uuid, format] = Reflection.getArguments(args, ['uuid', 'format']);
     if (!uuid) return '';
     const formats = format.split(' ');
     for (const fmt of formats) {

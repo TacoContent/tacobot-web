@@ -1,8 +1,18 @@
 <!-- Shift Codes List Page -->
 <div class="container-x mt-4">
-  <h2>SHiFT Codes</h2>
-  <div class="d-flex justify-content-center">
-  {{> pager this.pager}}
+  <div class="justify-content-center">
+    <div class="row mb-3">
+      <div class="col"></div>
+      <div class="col">
+        {{> search id="search" name="search" placeholder="Search by Game Name/ID, Reward, Code, or Notes" }}
+      </div>
+      <div class="col"></div>
+    </div>
+    <div class="row mb-3">
+      <div class="col d-flex justify-content-center">
+        {{> pager this.pager search=this.search }}
+      </div>
+    </div>
   </div>
 
   <div class="row">

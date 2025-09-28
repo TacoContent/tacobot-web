@@ -4,7 +4,7 @@ import path from 'path';
 import Handlebars from 'handlebars';
 import SettingsMongoClient from '../../mongo/Settings';
 
-export function getSitemap() {
+export function getSitemap(): any {
   const sitemapPath = path.join(__dirname, '../../../.sitemap.yaml');
   try {
     const file = fs.readFileSync(sitemapPath, 'utf8');
@@ -15,7 +15,7 @@ export function getSitemap() {
   }
 }
 
-function processItem(item: any, currentPath: string, children: any[]): string {
+function _processItem(item: any, currentPath: string, children: any[]): string {
   let html = '';
   const sidebarLink = Handlebars.partials['sidebar/link'] || '';
   const sidebarGroup = Handlebars.partials['sidebar/group'] || '';
@@ -44,7 +44,7 @@ function processItem(item: any, currentPath: string, children: any[]): string {
 
     let childrenHtml = '';
     for (const child of children) {
-      childrenHtml += processItem(child, currentPath, child.children || []);
+      childrenHtml += _processItem(child, currentPath, child.children || []);
     }
     html += template({
       ...item,
@@ -56,7 +56,7 @@ function processItem(item: any, currentPath: string, children: any[]): string {
   } else if (item.type === 'group') {
     let childrenHtml = '';
     for (const child of item.children) {
-      childrenHtml += processItem(child, currentPath, child.children || []); // Pass empty array if no children
+      childrenHtml += _processItem(child, currentPath, child.children || []); // Pass empty array if no children
     }
     const groupTemplate = Handlebars.compile(sidebarGroup);
     html += groupTemplate({
@@ -68,13 +68,13 @@ function processItem(item: any, currentPath: string, children: any[]): string {
   return html;
 }
 
-function titleCase(str: string): string {
+function _titleCase(this: any, str: string): string {
   return str.replace(/\w\S*/g, (txt) => {
     return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
   }).replace(/_/g, ' ');
 }
 
-export function renderSidebar(sitemap: any[], currentPath: string, settingsGroups?: any[]) {
+export function renderSidebar(this: any, sitemap: any[], currentPath: string, settingsGroups?: any[]) {
 
   let html = '';
   // Optionally inject settingsGroups into the sitemap or nav rendering logic
@@ -86,14 +86,14 @@ export function renderSidebar(sitemap: any[], currentPath: string, settingsGroup
       for (const group of settingsGroups) {
         children.push({
           type: 'link',
-          title: titleCase(group),
+          title: _titleCase(group),
           href:`/settings/edit/${group}`,
           icon: 'cog',
         });
       }
-      html += processItem(item, currentPath, children);
+      html += _processItem(item, currentPath, children);
     } else {
-      html += processItem(item, currentPath, item.children || []);
+      html += _processItem(item, currentPath, item.children || []);
     }
   }
   return html;

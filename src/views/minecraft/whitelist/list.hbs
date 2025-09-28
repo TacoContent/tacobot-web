@@ -1,5 +1,18 @@
 <div class="container mt-4">
-  <h2>Minecraft Whitelist</h2>
+  <div class="justify-content-center">
+    <div class="row mb-3">
+      <div class="col"></div>
+      <div class="col">
+        {{> search id="search" name="search" placeholder="Search by Discord User, Minecraft User, or UUID" }}
+      </div>
+      <div class="col"></div>
+    </div>
+    <div class="row mb-3">
+      <div class="col d-flex justify-content-center">
+        {{> pager this.pager search=this.search }}
+      </div>
+    </div>
+  </div>
   <table class="table">
     <thead>
       <tr class="table-active">
@@ -21,5 +34,9 @@
       {{/each}}
     </tbody>
   </table>
-  {{> pager this.pager}}
+  <div class="row mt-3">
+    <div class="col d-flex justify-content-center">
+      {{> pager this.pager search=this.search }}
+    </div>
+  </div>
 </div>

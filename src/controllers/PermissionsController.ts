@@ -13,11 +13,13 @@ export default class PermissionsController {
     try {
       const page = Math.max(1, parseInt(req.query.page as string) || 1);
       const pageSize = 10;
+      const search: string | undefined = (req.query.search as string) || undefined;
 
       const client = new PermissionsMongoClient();
-      const pagedResults = await client.get((page - 1) * pageSize, pageSize);
+      const pagedResults = await client.get((page - 1) * pageSize, pageSize, search);
 
       res.render('permissions/list', {
+        ...res.locals,
         title: 'User Permissions',
         items: pagedResults.items,
         pager: pagedResults.getPager(),
