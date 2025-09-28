@@ -1,5 +1,19 @@
-<div class="container mt-4">
-  <h2>User TACO Balance</h2>
+<div class="container-x mt-4">
+  <div class="justify-content-center">
+    <div class="row mb-3">
+      <div class="col"></div>
+      <div class="col">
+        {{> search id="search" name="search" placeholder="Search by Title, Key, User Id" }}
+      </div>
+      <div class="col"></div>
+    </div>
+    <div class="row mb-3">
+      <div class="col d-flex justify-content-center">
+        {{> pager this.pager search=this.search }}
+      </div>
+    </div>
+  </div>
+
   <table class="table">
     <thead>
       <tr class="table-active">
@@ -19,5 +33,13 @@
       {{/each}}
     </tbody>
   </table>
-  {{> pager this.pager}}
+  
+  
+  <div class="justify-content-center">
+    <div class="row mb-3">
+      <div class="col d-flex justify-content-center">
+        {{> pager this.pager search=this.search }}
+      </div>
+    </div>
+  </div>
 </div>

@@ -13,11 +13,12 @@ export default class TacosController {
     try {
       const page = Math.max(1, parseInt(req.query.page as string) || 1);
       const pageSize = 10;
-
+      const search: string | undefined = (req.query.search as string) || undefined;
       const client = new TacosMongoClient();
-      const pagedResults = await client.get((page - 1) * pageSize, pageSize);
+      const pagedResults = await client.get((page - 1) * pageSize, pageSize, search);
 
       res.render('tacos/list', {
+        ...res.locals,
         title: 'User TACO Balance',
         items: pagedResults.items,
         pager: pagedResults.getPager(),

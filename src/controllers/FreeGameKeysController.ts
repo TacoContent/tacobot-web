@@ -10,10 +10,12 @@ export default class FreeGameKeysController {
   public list = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const pageSize = Math.max(1, parseInt(req.query.pageSize as string) || 10);
+    const search: string | undefined = (req.query.search as string) || undefined;
     const client = new FreeGameKeysMongoClient();
     // Get paginated game keys
-    const results = await client.get((page - 1) * pageSize, pageSize);
+    const results = await client.get((page - 1) * pageSize, pageSize, search);
     res.render('freegamekeys/list', {
+      ...res.locals,
       title: 'Free Games',
       items: results.items,
       pager: results.getPager(),
