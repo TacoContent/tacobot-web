@@ -2,7 +2,6 @@ import yaml from 'js-yaml';
 import fs from 'fs';
 import path from 'path';
 import Handlebars from 'handlebars';
-import SettingsMongoClient from '../../mongo/Settings';
 
 export function getSitemap(): any {
   const sitemapPath = path.join(__dirname, '../../../.sitemap.yaml');
@@ -21,6 +20,7 @@ function _processItem(item: any, currentPath: string, children: any[]): string {
   const sidebarGroup = Handlebars.partials['sidebar/group'] || '';
   const sidebarSeparator = Handlebars.partials['sidebar/separator'] || '';
   const sidebarSettings = Handlebars.partials['sidebar/settings'] || '';
+  const sidebarGuildLink = Handlebars.partials['sidebar/guild_link'] || '';
   if (typeof sidebarLink !== 'string' || typeof sidebarGroup !== 'string') {
     console.error('Sidebar link or group partials are not defined correctly.');
     return html;
@@ -28,6 +28,12 @@ function _processItem(item: any, currentPath: string, children: any[]): string {
 
   if (item.type === 'link') {
     const template = Handlebars.compile(sidebarLink);
+    html += template({
+      ...item,
+      active: item.href === currentPath
+    });
+  } else if (item.type === 'guild_link') {
+    const template = Handlebars.compile(sidebarGuildLink);
     html += template({
       ...item,
       active: item.href === currentPath
@@ -56,6 +62,7 @@ function _processItem(item: any, currentPath: string, children: any[]): string {
   } else if (item.type === 'group') {
     let childrenHtml = '';
     for (const child of item.children) {
+
       childrenHtml += _processItem(child, currentPath, child.children || []); // Pass empty array if no children
     }
     const groupTemplate = Handlebars.compile(sidebarGroup);
@@ -84,11 +91,22 @@ export function renderSidebar(this: any, sitemap: any[], currentPath: string, se
     if (item.type === 'settings' && Array.isArray(settingsGroups)) {
       let children = []
       for (const group of settingsGroups) {
+        const guildChildren: any[] = [];
+        for (const guild_id of (group.guilds || [])) {
+          guildChildren.push({
+            id: `settings_${group.name}_${guild_id.guild_id}`,
+            type: 'guild_link',
+            title: guild_id.guild_id,
+            href: `/settings/edit/${guild_id.guild_id}/${group.name}`,
+          });
+        }
+        if (guildChildren.length === 0) continue;
         children.push({
-          type: 'link',
-          title: _titleCase(group),
-          href:`/settings/edit/${group}`,
+          id: `settings_${group.name}`,
+          type: 'group',
+          title: _titleCase(group.name),
           icon: 'cog',
+          children: guildChildren
         });
       }
       html += _processItem(item, currentPath, children);

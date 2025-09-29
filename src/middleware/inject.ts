@@ -14,10 +14,21 @@ const pagePath = async(req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
+// const settingsGroups = async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     const settings: SettingsMongoClient = new SettingsMongoClient();
+//     const groups = await settings.getGroups();
+//     res.locals.settingsGroups = groups;
+//     next();
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 const settingsGroups = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const settings: SettingsMongoClient = new SettingsMongoClient();
-    const groups = await settings.getGroups();
+    const groups = await settings.getSections();
     res.locals.settingsGroups = groups;
     next();
   } catch (error) {

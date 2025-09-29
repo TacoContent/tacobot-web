@@ -1,8 +1,8 @@
 import Reflection from "../../Reflection";
 
 export default {
-  section: function (this: any, ...args: any[]): null {
-    const [name, context] = Reflection.getArguments(args, ['name', 'context']);
+  section: function (this: any, name: string, context: any): null {
+    // const [name, context] = Reflection.getArguments(args, ['name', 'context']);
     if (!this._sections) {
       this._sections = {};
     }

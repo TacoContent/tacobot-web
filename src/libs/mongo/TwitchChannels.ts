@@ -19,11 +19,6 @@ export default class TwitchChannelsMongoClient extends DatabaseMongoClient<Twitc
 
     if (skip < 0) skip = 0;
     if (take <= 0 || take > 100) take = 100;
-    const users = new DiscordUsersMongoClient();
-
-    const filteredUsers = await users.get(search);
-    const userMap = new Map(filteredUsers.map(user => [user.user_id, user.displayname]));
-
     let filter = {};
 
     if (!search) {
@@ -36,7 +31,6 @@ export default class TwitchChannelsMongoClient extends DatabaseMongoClient<Twitc
         filter = {
           $or: [
             { channel_name: { "$regex": search, $options: 'i' } },
-            { user_id: { $in: Array.from(userMap.keys()) } },
           ]
         };
       }

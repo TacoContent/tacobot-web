@@ -26,6 +26,11 @@ code {
   color: var(--bs-body-color, #dee2e6);
 }
 
+pre code {
+  text-align: left;
+  background-color: var(--bs-dark, #212529);
+}
+
 /*code.spoiler:hover {
   color: #fff;
 }*/

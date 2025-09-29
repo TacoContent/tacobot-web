@@ -214,8 +214,8 @@ class DiscordGuildLoader extends TemplateLoader {
     const guildIds = [];
     elements.each((index, element) => {
       const guildId = $(element).data('discord-guild');
-      if (guildId) {
-        guildIds.push(guildId);
+      if (guildId || guildId.toString().trim() === "0") {
+        guildIds.push(guildId.toString().trim());
       }
     });
 
