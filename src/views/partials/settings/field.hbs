@@ -1,17 +1,54 @@
 {{!-- settings/field.hbs --}}
-{{!-- <div class="mb-3">
-  <label class="form-label" for="field-{{@key}}">{{@key}}</label>
-  {{#if (eq (fieldType value=value) 'string')}}
-    <input type="text" class="form-control" id="field-{{@key}}" name="{{@key}}" value="{{value}}" />
-  {{else if (eq (fieldType value=value) 'number')}}
-    <input type="number" class="form-control" id="field-{{@key}}" name="{{@key}}" value="{{value}}" />
-  {{else if (eq (fieldType value=value) 'boolean')}}
-    <input type="checkbox" class="form-check-input" id="field-{{@key}}" name="{{@key}}" {{#if value}}checked{{/if}} />
-  {{else if (eq (fieldType value=value) 'array')}}
-    <textarea class="form-control" id="field-{{@key}}" name="{{@key}}">{{json value}}</textarea>
-  {{else if (eq (fieldType value=value) 'object')}}
-    <textarea class="form-control" id="field-{{@key}}" name="{{@key}}">{{json value}}</textarea>
-  {{else}}
-    <input type="text" class="form-control" id="field-{{@key}}" name="{{@key}}" value="{{value}}" />
-  {{/if}}
-</div> --}}
+{{#if (eq (fieldType value=this.data) 'string')}}
+  <div class="mb-3 input-group">
+
+    <label class="form-label input-group-text" for="field-{{@key}}">{{@key}}</label>
+    <input type="text" class="form-control" id="field-{{@key}}" name="{{@key}}" value="{{this.data}}" />
+  </div>
+{{else if (eq (fieldType value=this.data) 'number') }}
+  <div class="mb-3 input-group">
+    <label class="form-label input-group-text" for="field-{{@key}}">{{@key}}</label>
+    <input type="number" class="form-control" id="field-{{@key}}" name="{{@key}}" value="{{this.data}}" />
+  </div>
+{{else if (eq (fieldType value=this.data) 'boolean')}}
+  <div class="mb-3 input-group">
+    <label class="form-label input-group-text" for="field-{{@key}}">{{@key}}</label>
+    <input type="checkbox" class="form-control form-check-input" id="field-{{@key}}" name="{{@key}}" {{#if this.data}}checked{{/if}} />
+  </div>
+{{else if (eq (fieldType value=this.data) 'array')}}
+  <div class="mb-3 input-group">
+    <span class="input-group-text" title="{{@key}}">{{@key}}</span>
+    <ul class="list-group mb-3 form-control">
+      {{#each this.data}}
+        <li class="list-group-item border-0">
+          <div class="">
+            {{> settings/field data=this}}
+          </div>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+  {{!-- <div class="mb-3 input-group">
+    <label class="form-label input-group-text" for="field-{{@key}}">{{@key}}</label>
+    <textarea class="form-control" id="field-{{@key}}" name="{{@key}}">{{json this.data}}</textarea>
+  </div> --}}
+{{else if (eq (fieldType value=this.data) 'object')}}
+  <div class="mb-3 input-group">
+    <span class="input-group-text" title="{{@key}}">{{@key}}</span>
+    <ul class="list-group mb-3 form-control">
+    {{#each this.data}}
+      <li class="list-group-item border-0">
+        <div class="">
+          {{> settings/field data=this}}
+        </div>
+      </li>
+    {{/each}}
+    </ul>
+  </div>
+  {{!-- <div class="mb-3 input-group">
+    <label class="form-label input-group-text" for="field-{{@key}}">{{@key}}</label>
+    <textarea class="form-control" id="field-{{@key}}" name="{{@key}}">{{json this.data}}</textarea>
+  </div> --}}
+{{else}}
+  UNKNOWN VALUE TYPE 
+{{/if}}

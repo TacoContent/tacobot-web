@@ -1,5 +1,3 @@
-import Handlebars from 'handlebars';
-
 import Reflection from "../../Reflection";
 
 // Infers field type from value
@@ -14,7 +12,5 @@ export default {
     return 'string';
   }
 }
-
-// Handlebars.registerHelper('fieldType', fieldType);
 
 // Optionally, you can add more helpers for friendly names, etc.
