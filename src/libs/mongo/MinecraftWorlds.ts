@@ -12,14 +12,32 @@ export default class MinecraftWorldsMongoClient extends DatabaseMongoClient<Mine
     console.log("MinecraftWorldsMongoClient initialized");
   }
 
-  async getWorlds(skip: number = 0, take: number = 100): Promise<PagedResults<MinecraftWorldEntry>> {
+  async getWorlds(skip: number = 0, take: number = 100, search?: string): Promise<PagedResults<MinecraftWorldEntry>> {
     const collection = await this.getCollection();
 
     if (skip < 0) skip = 0;
     if (take <= 0 || take > 100) take = 100;
 
-    const items = await collection.find().skip(skip).limit(take).sort({ active: -1, name: 1 }).toArray();
-    const totalItems = await collection.countDocuments();
+    let filter = {};
+
+    if (!search) {
+      filter = {};
+    } else {
+      search = search.trim();
+      if (search.length === 0) {
+        filter = {};
+      } else {
+        filter = {
+          $or: [
+            { name: { "$regex": search, $options: 'i' } },
+            { world: { "$regex": search, $options: 'i' } },
+          ]
+        };
+      }
+    }
+
+    const items = await collection.find(filter).skip(skip).limit(take).sort({ active: -1, name: 1 }).toArray();
+    const totalItems = await collection.countDocuments(filter);
 
     return new PagedResults({
       items,

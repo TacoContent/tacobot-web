@@ -12,15 +12,39 @@ class ShiftCodesMongoClient extends DatabaseMongoClient<ShiftCodeEntry> {
     console.log("ShiftCodesMongoClient initialized");
   }
 
-  async get(skip: number = 0, take: number = 100): Promise<PagedResults<ShiftCodeEntry>> {
+  async get(skip: number = 0, take: number = 100, search?: string): Promise<PagedResults<ShiftCodeEntry>> {
     const collection = await this.getCollection();
 
     if (skip < 0) skip = 0;
     if (take <= 0 || take > 100) take = 100;
 
-    const items = await collection.find({}).skip(skip).limit(take).sort({ created_at: -1 }).toArray();
+    let filter: any = {};
 
-    const totalItems = await collection.countDocuments({});
+    if (!search) {
+      filter = {};
+    } else {
+      search = search.trim();
+      if (search.length === 0) {
+        filter = {};
+      } else {
+        filter = {
+          $or: [
+            { reward: { "$regex": search, $options: 'i' } },
+            { notes: { "$regex": search, $options: 'i' } },
+            { code: { "$regex": search, $options: 'i' } },
+            // search by game.id or game.name
+            { 'games.id': { "$regex": search, $options: 'i' } },
+            { 'games.name': { "$regex": search, $options: 'i' } },
+            { source: { "$regex": search, $options: 'i' } },
+            { source_id: { "$regex": search, $options: 'i' } },
+          ],
+        };
+      }
+    }
+
+    const items = await collection.find(filter).skip(skip).limit(take).sort({ created_at: -1 }).toArray();
+
+    const totalItems = await collection.countDocuments(filter);
 
     return new PagedResults({
       items,

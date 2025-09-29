@@ -2,6 +2,7 @@ $(() => {
   BootstrapInitializer.initialize();
   ImageErrorHandler.initialize();
   InputSetter.initialize();
+  FormSubmitter.initialize();
 });
 
 class BootstrapInitializer {
@@ -49,6 +50,24 @@ class ImageErrorHandler {
   }
 }
 
+class FormSubmitter {
+  static initialize() {
+    const elements = document.querySelectorAll('[data-submit]');
+    elements.forEach(element => {
+      element.addEventListener($(element).attr('data-event') || 'click', (e) => {
+        e.preventDefault();
+        const targetSelector = $(element).attr('data-submit');
+        console.log(`Submitting form ${targetSelector}`);
+        if (targetSelector) {
+          const form = $(element).closest(targetSelector);
+          if (form && form.length > 0) {
+            form.submit();
+          }
+        }
+      });
+    });
+  }
+}
 
 class InputSetter {
   static initialize() {

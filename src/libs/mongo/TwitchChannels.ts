@@ -5,6 +5,7 @@ import { Collection, InsertManyResult, InsertOneResult } from 'mongodb';
 import PagedResults from '../../models/PagedResults';
 import TwitchChannelEntry from '../../models/TwitchChannelEntry';
 import TwitchUserEntry from '../../models/TwitchUserEntry';
+import DiscordUsersMongoClient from './Users';
 
 export default class TwitchChannelsMongoClient extends DatabaseMongoClient<TwitchChannelEntry> {
   constructor() {
@@ -13,15 +14,31 @@ export default class TwitchChannelsMongoClient extends DatabaseMongoClient<Twitc
     console.log("TwitchChannelsMongoClient initialized");
   }
 
-  async get(skip: number = 0, take: number = 100): Promise<PagedResults<TwitchChannelEntry>> {
+  async get(skip: number = 0, take: number = 100, search?: string): Promise<PagedResults<TwitchChannelEntry>> {
     const collection = await this.getCollection();
 
     if (skip < 0) skip = 0;
     if (take <= 0 || take > 100) take = 100;
+    let filter = {};
 
-    const items = await collection.find({}).skip(skip).limit(take).sort({ timestamp: -1 }).toArray();
+    if (!search) {
+      filter = {};
+    } else {
+      search = search.trim();
+      if (search.length === 0) {
+        filter = {};
+      } else {
+        filter = {
+          $or: [
+            { channel_name: { "$regex": search, $options: 'i' } },
+          ]
+        };
+      }
+    }
 
-    const totalItems = await collection.countDocuments({});
+    const items = await collection.find(filter).skip(skip).limit(take).sort({ timestamp: -1 }).toArray();
+
+    const totalItems = await collection.countDocuments(filter);
 
     return new PagedResults({
       items,

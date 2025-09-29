@@ -26,6 +26,11 @@ code {
   color: var(--bs-body-color, #dee2e6);
 }
 
+pre code {
+  text-align: left;
+  background-color: var(--bs-dark, #212529);
+}
+
 /*code.spoiler:hover {
   color: #fff;
 }*/
@@ -51,6 +56,11 @@ code {
 .search-form .search-clear:hover {
   color: light-dark(var(--bs-text), var(--bs-text-dark));
   text-decoration: none;
+}
+
+.btn-action {
+  padding: 0;
+  background: transparent;
 }
 
 /*.btn {

@@ -2,6 +2,7 @@ import DatabaseMongoClient from './Database'
 import BirthdayEntry from '../../models/BirthdayEntry';
 import PagedResults from '../../models/PagedResults';
 import moment from 'moment-timezone';
+import DiscordUsersMongoClient from './Users';
 
 class BirthdaysMongoClient extends DatabaseMongoClient<BirthdayEntry> {
   constructor() {
@@ -12,35 +13,16 @@ class BirthdaysMongoClient extends DatabaseMongoClient<BirthdayEntry> {
 
   async get(skip: number = 0, take: number = 100, search?: string): Promise<PagedResults<BirthdayEntry>> {
     const collection = await this.getCollection();
+    const users = new DiscordUsersMongoClient();
 
     if (skip < 0) skip = 0;
     if (take <= 0 || take > 100) take = 100;
 
-    let filter: any = {};
-
-    if (!search) {
-      filter = {};
-    } else {
-      search = search.trim();
-      if (search.length === 0) {
-        filter = {};
-      } else {
-        filter = {
-          $or: [
-            { username: { "$regex": search, $options: 'i' } },
-            { discriminator: { "$regex": search, $options: 'i' } },
-            { displayname: { "$regex": search, $options: 'i' } },
-          ]
-        };
-      }
-    }
+    const filteredUsers = await users.get(search);
+    const filteredUserMap = new Map(filteredUsers.map(user => [user.user_id, user.displayname]));
 
     // need to join with users collection to get the usernames
-    const userCollection = await this.getCollection('users');
-    const users = await userCollection.find(filter).toArray();
-    const userMap = new Map(users.map(user => [user.user_id, user.username]));
-
-    filter = { user_id: { $in: Array.from(userMap.keys()) } };
+    const filter = { user_id: { $in: Array.from(filteredUserMap.keys()) } };
     
     // get all birthdays and map usernames
     const allBirthdays = await collection.find(filter).toArray();

@@ -1,6 +1,8 @@
+import Reflection from "../../Reflection";
 
 export default {
   section: function (this: any, name: string, context: any): null {
+    // const [name, context] = Reflection.getArguments(args, ['name', 'context']);
     if (!this._sections) {
       this._sections = {};
     }
@@ -11,7 +13,8 @@ export default {
     this._sections[name].push(context.fn(this));
     return null;
   },
-  block: function (this: any, name: string): string {
+  block: function (this: any, ...args: any[]): string {
+    const [name] = Reflection.getArguments(args, ['name']);
     if (!this._sections) {
       this._sections = {};
     }

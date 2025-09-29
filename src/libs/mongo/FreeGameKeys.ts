@@ -32,6 +32,7 @@ class FreeGameKeysMongoClient extends DatabaseMongoClient<FreeGameKeyEntry> {
           $or: [
             { title: { "$regex": search, $options: 'i' } },
             { platform: { "$regex": search, $options: 'i' } },
+            { description: { "$regex": search, $options: 'i' } },
             { type: { "$regex": search, $options: 'i' } },
           ],
         };

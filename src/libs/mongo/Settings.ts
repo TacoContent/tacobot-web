@@ -1,8 +1,8 @@
-// @ts-nocheck
-import { Collection } from 'mongodb';
 import DatabaseMongoClient from './Database';
 import config from '../../config';
 import LogsMongoClient from './Logs';
+import SettingEntry from '../../models/SettingEntry';
+import Reflection from '../Reflection';
 
 const logger = new LogsMongoClient();
 const MODULE = 'SettingsMongoClient';
@@ -19,13 +19,85 @@ export default class SettingsMongoClient extends DatabaseMongoClient<Setting> {
     this.collectionName = 'settings';
   }
 
-  async getGroups(): Promise<string[]> {
-    const method = 'getGroups';
-    const guild_id = config.tacobot.primaryGuildId;
+  async getByName(guildId: string, name: string): Promise<SettingEntry | null> {
+    const METHOD = Reflection.getCallingMethodName();
     try {
       await this.connect();
-      const result = await this.collection.distinct('name', { guild_id });
-      return result;
+      const collection = await this.getCollectionOf<SettingEntry>();
+      const result = await collection.findOne({ guild_id: guildId, name });
+      return result || null;
+    } catch (err: any) {
+      await logger.error(`${MODULE}.${METHOD}`, err.message, { stack: err.stack });
+      return new SettingEntry();
+    }
+  }
+
+  async getSections(): Promise<any[]> {
+    const method = Reflection.getCallingMethodName();
+    try {
+      await this.connect();
+      const collection = await this.getCollection();
+      /*
+      {
+        name: 'general',
+        guild_id: 'guild id',
+      }
+      */
+     // return as:
+     /*
+      [
+        {
+          name: 'general',
+          guilds: [
+            { guild_id: 'guild id'},
+            { guild_id: 'guild id'},
+          ]
+        },
+        {
+          name: 'another section',
+          guilds: [
+            { guild_id: 'guild id'},
+            { guild_id: 'guild id'},
+          ]
+        }
+      ]
+     */
+
+      const results = await collection.aggregate([
+        {
+          $group: {
+            _id: '$name',
+            guilds: { $addToSet: '$guild_id' },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            name: '$_id',
+            guilds: 1,
+          },
+        },
+      ]).sort({ name: 1 }).toArray();
+
+      // create a map that includes the name, and the guild.
+      return results.map(r => ({
+        name: r.name,
+        guilds: r.guilds.map((g: string) => ({ guild_id: g })),
+      }));
+    } catch (err: any) {
+      await logger.error(`${MODULE}.${method}`, err.message, { stack: err.stack });
+      return [];
+    }
+  }
+
+  async getGroups(): Promise<string[]> {
+    const method = 'getGroups';
+    try {
+      await this.connect();
+      const collection = await this.getCollection();
+      const results = await collection.distinct('name');
+      // create a map that includes the name, and the guild.
+      return results;
     } catch (err: any) {
       await logger.error(`${MODULE}.${method}`, err.message, { stack: err.stack });
       return [];
@@ -36,7 +108,8 @@ export default class SettingsMongoClient extends DatabaseMongoClient<Setting> {
     const method = 'list';
     try {
       await this.connect();
-      const result = await this.collection.find().toArray();
+      const collection = await this.getCollection();
+      const result = await collection.find().toArray();
       return result;
     } catch (err: any) {
       await logger.error(`${MODULE}.${method}`, err.message, { stack: err.stack });

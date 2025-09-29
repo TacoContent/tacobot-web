@@ -11,9 +11,7 @@ export default class GameKeyEntry implements Document {
   download_link?: string | undefined | null;
   info_link: string = '';
   user_owner: string = '';
-  owner_username?: string;
   redeemed_by?: string | undefined | null;
-  redeemed_username?: string;
   redeemed_timestamp?: number | undefined | null;
   guild_id: string = '';
   source: string = '';

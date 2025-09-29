@@ -51,6 +51,10 @@ class DatabaseMongoClient<T extends Document> {
   }
 
   async getCollection(collectionName: string | undefined | null = undefined): Promise<Collection<T>> {
+    return this.getCollectionOf<T>(collectionName);
+  }
+
+  async getCollectionOf<X extends Document>(collectionName: string | undefined | null = undefined): Promise<Collection<X>> {
     if (!this.db) {
       await this.connect();
     }

@@ -1,5 +1,18 @@
 <div class="container mt-4">
-  <h2>TacoBot Active Twitch Channels</h2>
+  <div class="justify-content-center">
+    <div class="row mb-3">
+      <div class="col"></div>
+      <div class="col">
+        {{> search id="search" name="search" placeholder="Search by Twitch Channel" }}
+      </div>
+      <div class="col"></div>
+    </div>
+    <div class="row mb-3">
+      <div class="col d-flex justify-content-center">
+        {{> pager this.pager search=this.search }}
+      </div>
+    </div>
+  </div>
   <table class="table">
     <thead>
       <tr class="table-active">
@@ -15,9 +28,19 @@
         <td class="text-nowrap p-1 text-start">{{> discord/guild id=this.guild_id}}</td>
         <td class="text-nowrap p-1 text-start">{{> twitch/user username=this.channel}}</td>
         <td class="text-nowrap p-1 text-end me-1">{{> date date=this.timestamp unknown="UNKNOWN"}}</td>
-        <td class="text-nowrap"></td>
+        <td class="text-nowrap">
+          <a href="/twitch/channels/edit/{{this.guild_id}}/{{this.channel}}" class="btn btn-sm btn-action text-primary" title="Edit"><i class="fas fa-edit"></i></a>
+          <a href="/twitch/channels/delete/{{this.guild_id}}/{{this.channel}}" class="btn btn-sm btn-action text-danger" title="Delete"><i class="fas fa-trash"></i></a>
+        </td>
       {{/each}}
     </tbody>
   </table>
-  {{> pager this.pager}}
+
+  <div class="justify-content-center">
+    <div class="row mb-3">
+      <div class="col d-flex justify-content-center">
+        {{> pager this.pager search=this.search }}
+      </div>
+    </div>
+  </div>
 </div>
