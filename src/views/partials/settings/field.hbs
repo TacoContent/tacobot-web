@@ -1,0 +1,17 @@
+{{!-- settings/field.hbs --}}
+{{!-- <div class="mb-3">
+  <label class="form-label" for="field-{{@key}}">{{@key}}</label>
+  {{#if (eq (fieldType value=value) 'string')}}
+    <input type="text" class="form-control" id="field-{{@key}}" name="{{@key}}" value="{{value}}" />
+  {{else if (eq (fieldType value=value) 'number')}}
+    <input type="number" class="form-control" id="field-{{@key}}" name="{{@key}}" value="{{value}}" />
+  {{else if (eq (fieldType value=value) 'boolean')}}
+    <input type="checkbox" class="form-check-input" id="field-{{@key}}" name="{{@key}}" {{#if value}}checked{{/if}} />
+  {{else if (eq (fieldType value=value) 'array')}}
+    <textarea class="form-control" id="field-{{@key}}" name="{{@key}}">{{json value}}</textarea>
+  {{else if (eq (fieldType value=value) 'object')}}
+    <textarea class="form-control" id="field-{{@key}}" name="{{@key}}">{{json value}}</textarea>
+  {{else}}
+    <input type="text" class="form-control" id="field-{{@key}}" name="{{@key}}" value="{{value}}" />
+  {{/if}}
+</div> --}}

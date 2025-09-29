@@ -1,0 +1,12 @@
+{
+  "allowed_channels": ["942603335675035699"],
+  "notify_role": "942881518420889631",
+  "choices": ["🇦", "🇧", "🇨", "🇩"],
+  "timeout": 60,
+  "category_points": {
+    "hard": 15,
+    "medium": 10,
+    "easy": 5
+  },
+  "api_url": "https://opentdb.com/api.php?amount=1&category={0}&difficulty={1}&type={2}"
+}
