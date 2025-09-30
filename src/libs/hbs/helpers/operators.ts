@@ -39,5 +39,11 @@ export default {
   },
   in: function (this: any, a: any, b: any): boolean {
     return b.indexOf(a) > -1;
+  },
+  isNull: function (this: any, a: any): boolean {
+    return a === null || a === undefined;
+  },
+  isNotNull: function (this: any, a: any): boolean {
+    return a !== null && a !== undefined;
   }
 }

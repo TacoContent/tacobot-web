@@ -9,10 +9,10 @@
     - metadata: the metadata for the setting (if any)
 --}}
 <div class="input-group mb-3" data-setting-type="string">
-  <span class="input-group-text" id="field-{{id}}">{{label}}</span>
+  <label class="input-group-text" for="field-{{id}}" id="field-{{id}}-label">{{label}}</label>
   {{#if multiline}}
-    <textarea class="form-control" placeholder="{{label}}" aria-label="{{label}}" aria-describedby="field-{{id}}" name="{{or name label}}">{{value}}</textarea>
+    <textarea class="form-control" placeholder="{{label}}" aria-label="{{label}}" aria-describedby="field-{{id}}-label" name="{{or name label}}"  id="field-{{id}}">{{value}}</textarea>
   {{else}}
-    <input type="text" class="form-control" placeholder="{{label}}" aria-label="{{label}}" aria-describedby="field-{{id}}" value="{{value}}" name="{{or name label}}" />
+    <input type="text" class="form-control" placeholder="{{label}}" aria-label="{{label}}" aria-describedby="field-{{id}}-label" value="{{value}}" name="{{or name label}}" id="field-{{id}}"/>
   {{/if}}
 </div>

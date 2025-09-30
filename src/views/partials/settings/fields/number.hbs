@@ -7,17 +7,65 @@
     - name: the name for the input (if any)
     - metadata: the metadata for the setting (if any)
 --}}
-<div class="input-group mb-3" data-setting-type="number">
-  <span class="input-group-text" id="field-{{id}}">{{label}}</span>
+{{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
+{{!-- <div>
+  <div>disabled: {{#if (eq (settingsGetMetadata metadata=metadata key="disabled") true)}}yes{{else}}no{{/if}}</div>
+  <div>disabled: {{asString (settingsGetMetadata metadata=metadata key="disabled")}}</div>
+  <div>min: {{settingsGetMetadata metadata=metadata key="min"}}</div>
+  <div>group: {{> 
+        settings/metadata/deprecated/class 
+        level="warning" 
+        metadata=metadata 
+        key=key 
+        type="group"}}</div>
+  <div>label: {{> 
+          settings/metadata/deprecated/class 
+          level="warning" 
+          metadata=metadata 
+          key=key 
+          type="label"}}</div>
+  <div>field: {{> 
+      settings/metadata/deprecated/class 
+      level="warning" 
+      metadata=metadata 
+      key=key 
+      type="field"}}</div>
+  <pre><code>{{json metadata}}</code></pre>
+</div> --}}
+
+<div class="input-group mb-3 {{> 
+        settings/metadata/deprecated/class 
+        level="warning" 
+        metadata=metadata 
+        key=key 
+        type="group"}}" data-setting-type="number">
+  <label class="input-group-text {{> 
+          settings/metadata/deprecated/class 
+          level="warning" 
+          metadata=metadata 
+          key=key 
+          type="label"}}"
+        for="field-{{id}}" 
+        id="field-{{id}}-label">{{label}}</label>
   <input 
-    type="number" 
-    class="form-control" 
-    placeholder="{{label}}" 
-    aria-label="{{label}}" 
-    aria-describedby="field-{{id}}" 
-    value="{{value}}" 
+    type="number"
+    class="form-control {{> 
+      settings/metadata/deprecated/class 
+      level="warning" 
+      metadata=metadata 
+      key=key 
+      type="field"}}"
+    placeholder="{{label}}"
+    aria-label="{{label}}"
+    aria-describedby="field-{{id}}-label"
+    value="{{value}}"
+    {{#if (settingsHasMetadataKey metadata=metadata key="min")}}min="{{settingsGetMetadata metadata=metadata key="min"}}"{{/if}}
+    {{#if (settingsHasMetadataKey metadata=metadata key="max")}}max="{{settingsGetMetadata metadata=metadata key="max"}}"{{/if}}
+    {{#if (settingsHasMetadataKey metadata=metadata key="step")}}step="{{settingsGetMetadata metadata=metadata key="step"}}"{{/if}}
     name="{{or name label}}"
+    {{#if (eq (settingsGetMetadata metadata=metadata key="disabled") true)}}disabled{{/if}}
+    id="field-{{id}}"
   />
 
-  {{> settings/metadata/unit metadata=metadata key="unit" }}
+  {{> settings/metadata/unit metadata=metadata key="unit" class="" }}
 </div>

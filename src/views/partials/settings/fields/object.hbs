@@ -8,12 +8,31 @@
     - metadata: the metadata for the setting (if any)
 --}}
 <div class="mb-3 input-group" data-setting-type="object">
-  <span class="input-group-text" title="{{key}}">{{key}}</span>
+  <label class="input-group-text" title="{{key}}">{{key}}</label>
   <ul class="list-group form-control">
   {{#each data}}
     <li class="list-group-item border-0">
       <div class="">
-        {{> settings/field data=this key=@key parentKey=(or parentKey @key) type=../type metadata=../metadata}}
+        {{!-- <div>key: {{@key}}</div>
+        <div>data: {{json this}}</div>
+        <div>type: {{or ../type 'null'}}</div>
+        <div>metadata: {{json metadata}}</div>
+        <div>parentKey: {{or parentKey @key}}</div> --}}
+        {{!--
+            - data: the value to render
+            - type: the type of the value (if known, otherwise it will be inferred)
+            - metadata: the metadata for the settings (if any)
+            - key: the key name of the value (required unless idx is provided)
+            - idx: the index name of the value (required unless key is provided)
+            - parentKey: the parent key name of the value (if any) - used for nested naming
+        --}}
+        {{> settings/field
+            data=this
+            key=@key
+            parentKey=parentKey
+            type=null
+            metadata=../metadata
+        }}
       </div>
     </li>
   {{/each}}

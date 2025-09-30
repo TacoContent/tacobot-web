@@ -1,5 +1,5 @@
 {{#with (settingsGetMetadata metadata=metadata key=key)}}
   {{#if this}}
-    <span class="input-group-text">{{this}}</span>
+    <span class="input-group-text {{#if ../class}}{{../class}}{{/if}}">{{this}}</span>
   {{/if}}
 {{/with}}
