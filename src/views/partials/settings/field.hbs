@@ -11,13 +11,21 @@
 --}}
 
 {{!-- base primitive types --}}
+{{!-- <div>
+  <div>type: {{type}}</div>
+  <div>key: {{key}}</div>
+  <div>idx: {{idx}}</div>
+  <div>parentKey: {{parentKey}}</div>
+  <div>fieldType: {{settingFieldType value=data key=key metadata=metadata type=type}}</div>
+  <div>forcedFieldType: {{settingFieldType value=data key=key metadata=metadata type=type force=true}}</div>
+</div> --}}
 {{#if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'string')}}
 
   {{> settings/fields/string 
     value=data 
     label=(settingFieldLabel key=(or idx key) metadata=metadata) 
     id=(uuid 's') 
-    name=(concat parentKey (or idx @key)) 
+    name=(concat parentKey (or idx key)) 
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
   }}
 
@@ -27,7 +35,7 @@
     value=data 
     label=(settingFieldLabel key=(or idx key) metadata=metadata) 
     id=(uuid 's') 
-    name=(concat parentKey (or idx @key))
+    name=(concat parentKey (or idx key))
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
   }}
 
@@ -37,18 +45,38 @@
     value=data 
     label=(settingFieldLabel key=(or idx key) metadata=metadata) 
     id=(uuid 's') 
-    name=(concat parentKey (or idx @key))
+    name=(concat parentKey (or idx key))
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
   }}
 
 {{!-- special types --}}
+{{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'url') }}
+
+  {{> settings/fields/url 
+    value=data 
+    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    id=(uuid 's') 
+    name=(concat parentKey (or idx key))
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+  }}
+
+{{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'image-url') }}
+
+  {{> settings/fields/image-url 
+    value=data 
+    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    id=(uuid 's') 
+    name=(concat parentKey (or idx key))
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+  }}
+
 {{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'duration') }}
 
   {{> settings/fields/duration 
     value=data 
     label=(settingFieldLabel key=(or idx key) metadata=metadata) 
     id=(uuid 's') 
-    name=(concat parentKey (or idx @key)) 
+    name=(concat parentKey (or idx key)) 
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
   }}
 
@@ -58,7 +86,7 @@
     value=data 
     label=(settingFieldLabel key=(or idx key) metadata=metadata) 
     id=(uuid 's') 
-    name=(concat parentKey (or idx @key))
+    name=(concat parentKey (or idx key))
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
   }}
 {{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'json')}}
@@ -67,7 +95,7 @@
     value=data 
     label=(settingFieldLabel key=(or idx key) metadata=metadata) 
     id=(uuid 's') 
-    name=(concat parentKey (or idx @key))
+    name=(concat parentKey (or idx key))
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
   }}
 {{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'channel')}}
@@ -76,7 +104,17 @@
     value=data 
     label=(settingFieldLabel key=(or idx key) metadata=metadata) 
     id=(uuid 's') 
-    name=(concat parentKey (or idx @key))
+    name=(concat parentKey (or idx key))
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+  }}
+
+{{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'role')}}
+
+  {{> settings/fields/role 
+    value=data 
+    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    id=(uuid 's') 
+    name=(concat parentKey (or idx key))
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
   }}
 
@@ -87,7 +125,7 @@
     label=(settingFieldLabel key=(or idx key) metadata=metadata) 
     id=(uuid 's')
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
-    name=(concat parentKey (or idx @key))
+    name=(concat parentKey (or idx key))
   }}
 
 {{!-- ARRAY & OBJECT --}}
@@ -97,6 +135,7 @@
     data=data 
     key=(settingFieldLabel key=(or idx key) metadata=metadata) 
     parentKey=(or key parentKey) 
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
     type=(settingFieldType value=data key=key metadata=metadata force=true)
   }}
 
@@ -105,24 +144,27 @@
   {{> settings/fields/object 
     data=data 
     key=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
     parentKey=(or key parentKey)
   }}
 
 {{!-- Unhandled type --}}
 {{else}}
+  {{#with (settingMetadata metadata=metadata key=(or key parentKey))}}
   <div class="mb-3 border rounded p-2">
-    <div>{{key}}</div>
+    <div>{{../key}}</div>
     <div>
       <pre>
-        <code>{{json metadata}}</code>
+        <code>{{json this}}</code>
       </pre>
     </div>
     <div>
       <pre>
-        <code>{{json data}}</code>
+        <code>{{json ../data}}</code>
       </pre>
     </div>
-    <div>fieldType: {{settingFieldType value=data key=key metadata=metadata}}</div>
-    <div>label: {{settingFieldLabel key=key metadata=metadata}}</div>
+    <div>fieldType: {{settingFieldType value=../data key=../key metadata=this force=true}}</div>
+    <div>label: {{settingFieldLabel key=(or ../idx ../key) metadata=this}}</div>
   </div>
+  {{/with}}
 {{/if}}

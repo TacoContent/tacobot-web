@@ -7,9 +7,38 @@
     - name: the name for the input (if any)
     - metadata: the metadata for the setting (if any)
 --}}
-<div class="input-group mb-3" data-setting-type="boolean">
-  <div class="input-group-text">
-    <input class="form-check-input mt-0" id="field-{{id}}" name="{{or name label}}" type="checkbox" value="{{value}}" {{#if value}}checked{{/if}} aria-label="{{label}}">
+{{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
+
+<div class="input-group mb-3 {{> 
+        settings/metadata/deprecated/class 
+        level="warning" 
+        metadata=metadata 
+        key=key 
+        type="group"}}" data-setting-type="boolean">
+  <div class="input-group-text {{> 
+        settings/metadata/deprecated/class 
+        level="warning" 
+        metadata=metadata 
+        key=key 
+        type="label"}}">
+    <input 
+      class="form-check-input mt-0"
+      id="field-{{id}}"
+      name="{{or name label}}"
+      type="checkbox"
+      value="{{value}}"
+      {{#if value}}checked{{/if}}
+      aria-label="{{label}}"
+      aria-describedby="field-{{id}}-label"
+      {{#if (eq (settingsGetMetadata metadata=metadata key="disabled") true)}}disabled{{/if}}
+    />
   </div>
-  <label class="form-control text-start" for="field-{{id}}">{{label}}</label>
+  <label class="form-control text-start {{> 
+      settings/metadata/deprecated/class 
+      level="warning" 
+      metadata=metadata 
+      key=key 
+      type="field"}}"
+    for="field-{{id}}"
+    id="field-{{id}}-label">{{label}}</label>
 </div>

@@ -122,7 +122,7 @@
       wrapper.append(inputGroup);
 
       return $('<li>', {
-        class: 'bdp-block list-group-item border-0 m-0 pb-0 col col-md-3' + (hidden ? 'hidden' : ''),
+        class: 'bdp-block list-group-item border-0 m-0 pb-0 col col-md-6' + (hidden ? 'hidden' : ''),
         html: [wrapper]
       });
     }
