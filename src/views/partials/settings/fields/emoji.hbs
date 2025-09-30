@@ -1,0 +1,46 @@
+{{!-- settings/fields/emoji.hbs --}}
+{{!--
+  inputs:
+    - value: the string emoji value
+    - label: the label for the input (if any)
+    - id: the id for the input (if any)
+    - name: the name for the input (if any)
+    - metadata: the metadata for the setting (if any)
+
+  The value can be:
+    - Unicode emoji (e.g. 😀)
+    - Custom emoji ID (e.g. 123456789012345678)
+    - Custom emoji string (e.g. <:emoji_name:123456789012345678>)
+--}}
+{{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
+
+<div 
+    class="input-group mb-3 {{> 
+      settings/metadata/deprecated/class 
+      level="warning" 
+      metadata=metadata 
+      key=key 
+      type="group"}}" 
+    data-setting-type="emoji">
+  <span class="input-group-text {{> 
+      settings/metadata/deprecated/class 
+      level="warning" 
+      metadata=metadata 
+      key=key 
+      type="label"}}" id="field-{{id}}">{{label}}</span>
+  <input
+    type="text"
+    class="form-control {{> 
+      settings/metadata/deprecated/class 
+      level="warning" 
+      metadata=metadata 
+      key=key 
+      type="field"}}" 
+    placeholder="{{label}}"
+    aria-label="{{label}}"
+    aria-describedby="field-{{id}}"
+    value="{{value}}" 
+    name="{{or name label}}"
+    {{#if (not (settingMetadata metadata=(settingsGetMetadata metadata=metadata key=key) key="enabled"))}}disabled{{/if}}
+  />
+</div>

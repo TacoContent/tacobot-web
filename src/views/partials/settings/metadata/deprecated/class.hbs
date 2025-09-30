@@ -1,0 +1,21 @@
+{{!-- settings/helpers/deprecated/class.hbs --}}
+{{!--
+  inputs:
+    - key: the setting key to check for deprecation
+    - metadata: the metadata object containing setting metadata
+    - level: the alert level (e.g. "info", "warning", "danger"), defaults to "info"
+    - type: ['group', 'label', 'field']
+--}}{{!--
+--}}{{#if (eq type "field")}}{{!--
+--}}{{#if (settingsGetMetadata metadata=metadata key="deprecated")}}{{!--
+--}}border-{{or level "info"}} deprecated text-bg-{{or level "info"}} bg-{{or level "info"}}-subtle{{!--
+--}}{{/if}}{{!--
+--}}{{else if (eq type "label")}}{{!--
+--}}{{#if (settingsGetMetadata metadata=metadata key="deprecated")}}{{!--
+--}}text-{{or level "info"}} border-{{or level "info"}} bg-{{or level "info"}}-subtle deprecated{{!--
+--}}{{/if}}{{!--
+--}}{{else if (eq type "group")}}{{!--
+--}}{{#if (settingsGetMetadata metadata=metadata key="deprecated")}}{{!--
+--}}border-{{or level "info"}} deprecated{{!--
+--}}{{/if}}{{!--
+--}}{{/if}}

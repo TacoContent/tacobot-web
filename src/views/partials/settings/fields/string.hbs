@@ -1,0 +1,18 @@
+{{!-- settings/fields/string.hbs --}}
+{{!--
+  inputs:
+    - value: the string value
+    - label: the label for the input (if any)
+    - id: the id for the input (if any)
+    - name: the name for the input (if any)
+    - multiline: boolean to indicate if this is a multiline string
+    - metadata: the metadata for the setting (if any)
+--}}
+<div class="input-group mb-3" data-setting-type="string">
+  <span class="input-group-text" id="field-{{id}}">{{label}}</span>
+  {{#if multiline}}
+    <textarea class="form-control" placeholder="{{label}}" aria-label="{{label}}" aria-describedby="field-{{id}}" name="{{or name label}}">{{value}}</textarea>
+  {{else}}
+    <input type="text" class="form-control" placeholder="{{label}}" aria-label="{{label}}" aria-describedby="field-{{id}}" value="{{value}}" name="{{or name label}}" />
+  {{/if}}
+</div>

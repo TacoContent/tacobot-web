@@ -1,7 +1,7 @@
 import Reflection from "../../Reflection";
+import { v4 as uuidv4 } from 'uuid';
 
-export default {
-  /**
+/**
    * Formats a UUID string according to the specified format.
    * 
    * Supported format options:
@@ -13,54 +13,64 @@ export default {
    * - '+d' or 'dashes': Add dashes to a 32-character UUID.
    * - 's' or 'short': Return the first 8 characters of the UUID without dashes.
    **/
-  uuidFormat: function (this: any, ...args: any[]): string {
-    let [uuid, format] = Reflection.getArguments(args, ['uuid', 'format']);
-    if (!uuid) return '';
-    const formats = format.split(' ');
-    for (const fmt of formats) {
-      switch (fmt) {
-        case 'l':
-        case 'lower':
-          uuid = uuid.toLowerCase();
+const uuidFormat = function (this: any, ...args: any[]): string {
+  let [uuid, format] = Reflection.getArguments(args, ['uuid', 'format']);
+  if (!uuid) return '';
+  const formats = format.split(' ');
+  for (const fmt of formats) {
+    switch (fmt) {
+      case 'l':
+      case 'lower':
+        uuid = uuid.toLowerCase();
+        break;
+      case 'u':
+      case 'upper':
+        uuid = uuid.toUpperCase();
+        break;
+      case '+b':
+      case 'braces':
+        if (!uuid.startsWith('{')) {
+          uuid = '{' + uuid;
+        }
+        if (!uuid.endsWith('}')) {
+          uuid = uuid + '}';
+        }
+        break;
+      case '-b':
+      case 'braceless':
+      case 'no-braces':
+        uuid = uuid.replace(/^\{/, '').replace(/\}$/, '');
+        break;
+      case '-d':
+      case 'dashless':
+      case 'no-dashes':
+        uuid = uuid.replace(/-/g, '');
+        break;
+      case '+d':
+      case 'dashes':
+        if (uuid.length === 32) {
+          uuid = uuid.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, '$1-$2-$3-$4-$5');
           break;
-        case 'u':
-        case 'upper':
-          uuid = uuid.toUpperCase();
-          break;
-        case '+b':
-        case 'braces':
-          if (!uuid.startsWith('{')) {
-            uuid = '{' + uuid;
-          }
-          if (!uuid.endsWith('}')) {
-            uuid = uuid + '}';
-          }
-          break;
-        case '-b':
-        case 'braceless':
-        case 'no-braces':
-          uuid = uuid.replace(/^\{/, '').replace(/\}$/, '');
-          break;
-        case '-d':
-        case 'dashless':
-        case 'no-dashes':
-          uuid = uuid.replace(/-/g, '');
-          break;
-        case '+d':
-        case 'dashes':
-          if (uuid.length === 32) {
-            uuid = uuid.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, '$1-$2-$3-$4-$5');
-            break;
-          }
-          break;
-        case "s":
-        case 'short':
-          uuid = uuid.replace(/-/g, '').substring(0, 8)
-          break;
-        default:
-          break;
-      }
+        }
+        break;
+      case "s":
+      case 'short':
+        uuid = uuid.replace(/-/g, '').substring(0, 8)
+        break;
+      default:
+        break;
     }
-    return uuid;
   }
+  return uuid;
+};
+
+const uuid = function(this: any, ...args: any[]): string {
+  let [format] = Reflection.getArguments(args, ['format'], ['l -b -d']);
+  const result = uuidv4();
+  return uuidFormat(result, format);
+};
+
+export default {
+  uuid,
+  uuidFormat
 }

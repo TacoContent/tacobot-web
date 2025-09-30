@@ -1,54 +1,128 @@
 {{!-- settings/field.hbs --}}
-{{#if (eq (fieldType value=this.data) 'string')}}
-  <div class="mb-3 input-group">
+{{!--
+  inputs:
+    - data: the value to render
+    - type: the type of the value (if known, otherwise it will be inferred)
+    - metadata: the metadata for the settings (if any)
+    - key: the key name of the value (required unless idx is provided)
+    - idx: the index name of the value (required unless key is provided)
+    - parentKey: the parent key name of the value (if any) - used for nested naming
+    
+--}}
 
-    <label class="form-label input-group-text" for="field-{{@key}}">{{@key}}</label>
-    <input type="text" class="form-control" id="field-{{@key}}" name="{{@key}}" value="{{this.data}}" />
-  </div>
-{{else if (eq (fieldType value=this.data) 'number') }}
-  <div class="mb-3 input-group">
-    <label class="form-label input-group-text" for="field-{{@key}}">{{@key}}</label>
-    <input type="number" class="form-control" id="field-{{@key}}" name="{{@key}}" value="{{this.data}}" />
-  </div>
-{{else if (eq (fieldType value=this.data) 'boolean')}}
-  <div class="mb-3 input-group">
-    <label class="form-label input-group-text" for="field-{{@key}}">{{@key}}</label>
-    <input type="checkbox" class="form-control form-check-input" id="field-{{@key}}" name="{{@key}}" {{#if this.data}}checked{{/if}} />
-  </div>
-{{else if (eq (fieldType value=this.data) 'array')}}
-  <div class="mb-3 input-group">
-    <span class="input-group-text" title="{{@key}}">{{@key}}</span>
-    <ul class="list-group mb-3 form-control">
-      {{#each this.data}}
-        <li class="list-group-item border-0">
-          <div class="">
-            {{> settings/field data=this}}
-          </div>
-        </li>
-      {{/each}}
-    </ul>
-  </div>
-  {{!-- <div class="mb-3 input-group">
-    <label class="form-label input-group-text" for="field-{{@key}}">{{@key}}</label>
-    <textarea class="form-control" id="field-{{@key}}" name="{{@key}}">{{json this.data}}</textarea>
-  </div> --}}
-{{else if (eq (fieldType value=this.data) 'object')}}
-  <div class="mb-3 input-group">
-    <span class="input-group-text" title="{{@key}}">{{@key}}</span>
-    <ul class="list-group mb-3 form-control">
-    {{#each this.data}}
-      <li class="list-group-item border-0">
-        <div class="">
-          {{> settings/field data=this}}
-        </div>
-      </li>
-    {{/each}}
-    </ul>
-  </div>
-  {{!-- <div class="mb-3 input-group">
-    <label class="form-label input-group-text" for="field-{{@key}}">{{@key}}</label>
-    <textarea class="form-control" id="field-{{@key}}" name="{{@key}}">{{json this.data}}</textarea>
-  </div> --}}
+{{!-- base primitive types --}}
+{{#if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'string')}}
+
+  {{> settings/fields/string 
+    value=data 
+    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    id=(uuid 's') 
+    name=(concat parentKey (or idx @key)) 
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+  }}
+
+{{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'number') }}
+
+  {{> settings/fields/number 
+    value=data 
+    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    id=(uuid 's') 
+    name=(concat parentKey (or idx @key))
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+  }}
+
+{{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'boolean')}}
+
+  {{> settings/fields/boolean 
+    value=data 
+    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    id=(uuid 's') 
+    name=(concat parentKey (or idx @key))
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+  }}
+
+{{!-- special types --}}
+{{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'duration') }}
+
+  {{> settings/fields/duration 
+    value=data 
+    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    id=(uuid 's') 
+    name=(concat parentKey (or idx @key)) 
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+  }}
+
+{{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'date')}}
+
+  {{> settings/fields/date 
+    value=data 
+    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    id=(uuid 's') 
+    name=(concat parentKey (or idx @key))
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+  }}
+{{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'json')}}
+
+  {{> settings/fields/json 
+    value=data 
+    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    id=(uuid 's') 
+    name=(concat parentKey (or idx @key))
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+  }}
+{{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'channel')}}
+
+  {{> settings/fields/channel 
+    value=data 
+    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    id=(uuid 's') 
+    name=(concat parentKey (or idx @key))
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+  }}
+
+{{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'emoji')}}
+
+  {{> settings/fields/emoji 
+    value=data 
+    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    id=(uuid 's')
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    name=(concat parentKey (or idx @key))
+  }}
+
+{{!-- ARRAY & OBJECT --}}
+{{!-- These are handled different to recursively call back to this view for each item --}}
+{{else if (eq (settingFieldType value=data key=key metadata=metadata) 'array')}}
+  {{> settings/fields/array 
+    data=data 
+    key=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    parentKey=(or key parentKey) 
+    type=(settingFieldType value=data key=key metadata=metadata force=true)
+  }}
+
+{{else if (eq (settingFieldType value=data key=key metadata=metadata) 'object')}}
+
+  {{> settings/fields/object 
+    data=data 
+    key=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    parentKey=(or key parentKey)
+  }}
+
+{{!-- Unhandled type --}}
 {{else}}
-  UNKNOWN VALUE TYPE 
+  <div class="mb-3 border rounded p-2">
+    <div>{{key}}</div>
+    <div>
+      <pre>
+        <code>{{json metadata}}</code>
+      </pre>
+    </div>
+    <div>
+      <pre>
+        <code>{{json data}}</code>
+      </pre>
+    </div>
+    <div>fieldType: {{settingFieldType value=data key=key metadata=metadata}}</div>
+    <div>label: {{settingFieldLabel key=key metadata=metadata}}</div>
+  </div>
 {{/if}}

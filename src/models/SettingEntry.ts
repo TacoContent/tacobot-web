@@ -7,6 +7,7 @@ export default class SettingEntry implements Document {
   guild_id: string = '';
   timestamp: number = 0;
   settings: any = {};
+  metadata: any = {};
 
   constructor(data: Partial<SettingEntry> = {}) {
     Object.assign(this, data);
