@@ -4,8 +4,8 @@ import operators from './operators';
 import * as sitemap from './sitemap';
 import uuid from './uuid';
 import numbers from './numbers';
-import json from './json';
-import fields from './fields';
+import strings from './strings';
+import settings from './settings';
 
 const helpers = {
   ...dates,
@@ -14,8 +14,8 @@ const helpers = {
   ...sitemap,
   ...uuid,
   ...numbers,
-  ...json,
-  ...fields,
+  ...strings,
+  ...settings,
 };
 
 export default helpers;

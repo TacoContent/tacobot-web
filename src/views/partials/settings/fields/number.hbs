@@ -1,0 +1,23 @@
+{{!-- settings/fields/number.hbs --}}
+{{!--
+  inputs:
+    - value: the number value
+    - label: the label for the input (if any)
+    - id: the id for the input (if any)
+    - name: the name for the input (if any)
+    - metadata: the metadata for the setting (if any)
+--}}
+<div class="input-group mb-3" data-setting-type="number">
+  <span class="input-group-text" id="field-{{id}}">{{label}}</span>
+  <input 
+    type="number" 
+    class="form-control" 
+    placeholder="{{label}}" 
+    aria-label="{{label}}" 
+    aria-describedby="field-{{id}}" 
+    value="{{value}}" 
+    name="{{or name label}}"
+  />
+
+  {{> settings/metadata/unit metadata=metadata key="unit" }}
+</div>

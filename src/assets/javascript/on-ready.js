@@ -3,7 +3,27 @@ $(() => {
   ImageErrorHandler.initialize();
   InputSetter.initialize();
   FormSubmitter.initialize();
+  DurationPickerInitializer.initialize();
 });
+
+class DurationPickerInitializer {
+  static initialize() {
+    const elements = document.querySelectorAll('input[data-type="duration"]');
+    elements.forEach(element => {
+      if (!$(element).data('durationPicker')) {
+        $(element).durationPicker({
+          showSeconds: true,
+          showDays: true,
+          daysLabel: 'd',
+          hoursLabel: 'h',
+          minutesLabel: 'm',
+          secondsLabel: 's',
+          totalMax: 60 * 60 * 24 * 365 // 1 year in seconds
+        });
+      }
+    });
+  }
+}
 
 class BootstrapInitializer {
   static initialize() {

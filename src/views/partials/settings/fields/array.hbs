@@ -1,0 +1,22 @@
+{{!-- settings/fields/array.hbs --}}
+{{!--
+  inputs:
+    - data: the array value
+    - key: the key name of the value (if any)
+    - type: the type of the value (if known, otherwise it will be inferred)
+    - parentKey: the parent key name of the value (if any) - used for nested naming
+    - metadata: the metadata for the setting (if any)
+--}}
+
+<div class="mb-3 input-group" data-setting-type="{{or type 'any'}}[]">
+  <span class="input-group-text" title="{{key}}">{{key}}</span>
+  <ul class="list-group form-control">
+    {{#each data}}
+      <li class="list-group-item border-0">
+        <div class="">
+            {{> settings/field data=this idx=(concat '[' @key ']') parentKey=(or ../parentKey @key) type=../type metadata=../metadata}}
+        </div>
+      </li>
+    {{/each}}
+  </ul>
+</div>

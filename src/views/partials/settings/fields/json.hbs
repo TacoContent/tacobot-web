@@ -1,0 +1,39 @@
+{{!-- settings/fields/json.hbs --}}
+{{!--
+  inputs:
+    - value: the json value
+    - label: the label for the input (if any)
+    - id: the id for the input (if any)
+    - name: the name for the input (if any)
+    - metadata: the metadata for the setting (if any)
+--}}
+
+<div class="mb-3" data-setting-type="json">
+  <div class="d-flex align-items-center highlight-toolbar ps-3 pe-2 py-1 border-0 border-top border-bottom">
+    <small class="font-monospace text-body-secondary text-uppercase">json</small>
+    <div class="d-flex ms-auto">
+      <button type="button" class="btn btn-sm btn-edit text-nowrap" aria-label="" data-bs-original-title=""><i class="fas fa-code"></i></button>
+      <button type="button" class="btn btn-sm btn-clipboard mt-0 me-0" aria-label="Copy to clipboard" data-bs-original-title="Copy to clipboard"><i class="fas fa-clipboard"></i></button>
+    </div>
+  </div>
+
+  <div class="input-group" data-view="edit">
+    <span class="input-group-text" id="field-{{id}}">{{label}}</span>
+    <textarea 
+      class="form-control" 
+      placeholder="{{label}}" 
+      aria-label="{{label}}" 
+      aria-describedby="field-{{id}}" 
+      name="{{or name label}}"
+      style="height: auto; max-height: 500px; min-height: 150px; overflow: scroll;">{{value}}</textarea>
+  </div>
+
+  <div class="input-group" data-view="preview">
+    <span class="input-group-text" id="field-{{id}}">{{label}}</span>
+    <pre 
+      class="form-control m-0 p-0" 
+      style="height: auto; max-height: 500px; min-height: 150px; overflow: scroll;"
+      ><code class="language-json m-0">{{value}}</code></pre>
+  </div>
+
+</div>

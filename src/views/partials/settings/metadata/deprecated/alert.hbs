@@ -1,0 +1,14 @@
+{{!--#with (settingsGetMetadata metadata=metadata key=key)}}
+  {{#if this--}}
+    {{#if (settingMetadata metadata=metadata key="deprecated")}}
+      <div class="alert alert-{{or level "info"}} p-1" role="alert">
+        <h4 class="alert-heading mt-1 mb-1">Deprecated Setting</h4>
+        <p class="mb-0 p-0">This setting is deprecated and will be removed in a future release.</p>
+        {{#if (settingMetadata metadata=metadata key="deprecationReason")}}
+          <hr>
+          <p class="mb-0 p-0"><strong>Reason:</strong> {{settingMetadata metadata=metadata key="deprecationReason"}}</p>
+        {{/if}}
+      </div>
+    {{/if}}
+  {{!--/if}}
+{{/with--}}

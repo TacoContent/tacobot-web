@@ -1,0 +1,21 @@
+{{!-- settings/fields/object.hbs ----}}
+{{!--
+  inputs:
+    - data: the object value
+    - key: the key name of the value (if any)
+    - parentKey: the parent key name of the value (if any) - used for nested naming
+    - type: the type of the value (if known, otherwise it will be inferred)
+    - metadata: the metadata for the setting (if any)
+--}}
+<div class="mb-3 input-group" data-setting-type="object">
+  <span class="input-group-text" title="{{key}}">{{key}}</span>
+  <ul class="list-group form-control">
+  {{#each data}}
+    <li class="list-group-item border-0">
+      <div class="">
+        {{> settings/field data=this key=@key parentKey=(or parentKey @key) type=../type metadata=../metadata}}
+      </div>
+    </li>
+  {{/each}}
+  </ul>
+</div>
