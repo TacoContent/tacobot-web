@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import siteConfig from '../config';
+import config from '../config';
 import SettingsMongoClient from '../libs/mongo/Settings';
 
 
-const config = async (req: Request, res: Response, next: NextFunction) =>  {
-  res.locals.config = siteConfig;
+const configs = async (req: Request, res: Response, next: NextFunction) =>  {
+  console.log('Injecting config:', { debug: config.debug, hasConfig: !!config, keys: Object.keys(config) });
+  res.locals.config = config;
   next();
 };
 
@@ -44,5 +45,5 @@ const searchQuery = async (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-export default { config, pagePath, settingsGroups, searchQuery };
-export { config, pagePath, settingsGroups, searchQuery };
+export default { config: configs, pagePath, settingsGroups, searchQuery };
+export { configs as config, pagePath, settingsGroups, searchQuery };

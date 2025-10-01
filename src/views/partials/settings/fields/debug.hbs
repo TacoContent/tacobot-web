@@ -1,0 +1,88 @@
+{{!-- settings/fields/array.hbs --}}
+{{!--
+  inputs:
+    - data: the array value
+    - key: the key name of the value (if any)
+    - type: the type of the value (if known, otherwise it will be inferred)
+    - parentKey: the parent key name of the value (if any) - used for nested naming
+    - metadata: the metadata for the setting (if any)
+    - path: the path to the metadata (if any)
+    - isChild: whether this field is a child field (boolean, default: false)
+
+  field:
+    - value: the number value
+    - label: the label for the input (if any)
+    - id: the id for the input (if any)
+    - name: the name for the input (if any)
+    - metadata: the metadata for the setting (if any)
+    - path: the path to the metadata (if any)
+    - isChild: whether this field is a child field (boolean, default: false)
+--}}
+
+{{#if (eq config.debug false)}}
+<div class="debug border rounded p-3 m-3 border-info bg-info-subtle text-info">
+  {{> alert level="info" message="Debug Info is enabled - remove this in production!" dismissible=true title="Debug Info"}}
+  <ul class="list-group border-info bg-info-subtle text-info">
+    {{!-- Debug Info --}}
+    {{!-- Show metadata, key, parentKey, type, and data --}}
+    {{#if metadata}}
+    <li class="list-group-item">
+      <strong class="text-uppercase">Metadata</strong>
+      {{> highlight (json metadata)}}
+    </li>
+    {{/if}}
+    {{#if key}}
+    <li class="list-group-item">
+      <strong class="text-uppercase">Key:</strong> {{key}}
+    </li>
+    {{/if}}
+    {{#if parentKey}}
+    <li class="list-group-item">
+      <strong class="text-uppercase">Parent Key:</strong> {{parentKey}}
+    </li>
+    {{/if}}
+    {{#if type}}
+    <li class="list-group-item">
+      <strong class="text-uppercase">Type:</strong> {{type}}
+    </li>
+    {{/if}}
+    {{#if data}}
+    <li class="list-group-item">
+      <strong class="text-uppercase">Data</strong>
+      {{> highlight (json data)}}
+    </li>
+    {{/if}}
+    {{#if value}}
+    <li class="list-group-item">
+      <strong class="text-uppercase">Value:</strong> {{value}}
+    </li>
+    {{/if}}
+    {{#if label}}
+    <li class="list-group-item">
+      <strong class="text-uppercase">Label:</strong> {{label}}
+    </li>
+    {{/if}}
+    {{#if id}}
+    <li class="list-group-item">
+      <strong class="text-uppercase">ID:</strong> {{id}}
+    </li>
+    {{/if}}
+    {{#if name}}
+    <li class="list-group-item">
+      <strong class="text-uppercase">Name:</strong> {{name}}
+    </li>
+    {{/if}}
+    {{#if path}}
+    <li class="list-group-item">
+      <strong class="text-uppercase">Path:</strong> {{path}}
+    </li>
+    {{/if}}
+    {{#if isChild}}
+    <li class="list-group-item">
+      <strong class="text-uppercase">Is Child:</strong>
+      {{> yes-no value=isChild}}
+    </li>
+    {{/if}}
+  </ul>
+</div>
+{{/if}}

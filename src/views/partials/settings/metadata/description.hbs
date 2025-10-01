@@ -1,0 +1,13 @@
+{{!-- settings/metadata/description.hbs --}}
+{{!--
+  This partial displays the description metadata for a setting.
+  inputs:
+    - metadata: the metadata object containing setting metadata
+--}}
+{{#if (settingsHasMetadataKey metadata=metadata key="description")}}
+<div class="input-description-text text-muted text-sm mb-3 mt-1 text-start">
+  <i class="fas fa-info-circle me-1 text-primary"></i>{{settingMetadata metadata=metadata key="description"}}
+</div>
+{{else}}
+<div class="mb-3"></div>
+{{/if}}

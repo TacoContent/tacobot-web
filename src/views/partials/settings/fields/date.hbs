@@ -1,0 +1,17 @@
+{{!-- settings/fields/date.hbs --}}
+{{!--
+  inputs:
+    - value: the string channel id value
+    - label: the label for the input (if any)
+    - id: the id for the input (if any)
+    - name: the name for the input (if any)
+    - metadata: the metadata for the setting (if any)
+    - path: the path to the metadata (if any)
+    - isChild: whether this field is a child field (boolean, default: false)
+--}}
+
+{{#if (not isChild) }}
+{{> settings/metadata/description metadata=metadata }}
+{{else}}
+<div class="mb-3"></div>
+{{/if}}

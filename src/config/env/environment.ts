@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
+import { get } from 'http';
 
 dotenv.config();
 
@@ -122,6 +123,7 @@ const config = {
   timezone: getEnvVarString('TZ', getEnvVarString('TBW_TIMEZONE', 'America/Chicago')),
   language: getEnvVarString('TBW_LANGUAGE', 'en-us'),
   port: getEnvVarInt('TBW_PORT', 3000),
+  debug: getEnvVarBooleanDefault('TBW_DEBUG', getEnvVarBooleanDefault('DEBUG', false)),
 };
 
 export default config;

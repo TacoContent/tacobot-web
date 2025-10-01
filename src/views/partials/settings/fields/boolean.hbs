@@ -6,10 +6,13 @@
     - id: the id for the input (if any)
     - name: the name for the input (if any)
     - metadata: the metadata for the setting (if any)
+    - path: the path to the metadata (if any)
+    - isChild: whether this field is a child field (boolean, default: false)
 --}}
 {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
+{{!-- {{> settings/fields/debug this}} --}}
 
-<div class="input-group mb-3 {{> 
+<div class="input-group mb-1 {{> 
         settings/metadata/deprecated/class 
         level="warning" 
         metadata=metadata 
@@ -42,3 +45,9 @@
     for="field-{{id}}"
     id="field-{{id}}-label">{{label}}</label>
 </div>
+
+{{#if (not isChild) }}
+{{> settings/metadata/description metadata=metadata }}
+{{else}}
+<div class="mb-3"></div>
+{{/if}}
