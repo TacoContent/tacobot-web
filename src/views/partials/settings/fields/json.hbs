@@ -9,40 +9,46 @@
     - path: the path to the metadata (if any)
     - isChild: whether this field is a child field (boolean, default: false)
 --}}
+{{> settings/fields/debug this}}
 
-<div class="mb-1" data-setting-type="json">
-  <div class="d-flex align-items-center highlight-toolbar ps-3 pe-2 py-1 border-0 border-top border-bottom">
-    <small class="font-monospace text-body-secondary text-uppercase">json</small>
-    <div class="d-flex ms-auto">
-      <button type="button" class="btn btn-sm btn-edit text-nowrap" aria-label="" data-bs-original-title=""><i class="fas fa-code"></i></button>
-      <button type="button" class="btn btn-sm btn-clipboard mt-0 me-0" aria-label="Copy to clipboard" data-bs-original-title="Copy to clipboard"><i class="fas fa-clipboard"></i></button>
-    </div>
-  </div>
-
-  <div class="input-group" data-view="edit">
-    <label class="input-group-text" for="field-{{id}}-edit">{{label}}</label>
-    <textarea 
-      class="form-control" 
-      placeholder="{{label}}" 
-      aria-label="{{label}}" 
-      aria-describedby="field-{{id}}-edit" 
-      name="{{or name label}}"
-      style="height: auto; max-height: 500px; min-height: 150px; overflow: scroll;"
-      id="field-{{id}}-edit">{{value}}</textarea>
-  </div>
-
-  <div class="input-group" data-view="preview">
-    <label class="input-group-text" for="field-{{id}}-preview">{{label}}</label>
-    <pre 
-      class="form-control m-0 p-0" 
-      style="height: auto; max-height: 500px; min-height: 150px; overflow: scroll;"
-      ><code class="language-json m-0" id="field-{{id}}-preview">{{value}}</code></pre>
-  </div>
-
-</div>
-
-{{#if (not isChild) }}
-{{> settings/metadata/description metadata=metadata }}
+{{#if (eq (settingsGetMetadata metadata=metadata key="hidden") true)}}
+  {{!-- do not render anything if this field is marked as not visible --}}
 {{else}}
-<div class="mb-3"></div>
+
+  <div class="mb-1" data-setting-type="json">
+    <div class="d-flex align-items-center highlight-toolbar ps-3 pe-2 py-1 border-0 border-top border-bottom">
+      <small class="font-monospace text-body-secondary text-uppercase">json</small>
+      <div class="d-flex ms-auto">
+        <button type="button" class="btn btn-sm btn-edit text-nowrap" aria-label="" data-bs-original-title=""><i class="fas fa-code"></i></button>
+        <button type="button" class="btn btn-sm btn-clipboard mt-0 me-0" aria-label="Copy to clipboard" data-bs-original-title="Copy to clipboard"><i class="fas fa-clipboard"></i></button>
+      </div>
+    </div>
+
+    <div class="input-group" data-view="edit">
+      <label class="input-group-text" for="field-{{id}}-edit">{{label}}</label>
+      <textarea 
+        class="form-control" 
+        placeholder="{{label}}" 
+        aria-label="{{label}}" 
+        aria-describedby="field-{{id}}-edit" 
+        name="{{or name label}}"
+        style="height: auto; max-height: 500px; min-height: 150px; overflow: scroll;"
+        id="field-{{id}}-edit">{{value}}</textarea>
+    </div>
+
+    <div class="input-group" data-view="preview">
+      <label class="input-group-text" for="field-{{id}}-preview">{{label}}</label>
+      <pre 
+        class="form-control m-0 p-0" 
+        style="height: auto; max-height: 500px; min-height: 150px; overflow: scroll;"
+        ><code class="language-json m-0" id="field-{{id}}-preview">{{value}}</code></pre>
+    </div>
+
+  </div>
+
+  {{#if (not isChild) }}
+  {{> settings/metadata/description metadata=metadata }}
+  {{else}}
+  <div class="mb-3"></div>
+  {{/if}}
 {{/if}}

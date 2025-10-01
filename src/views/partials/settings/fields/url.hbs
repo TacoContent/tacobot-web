@@ -10,13 +10,19 @@
     - path: the path to the metadata (if any)
     - isChild: whether this field is a child field (boolean, default: false)
 --}}
-<div class="input-group mb-3" data-setting-type="url">
-  <label class="input-group-text" for="field-{{id}}" id="field-{{id}}-label">{{label}}</label>
-  <input type="url" class="form-control" placeholder="{{label}}" aria-label="{{label}}" aria-describedby="field-{{id}}-label" value="{{value}}" name="{{or name label}}" id="field-{{id}}"/>
-</div>
-
-{{#if (not isChild) }}
-{{> settings/metadata/description metadata=metadata }}
+{{> settings/fields/debug this}}
+{{#if (eq (settingsGetMetadata metadata=metadata key="hidden") true)}}
+  {{!-- do not render anything if this field is marked as not visible --}}
 {{else}}
-<div class="mb-3"></div>
+
+  <div class="input-group mb-3" data-setting-type="url">
+    <label class="input-group-text" for="field-{{id}}" id="field-{{id}}-label">{{label}}</label>
+    <input type="url" class="form-control" placeholder="{{label}}" aria-label="{{label}}" aria-describedby="field-{{id}}-label" value="{{value}}" name="{{or name label}}" id="field-{{id}}"/>
+  </div>
+
+  {{#if (not isChild) }}
+  {{> settings/metadata/description metadata=metadata }}
+  {{else}}
+  <div class="mb-3"></div>
+  {{/if}}
 {{/if}}

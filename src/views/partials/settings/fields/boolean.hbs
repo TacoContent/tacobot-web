@@ -9,45 +9,50 @@
     - path: the path to the metadata (if any)
     - isChild: whether this field is a child field (boolean, default: false)
 --}}
-{{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
-{{!-- {{> settings/fields/debug this}} --}}
+{{> settings/fields/debug this}}
 
-<div class="input-group mb-1 {{> 
-        settings/metadata/deprecated/class 
-        level="warning" 
-        metadata=metadata 
-        key=key 
-        type="group"}}" data-setting-type="boolean">
-  <div class="input-group-text {{> 
-        settings/metadata/deprecated/class 
-        level="warning" 
-        metadata=metadata 
-        key=key 
-        type="label"}}">
-    <input 
-      class="form-check-input mt-0"
-      id="field-{{id}}"
-      name="{{or name label}}"
-      type="checkbox"
-      value="{{value}}"
-      {{#if value}}checked{{/if}}
-      aria-label="{{label}}"
-      aria-describedby="field-{{id}}-label"
-      {{#if (eq (settingsGetMetadata metadata=metadata key="disabled") true)}}disabled{{/if}}
-    />
-  </div>
-  <label class="form-control text-start {{> 
-      settings/metadata/deprecated/class 
-      level="warning" 
-      metadata=metadata 
-      key=key 
-      type="field"}}"
-    for="field-{{id}}"
-    id="field-{{id}}-label">{{label}}</label>
-</div>
-
-{{#if (not isChild) }}
-{{> settings/metadata/description metadata=metadata }}
+{{#if (eq (settingsGetMetadata metadata=metadata key="hidden") true)}}
+  {{!-- do not render anything if this field is marked as not visible --}}
 {{else}}
-<div class="mb-3"></div>
+  {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
+
+  <div class="input-group mb-1 {{> 
+          settings/metadata/deprecated/class 
+          level="warning" 
+          metadata=metadata 
+          key=key 
+          type="group"}}" data-setting-type="boolean">
+    <div class="input-group-text {{> 
+          settings/metadata/deprecated/class 
+          level="warning" 
+          metadata=metadata 
+          key=key 
+          type="label"}}">
+      <input 
+        class="form-check-input mt-0"
+        id="field-{{id}}"
+        name="{{or name label}}"
+        type="checkbox"
+        value="{{value}}"
+        {{#if value}}checked{{/if}}
+        aria-label="{{label}}"
+        aria-describedby="field-{{id}}-label"
+        {{#if (eq (settingsGetMetadata metadata=metadata key="disabled") true)}}disabled{{/if}}
+      />
+    </div>
+    <label class="form-control text-start {{> 
+        settings/metadata/deprecated/class 
+        level="warning" 
+        metadata=metadata 
+        key=key 
+        type="field"}}"
+      for="field-{{id}}"
+      id="field-{{id}}-label">{{label}}</label>
+  </div>
+
+  {{#if (not isChild) }}
+  {{> settings/metadata/description metadata=metadata }}
+  {{else}}
+  <div class="mb-3"></div>
+  {{/if}}
 {{/if}}

@@ -9,47 +9,53 @@
     - path: the path to the metadata (if any)
     - isChild: whether this field is a child field (boolean, default: false)
 --}}
-{{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
+{{> settings/fields/debug this}}
+{{#if (eq (settingsGetMetadata metadata=metadata key="hidden") true)}}
+  {{!-- do not render anything if this field is marked as not visible --}}
+{{else}}
 
-<div class="input-group mb-1 {{> 
-        settings/metadata/deprecated/class 
-        level="warning" 
-        metadata=metadata 
-        key=key 
-        type="group"}}" data-setting-type="number">
-  <label class="input-group-text {{> 
+  {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
+
+  <div class="input-group mb-1 {{> 
           settings/metadata/deprecated/class 
           level="warning" 
           metadata=metadata 
           key=key 
-          type="label"}}"
-        for="field-{{id}}" 
-        id="field-{{id}}-label">{{label}}</label>
-  <input 
-    type="number"
-    class="form-control {{> 
-      settings/metadata/deprecated/class 
-      level="warning" 
-      metadata=metadata 
-      key=key 
-      type="field"}}"
-    placeholder="{{label}}"
-    aria-label="{{label}}"
-    aria-describedby="field-{{id}}-label"
-    value="{{value}}"
-    {{#if (settingsHasMetadataKey metadata=metadata key="min")}}min="{{settingsGetMetadata metadata=metadata key="min"}}"{{/if}}
-    {{#if (settingsHasMetadataKey metadata=metadata key="max")}}max="{{settingsGetMetadata metadata=metadata key="max"}}"{{/if}}
-    {{#if (settingsHasMetadataKey metadata=metadata key="step")}}step="{{settingsGetMetadata metadata=metadata key="step"}}"{{/if}}
-    name="{{or name label}}"
-    {{#if (eq (settingsGetMetadata metadata=metadata key="disabled") true)}}disabled{{/if}}
-    id="field-{{id}}"
-  />
+          type="group"}}" data-setting-type="number">
+    <label class="input-group-text {{> 
+            settings/metadata/deprecated/class 
+            level="warning" 
+            metadata=metadata 
+            key=key 
+            type="label"}}"
+          for="field-{{id}}" 
+          id="field-{{id}}-label">{{label}}</label>
+    <input 
+      type="number"
+      class="form-control {{> 
+        settings/metadata/deprecated/class 
+        level="warning" 
+        metadata=metadata 
+        key=key 
+        type="field"}}"
+      placeholder="{{label}}"
+      aria-label="{{label}}"
+      aria-describedby="field-{{id}}-label"
+      value="{{value}}"
+      {{#if (settingsHasMetadataKey metadata=metadata key="min")}}min="{{settingsGetMetadata metadata=metadata key="min"}}"{{/if}}
+      {{#if (settingsHasMetadataKey metadata=metadata key="max")}}max="{{settingsGetMetadata metadata=metadata key="max"}}"{{/if}}
+      {{#if (settingsHasMetadataKey metadata=metadata key="step")}}step="{{settingsGetMetadata metadata=metadata key="step"}}"{{/if}}
+      name="{{or name label}}"
+      {{#if (eq (settingsGetMetadata metadata=metadata key="disabled") true)}}disabled{{/if}}
+      id="field-{{id}}"
+    />
 
-  {{> settings/metadata/unit metadata=metadata key="unit" class="" }}
-</div>
+    {{> settings/metadata/unit metadata=metadata key="unit" class="" }}
+  </div>
 
-{{#if (not isChild) }}
-{{> settings/metadata/description metadata=metadata }}
-{{else}}
-<div class="mb-3"></div>
+  {{#if (not isChild) }}
+  {{> settings/metadata/description metadata=metadata }}
+  {{else}}
+  <div class="mb-3"></div>
+  {{/if}}
 {{/if}}
