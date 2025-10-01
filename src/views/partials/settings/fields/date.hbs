@@ -9,9 +9,14 @@
     - path: the path to the metadata (if any)
     - isChild: whether this field is a child field (boolean, default: false)
 --}}
+{{> settings/fields/debug this}}
 
-{{#if (not isChild) }}
-{{> settings/metadata/description metadata=metadata }}
+{{#if (eq (settingsGetMetadata metadata=metadata key="hidden") true)}}
+  {{!-- do not render anything if this field is marked as not visible --}}
 {{else}}
-<div class="mb-3"></div>
+  {{#if (not isChild) }}
+  {{> settings/metadata/description metadata=metadata }}
+  {{else}}
+  <div class="mb-3"></div>
+  {{/if}}
 {{/if}}

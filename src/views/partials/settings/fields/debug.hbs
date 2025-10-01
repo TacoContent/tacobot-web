@@ -19,7 +19,7 @@
     - isChild: whether this field is a child field (boolean, default: false)
 --}}
 
-{{#if (eq config.debug false)}}
+{{#if (eq config.debug true)}}
 <div class="debug border rounded p-3 m-3 border-info bg-info-subtle text-info">
   {{> alert level="info" message="Debug Info is enabled - remove this in production!" dismissible=true title="Debug Info"}}
   <ul class="list-group border-info bg-info-subtle text-info">

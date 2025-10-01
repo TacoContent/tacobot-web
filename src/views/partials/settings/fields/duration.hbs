@@ -9,28 +9,33 @@
     - path: the path to the metadata (if any)
     - isChild: whether this field is a child field (boolean, default: false)
 --}}
-{{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
-
 {{> settings/fields/debug this}}
-
-<div class="input-group mb-1" data-setting-type="duration">
-  <label class="input-group-text" for="field-{{id}}" id="field-{{id}}-label">{{label}}</label>
-  <input
-    data-type="duration"
-    id="field-{{id}}"
-    type="number"
-    class="form-control"
-    placeholder="{{label}}"
-    aria-label="{{label}}"
-    aria-describedby="field-{{id}}-label"
-    value="{{value}}"
-    name="{{or name label}}"
-  />
-
-</div>
-
-{{#if (not isChild) }}
-{{> settings/metadata/description metadata=metadata }}
+{{#if (eq (settingsGetMetadata metadata=metadata key="hidden") true)}}
+  {{!-- do not render anything if this field is marked as not visible --}}
 {{else}}
-<div class="mb-3"></div>
+
+  {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
+
+
+  <div class="input-group mb-1" data-setting-type="duration">
+    <label class="input-group-text" for="field-{{id}}" id="field-{{id}}-label">{{label}}</label>
+    <input
+      data-type="duration"
+      id="field-{{id}}"
+      type="number"
+      class="form-control"
+      placeholder="{{label}}"
+      aria-label="{{label}}"
+      aria-describedby="field-{{id}}-label"
+      value="{{value}}"
+      name="{{or name label}}"
+    />
+
+  </div>
+
+  {{#if (not isChild) }}
+  {{> settings/metadata/description metadata=metadata }}
+  {{else}}
+  <div class="mb-3"></div>
+  {{/if}}
 {{/if}}
