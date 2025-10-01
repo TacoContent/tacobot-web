@@ -6,9 +6,11 @@
     - id: the id for the input (if any)
     - name: the name for the input (if any)
     - metadata: the metadata for the setting (if any)
+    - path: the path to the metadata (if any)
+    - isChild: whether this field is a child field (boolean, default: false)
 --}}
 
-<div class="mb-3" data-setting-type="json">
+<div class="mb-1" data-setting-type="json">
   <div class="d-flex align-items-center highlight-toolbar ps-3 pe-2 py-1 border-0 border-top border-bottom">
     <small class="font-monospace text-body-secondary text-uppercase">json</small>
     <div class="d-flex ms-auto">
@@ -38,3 +40,9 @@
   </div>
 
 </div>
+
+{{#if (not isChild) }}
+{{> settings/metadata/description metadata=metadata }}
+{{else}}
+<div class="mb-3"></div>
+{{/if}}

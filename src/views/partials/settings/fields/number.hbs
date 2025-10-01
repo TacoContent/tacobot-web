@@ -6,34 +6,12 @@
     - id: the id for the input (if any)
     - name: the name for the input (if any)
     - metadata: the metadata for the setting (if any)
+    - path: the path to the metadata (if any)
+    - isChild: whether this field is a child field (boolean, default: false)
 --}}
 {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
-{{!-- <div>
-  <div>disabled: {{#if (eq (settingsGetMetadata metadata=metadata key="disabled") true)}}yes{{else}}no{{/if}}</div>
-  <div>disabled: {{asString (settingsGetMetadata metadata=metadata key="disabled")}}</div>
-  <div>min: {{settingsGetMetadata metadata=metadata key="min"}}</div>
-  <div>group: {{> 
-        settings/metadata/deprecated/class 
-        level="warning" 
-        metadata=metadata 
-        key=key 
-        type="group"}}</div>
-  <div>label: {{> 
-          settings/metadata/deprecated/class 
-          level="warning" 
-          metadata=metadata 
-          key=key 
-          type="label"}}</div>
-  <div>field: {{> 
-      settings/metadata/deprecated/class 
-      level="warning" 
-      metadata=metadata 
-      key=key 
-      type="field"}}</div>
-  <pre><code>{{json metadata}}</code></pre>
-</div> --}}
 
-<div class="input-group mb-3 {{> 
+<div class="input-group mb-1 {{> 
         settings/metadata/deprecated/class 
         level="warning" 
         metadata=metadata 
@@ -69,3 +47,9 @@
 
   {{> settings/metadata/unit metadata=metadata key="unit" class="" }}
 </div>
+
+{{#if (not isChild) }}
+{{> settings/metadata/description metadata=metadata }}
+{{else}}
+<div class="mb-3"></div>
+{{/if}}

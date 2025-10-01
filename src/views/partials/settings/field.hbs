@@ -7,7 +7,8 @@
     - key: the key name of the value (required unless idx is provided)
     - idx: the index name of the value (required unless key is provided)
     - parentKey: the parent key name of the value (if any) - used for nested naming
-    
+    - path: the path to the metadata (if any)
+    - isChild: whether this field is a child field (boolean, default: false)
 --}}
 
 {{!-- base primitive types --}}
@@ -27,6 +28,20 @@
     id=(uuid 's') 
     name=(concat parentKey (or idx key)) 
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    path=(settingsCleanPath (concat path '.' key))
+    isChild=isChild
+  }}
+
+{{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'password')}}
+
+  {{> settings/fields/password 
+    value=data 
+    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    id=(uuid 's') 
+    name=(concat parentKey (or idx key)) 
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    path=(settingsCleanPath (concat path '.' key))
+    isChild=isChild
   }}
 
 {{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'number') }}
@@ -37,6 +52,8 @@
     id=(uuid 's') 
     name=(concat parentKey (or idx key))
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    path=(settingsCleanPath (concat path '.' key))
+    isChild=isChild
   }}
 
 {{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'boolean')}}
@@ -46,7 +63,9 @@
     label=(settingFieldLabel key=(or idx key) metadata=metadata) 
     id=(uuid 's') 
     name=(concat parentKey (or idx key))
-    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    metadata=(or (settingMetadata metadata=metadata key=(or key parentKey)) metadata)
+    path=(settingsCleanPath (concat path '.' key))
+    isChild=isChild
   }}
 
 {{!-- special types --}}
@@ -58,6 +77,8 @@
     id=(uuid 's') 
     name=(concat parentKey (or idx key))
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    path=(settingsCleanPath (concat path '.' key))
+    isChild=isChild
   }}
 
 {{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'image-url') }}
@@ -68,6 +89,8 @@
     id=(uuid 's') 
     name=(concat parentKey (or idx key))
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    path=(settingsCleanPath (concat path '.' key))
+    isChild=isChild
   }}
 
 {{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'duration') }}
@@ -78,6 +101,8 @@
     id=(uuid 's') 
     name=(concat parentKey (or idx key)) 
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    path=(settingsCleanPath (concat path '.' key))
+    isChild=isChild
   }}
 
 {{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'date')}}
@@ -88,6 +113,8 @@
     id=(uuid 's') 
     name=(concat parentKey (or idx key))
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    path=(settingsCleanPath (concat path '.' key))
+    isChild=isChild
   }}
 {{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'json')}}
 
@@ -97,6 +124,8 @@
     id=(uuid 's') 
     name=(concat parentKey (or idx key))
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    path=(settingsCleanPath (concat path '.' key))
+    isChild=isChild
   }}
 {{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'channel')}}
 
@@ -106,6 +135,8 @@
     id=(uuid 's') 
     name=(concat parentKey (or idx key))
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    path=(settingsCleanPath (concat path '.' key))
+    isChild=isChild
   }}
 
 {{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'role')}}
@@ -115,7 +146,9 @@
     label=(settingFieldLabel key=(or idx key) metadata=metadata) 
     id=(uuid 's') 
     name=(concat parentKey (or idx key))
-    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    metadata=(or (settingMetadata metadata=metadata key=(or key parentKey)) metadata)
+    path=(settingsCleanPath (concat path '.' key))
+    isChild=isChild
   }}
 
 {{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'emoji')}}
@@ -126,26 +159,48 @@
     id=(uuid 's')
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
     name=(concat parentKey (or idx key))
+    path=(settingsCleanPath (concat path '.' key))
+    isChild=isChild
   }}
 
 {{!-- ARRAY & OBJECT --}}
 {{!-- These are handled different to recursively call back to this view for each item --}}
 {{else if (eq (settingFieldType value=data key=key metadata=metadata) 'array')}}
+{{!-- (settingMetadata metadata=metadata key=(or key parentKey)) --}}
+
+  {{!--
+    For arrays, we pass:
+      - data: the array value
+      - parentKey: the parent key name of the value (if any) - used for nested naming
+      - key: the key name of the value (if any)
+      - label: the label for the input group (if any)
+      - metadata: the metadata for the setting (if any)
+      - type: the type of the value (if known, otherwise it will be inferred)
+      - path: the path to the metadata (if any)
+      - isChild: whether this field is a child field (boolean, default: false)
+  --}}
   {{> settings/fields/array 
     data=data 
-    key=(settingFieldLabel key=(or idx key) metadata=metadata) 
     parentKey=(or key parentKey) 
-    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    key=(or key parentKey)
+    metadata=(or (settingMetadata metadata=metadata key=(or key parentKey)) metadata)
     type=(settingFieldType value=data key=key metadata=metadata force=true)
+    path=(settingsCleanPath (concat path '.' key))
+    isChild=isChild
   }}
 
 {{else if (eq (settingFieldType value=data key=key metadata=metadata) 'object')}}
 
   {{> settings/fields/object 
     data=data 
-    key=(settingFieldLabel key=(or idx key) metadata=metadata) 
-    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
-    parentKey=(or key parentKey)
+    parentKey=(or key parentKey) 
+    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    key=(or idx key)
+    metadata=(or (settingMetadata metadata=metadata key=(or key parentKey)) metadata)
+    type=(settingFieldType value=data key=key metadata=metadata force=true)
+    path=(settingsCleanPath (concat path '.' key))
+    isChild=isChild
   }}
 
 {{!-- Unhandled type --}}

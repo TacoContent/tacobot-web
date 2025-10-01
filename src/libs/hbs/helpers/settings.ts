@@ -28,6 +28,22 @@ export default {
     console.log('No metadata found for key', key);
     return null;
   },
+  settingsCleanPath: function (...args: any[]): string {
+    const [path] = Reflection.getArguments(args, ['path'], ['']);
+    if (!path) return '';
+    // remove leading dot
+    let cleanPath = path;
+    if (cleanPath.startsWith('.')) {
+      cleanPath = cleanPath.substring(1);
+    }
+    // remove trailing dot
+    if (cleanPath.endsWith('.')) {
+      cleanPath = cleanPath.substring(0, cleanPath.length - 1);
+    }
+    // replace multiple dots with single dot
+    cleanPath = cleanPath.replace(/\.{2,}/g, '.');
+    return cleanPath;
+  },
   settingFieldLabel: function (...args: any[]): any {
     const [key, metadata] = Reflection.getArguments(args, ['key', 'metadata'], [{}]);
     console.log('Getting label for key', key, 'with metadata:', metadata);

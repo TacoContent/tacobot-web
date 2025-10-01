@@ -1,0 +1,18 @@
+{{!-- settings/fields/role.hbs --}}
+{{!--
+  inputs:
+    - level: the alert level (e.g. "info", "warning", "danger")
+    - title: the alert title
+    - message: the alert message
+    - reason: the alert reason (if any)
+    - dismissible: whether the alert is dismissible (default: false)
+--}}
+
+<div class="alert alert-{{or level "info"}} p-1" role="alert">
+  <h4 class="alert-heading mt-1 mb-1">{{title}}</h4>
+  <p class="mb-0 p-0">{{message}}</p>
+  {{#if reason}}
+    <hr>
+    <p class="mb-0 p-0">{{reason}}</p>
+  {{/if}}
+</div>
