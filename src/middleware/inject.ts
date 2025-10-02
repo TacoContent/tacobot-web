@@ -4,11 +4,15 @@ import SettingsMongoClient from '../libs/mongo/Settings';
 
 
 const configs = async (req: Request, res: Response, next: NextFunction) =>  {
-  console.log('Injecting config:', { debug: config.debug, hasConfig: !!config, keys: Object.keys(config) });
   res.locals.config = config;
   next();
 };
 
+const discordGuild = async (req: Request, res: Response, next: NextFunction) => {
+  const guildId = req.params.guildId || req.query.guildId || req.query.guild_id || req.query.guild || config.tacobot.primaryGuildId;
+  res.locals.discordGuild = guildId;
+  next();
+};
 
 const pagePath = async(req: Request, res: Response, next: NextFunction) => {
   res.locals.currentPath = req.path;
@@ -45,5 +49,5 @@ const searchQuery = async (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-export default { config: configs, pagePath, settingsGroups, searchQuery };
-export { configs as config, pagePath, settingsGroups, searchQuery };
+export default { config: configs, pagePath, settingsGroups, searchQuery, discordGuild };
+export { configs as config, pagePath, settingsGroups, searchQuery, discordGuild };

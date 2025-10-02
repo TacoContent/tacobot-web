@@ -21,8 +21,6 @@
   {{!-- do not render anything if this field is marked as not visible --}}
 {{else}}
   {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
-
-
   <div 
       class="input-group mb-1 {{> 
         settings/metadata/deprecated/class 
@@ -39,8 +37,25 @@
         type="label"}}"
       for="field-{{id}}"
       id="field-{{id}}-label">{{label}}</label>
+    <label class="input-group-text"
+      for="field-{{id}}"
+      id="field-{{id}}-emoji">
+      {{#if (emojiId value)}}
+        {{> discord/emoji id=(emojiId value) guild=@root.discordGuild large=true}}
+      {{else if (emojiName value)}}
+        {{> discord/emoji name=(emojiName value) guild=@root.discordGuild large=true}}
+      {{else if (emojiUnicode value)}}
+        {{emojiUnicode value}}
+      {{else}}
+        <em class="text-muted">🙁 unknown emoji 🙁</em>
+      {{/if}}
+    </label>
+    {{> code value=value copy=true }}
+    {{#if isChild}}
+    <button class="btn btn-outline-secondary btn-sm border border-start-0 border-secondary-subtle text-danger" type="button"><i class="fas fa-trash" aria-hidden="true"></i></button>
+    {{/if}}
     <input
-      type="text"
+      type="hidden"
       class="form-control {{> 
         settings/metadata/deprecated/class 
         level="warning" 

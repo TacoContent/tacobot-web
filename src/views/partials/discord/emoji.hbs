@@ -1,0 +1,9 @@
+  <span class="discord-emoji btn btn-link p-0 m-0{{#if small}} discord-emoji-sm{{else if large}} discord-emoji-lg{{/if}}" 
+    data-discord-emoji-guild="{{or guild @root.discordGuild config.tacobot.primaryGuildId}}"
+    {{#if id}}data-discord-emoji-id="{{id}}"
+    {{else if name}}data-discord-emoji-name="{{name}}"{{/if}}>
+    <div class="placeholder-glow" data-template="discord-emoji">
+      <img data-img-error src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" 
+      style="max-height: 24px;" class="me-1 placeholder"/>
+    </div>
+  </span>

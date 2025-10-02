@@ -16,4 +16,14 @@ router.route('/api/v1/emoji/:guild/lookup/:name').get(
   (req: Request, res: Response, next: NextFunction) => emojisController.getEmojiByName(req, res, next).catch(next)
 );
 
+// Batch emoji endpoint - supports both POST with body and GET with query params
+router.route('/api/v1/emojis/:guild/batch/ids')
+  .post((req: Request, res: Response, next: NextFunction) => emojisController.getEmojisByIds(req, res, next).catch(next))
+  .get((req: Request, res: Response, next: NextFunction) => emojisController.getEmojisByIds(req, res, next).catch(next));
+
+// Batch emoji names endpoint - supports both POST with body and GET with query params
+router.route('/api/v1/emojis/:guild/batch/names')
+  .post((req: Request, res: Response, next: NextFunction) => emojisController.getEmojisByNames(req, res, next).catch(next))
+  .get((req: Request, res: Response, next: NextFunction) => emojisController.getEmojisByNames(req, res, next).catch(next));
+
 export default router;

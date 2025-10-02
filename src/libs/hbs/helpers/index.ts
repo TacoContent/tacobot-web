@@ -6,6 +6,7 @@ import uuid from './uuid';
 import numbers from './numbers';
 import strings from './strings';
 import settings from './settings';
+import discord from './discord';
 
 const helpers = {
   ...dates,
@@ -16,6 +17,7 @@ const helpers = {
   ...numbers,
   ...strings,
   ...settings,
+  ...discord,
 };
 
 export default helpers;
