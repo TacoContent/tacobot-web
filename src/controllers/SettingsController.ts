@@ -25,6 +25,7 @@ export default class SettingsController {
         ...res.locals,
         title: `TACO Settings ${item.name.toUpperCase()}`,
         item: item,
+        discordGuild: res.locals.discordGuild, // Explicitly pass discordGuild
       });
     } catch (error: any) {
       // this.logger.error(METHOD, error);

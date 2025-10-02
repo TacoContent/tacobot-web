@@ -40,7 +40,8 @@
   </div>
 
   {{#if (not isChild) }}
-  {{> settings/metadata/description metadata=(settingMetadata metadata=metadata key=(or key parentKey)) }}
+  {{!-- (settingMetadata metadata=metadata key=(or key parentKey)) --}}
+  {{> settings/metadata/description metadata=metadata }}
   {{else}}
   <div class="mb-3"></div>
   {{/if}}

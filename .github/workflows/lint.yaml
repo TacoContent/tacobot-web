@@ -44,6 +44,14 @@ jobs:
           VALIDATE_SHELL_SHFMT: false
           GITHUB_TOKEN: ${{ github.token }}
           VALIDATE_CHECKOV: false
+
+          VALIDATE_BIOME_FORMAT: false
+          FIX_BIOME_FORMAT: false
+          VALIDATE_BIOME_LINT: false
+          FIX_BIOME_LINT: false
+          VALIDATE_PYTHON_RUFF_FORMAT: false
+          FIX_PYTHON_RUFF_FORMAT: false
+
           # REENABLE 
           VALIDATE_JAVASCRIPT_ES: true
           VALIDATE_JAVASCRIPT_PRETTIER: false
@@ -56,6 +64,7 @@ jobs:
           VALIDATE_JSON_PRETTIER: false
           VALIDATE_CSS_PRETTIER: false
           VALIDATE_YAML_PRETTIER: false
+
   # test:
   #   name: Test
   #   needs: 

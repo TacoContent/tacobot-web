@@ -14,6 +14,19 @@ body {
   font-family: Raleway, sans-serif;
 }
 
+.discord-emoji img {
+  vertical-align: middle;
+  max-width: 24px;
+}
+
+.discord-emoji.discord-emoji-lg img {
+  max-width: 32px;
+}
+
+.discord-emoji.discord-emoji-sm img {
+  max-width: 16px;
+}
+
 code.spoiler {
   background-color: var(--bs-dark, #212529);
   color: var(--bs-dark, #212529);

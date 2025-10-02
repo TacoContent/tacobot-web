@@ -43,10 +43,10 @@ export default class ScriptsController {
       // Combine scripts into one file and send
       const scripts = [
         'templates.js',
-        'on-ready.js',
         'form-validator.js',
-        'user-loader.js',
+        'template-loader.js',
         'code-field.js',
+        'on-ready.js',
       ];
 
       res.setHeader('Content-Type', 'application/javascript');
