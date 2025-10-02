@@ -46,15 +46,19 @@ const customClient = new TacoBotApiClient({
 - `getHealth()` - Check API health status
 - `getSwagger()` - Get Swagger specification
 
+
 ### Discord Guilds
 
 - `getGuilds()` - List all guilds
 - `getGuild(guildId)` - Get specific guild info
 - `getGuildChannels(guildId)` - Get guild channels
+- `getGuildChannelsByIds(guildId, channelIds)` - Get multiple channels by IDs (batch)
 - `getGuildEmojis(guildId)` - Get guild emojis
 - `getGuildEmojisByIds(guildId, emojiIds)` - Get multiple emojis by IDs (batch)
 - `getGuildEmojisByNames(guildId, emojiNames)` - Get multiple emojis by names (batch)
 - `getGuildCategories(guildId)` - Get channel categories
+- `getGuildRoles(guildId)` - Get guild roles
+- `getGuildRolesByIds(guildId, roleIds)` - Get multiple roles by IDs (batch)
 
 ### Minecraft
 

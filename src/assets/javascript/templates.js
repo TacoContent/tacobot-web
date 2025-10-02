@@ -55,10 +55,14 @@ class Templates {
         // console.log(`key: ${key}`);
         // find the `data-bind-attr` attribute and set its text
         const target = clonedTemplate.find(`[data-bind="${key}"]`);
-        const targetAttr = target.data(`bind-${key}-attr`);
+        const targetAttr = target.data(`bind-${key.toLowerCase()}-attr`);
+        const emptyOnBind = Boolean(target.data('bind-empty') || "false");
         if (target) {
           Templates.classSetter(key, data);
           if (targetAttr) {
+            if (emptyOnBind) {
+              target.empty();
+            }
             // console.log(`bind: ${targetAttr} => ${data[key]}`);
             target.attr(targetAttr, data[key]);
           } else {

@@ -14,6 +14,10 @@ body {
   font-family: Raleway, sans-serif;
 }
 
+.discord-channel.input-group {
+  width: auto !important;
+}
+
 .discord-emoji img {
   vertical-align: middle;
   max-width: 24px;

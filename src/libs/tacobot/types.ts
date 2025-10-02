@@ -173,6 +173,7 @@ export interface DiscordGuild {
 
 export interface DiscordChannel {
   id: string;
+  guild_id: string;
   name: string;
   type: string;
   position?: number;
@@ -185,6 +186,7 @@ export interface DiscordChannel {
 
 export interface DiscordCategory {
   id: string;
+  guild_id: string;
   name: string;
   position?: number;
   type?: string;
@@ -194,6 +196,7 @@ export interface DiscordCategory {
 
 export interface DiscordGuildChannels {
   id: string;
+  guild_id: string;
   name: string;
   channels: DiscordChannel[];
   categories: DiscordCategory[];
@@ -208,6 +211,20 @@ export interface DiscordEmoji {
   managed?: boolean;
   require_colons?: boolean;
   url?: string;
+}
+
+export interface DiscordRole {
+  id: string;
+  guild_id: string;
+  name: string;
+  color?: number | null;
+  position?: number | null;
+  permissions?: number | null;
+  managed?: boolean | null;
+  mentionable?: boolean | null;
+  hoist?: boolean | null;
+  icon?: string | null;
+  unicode_emoji?: string | null;
 }
 
 export interface ApiClientConfig {
