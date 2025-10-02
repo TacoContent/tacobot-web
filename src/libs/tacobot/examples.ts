@@ -72,6 +72,31 @@ export async function getGuildChannelsWithRetry(guildId: string): Promise<void> 
 }
 
 /**
+ * Example: Get multiple channels by IDs using batch endpoint
+ */
+export async function getBatchChannels(guildId: string, channelIds: string[]): Promise<void> {
+  if (!isValidGuildId(guildId)) {
+    console.error('Invalid guild ID format');
+    return;
+  }
+
+  if (channelIds.length === 0) {
+    console.error('No channel IDs provided');
+    return;
+  }
+
+  try {
+    const response = await tacoBotApiClient.getGuildChannelsByIds(guildId, channelIds);
+    console.log(`Retrieved ${response.data.length} channels from guild ${guildId}:`);
+    response.data.forEach(channel => {
+      console.log(`- ${channel.name} (${channel.id}) - ${channel.type}`);
+    });
+  } catch (error) {
+    console.error('Failed to get batch channels:', handleApiError(error, 'Batch Channels'));
+  }
+}
+
+/**
  * Example: Get multiple emojis by IDs using batch endpoint
  */
 export async function getBatchEmojis(guildId: string, emojiIds: string[]): Promise<void> {
@@ -127,6 +152,32 @@ export async function getBatchEmojisByNames(guildId: string, emojiNames: string[
     });
   } catch (error) {
     console.error('Failed to get batch emojis by names:', handleApiError(error, 'Batch Emojis By Names'));
+  }
+}
+
+/**
+ * Example: Get guild roles and by IDs
+ */
+export async function getGuildRolesExamples(guildId: string, roleIds: string[]): Promise<void> {
+  if (!isValidGuildId(guildId)) {
+    console.error('Invalid guild ID format');
+    return;
+  }
+
+  try {
+    const allRoles = await tacoBotApiClient.getGuildRoles(guildId);
+    console.log(`Found ${allRoles.data.length} roles in guild ${guildId}`);
+  } catch (error) {
+    console.error('Failed to get guild roles:', handleApiError(error, 'Guild Roles'));
+  }
+
+  if (roleIds && roleIds.length > 0) {
+    try {
+      const byIds = await tacoBotApiClient.getGuildRolesByIds(guildId, roleIds);
+      console.log(`Retrieved ${byIds.data.length} roles by IDs in guild ${guildId}`);
+    } catch (error) {
+      console.error('Failed to get roles by IDs:', handleApiError(error, 'Guild Roles By IDs'));
+    }
   }
 }
 
@@ -282,6 +333,7 @@ export const examples = {
   getGuildChannelsWithRetry,
   getBatchEmojis,
   getBatchEmojisByNames,
+  getGuildRolesExamples,
   getMinecraftServerStatus,
   getPlayerStats,
   getUserPermissions,

@@ -8,6 +8,7 @@ import {
   DiscordChannel,
   DiscordCategory,
   DiscordEmoji,
+  DiscordRole,
   MinecraftUser,
   MinecraftOpUser,
   MinecraftWhiteListUser,
@@ -124,6 +125,11 @@ export class TacoBotApiClient {
     return this.makeRequest<DiscordChannel[]>('GET', `/api/v1/guild/${guildId}/channels`);
   }
 
+  async getGuildChannelsByIds(guildId: string, channelIds: string[]): Promise<ApiResponse<DiscordChannel[]>> {
+    console.log('channelIds:', channelIds);
+    return this.makeRequest<DiscordChannel[]>('POST', `/api/v1/guild/${guildId}/channels/batch/ids`, channelIds);
+  }
+
   async getGuildEmojis(guildId: string): Promise<ApiResponse<DiscordEmoji[]>> {
     return this.makeRequest<DiscordEmoji[]>('GET', `/api/v1/guild/${guildId}/emojis`);
   }
@@ -142,6 +148,15 @@ export class TacoBotApiClient {
 
   async getGuildEmojisByNames(guildId: string, emojiNames: string[]): Promise<ApiResponse<DiscordEmoji[]>> {
     return this.makeRequest<DiscordEmoji[]>('POST', `/api/v1/guild/${guildId}/emojis/names/batch`, emojiNames);
+  }
+
+  // Role endpoints
+  async getGuildRoles(guildId: string): Promise<ApiResponse<DiscordRole[]>> {
+    return this.makeRequest<DiscordRole[]>('GET', `/api/v1/guild/${guildId}/roles`);
+  }
+
+  async getGuildRolesByIds(guildId: string, roleIds: string[]): Promise<ApiResponse<DiscordRole[]>> {
+    return this.makeRequest<DiscordRole[]>('POST', `/api/v1/guild/${guildId}/roles/batch/ids`, roleIds);
   }
 
   // Minecraft endpoints

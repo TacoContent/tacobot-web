@@ -14,6 +14,18 @@ $(() => {
   const discordEmojiNameLoader = new DiscordEmojiNameLoader();
   const deNameElements = $('[data-discord-emoji-name]');
   discordEmojiNameLoader.renderBatch(deNameElements);
+
+  const discordChannelLoader = new DiscordChannelLoader();
+  const dcElements = $('[data-discord-channel]');
+  discordChannelLoader.renderBatch(dcElements);
+
+  const discordRoleLoader = new DiscordRoleLoader();
+  const drElements = $('[data-discord-role]');
+  discordRoleLoader.renderBatch(drElements);
+
+  // const twitchUserLoader = new TwitchUserLoader();
+  // const tuElements = $('[data-twitch-user]');
+  // twitchUserLoader.renderBatch(tuElements);
 });
 
 class TemplateLoader {
@@ -122,7 +134,6 @@ class DiscordUserLoader extends TemplateLoader {
     }
 
     const users = await this.fetchBatch(userIds);
-    console.log(users);
     elements.each((index, element) => {
       const userId = $(element).data('discord-user')?.toString().trim();
       let guildId = $(element).data('discord-user-guild')?.toString().trim();
@@ -443,7 +454,6 @@ class DiscordEmojiNameLoader extends TemplateLoader {
     }
     const guildId = guild.toString().trim();
     const uncachedNames = names.filter(name => {
-      console.log("filter => name", name);
       const cacheKey = `${guildId}/${name.toString().trim()}`;
       return !this.cache.has(cacheKey);
     });
@@ -456,7 +466,6 @@ class DiscordEmojiNameLoader extends TemplateLoader {
       });
       
       response.forEach(emoji => {
-        console.log("response.forEach => emoji", emoji);
         if (emoji && emoji.id && emoji.guild_id && emoji.name) {
           // const keyById = `${emoji.guild_id.toString().trim()}/${emoji.id.toString().trim()}`;
           const keyByName = `${emoji.guild_id.toString().trim()}/${emoji.name.toString().trim()}`;
@@ -467,9 +476,7 @@ class DiscordEmojiNameLoader extends TemplateLoader {
     }
 
     return names.map(name => {
-      console.log("names.map => name", name);
       const cacheKey = `${guildId}/${name.toString().trim()}`;
-      console.log("names.map => cacheKey", cacheKey);
       return this.cache.get(cacheKey) || null;
     });
   }
@@ -528,17 +535,13 @@ class DiscordEmojiNameLoader extends TemplateLoader {
     // For each guild, fetch the emojis by names
     for (const [guildId, nameSet] of batchMap.entries()) {
       const nameArray = Array.from(nameSet);
-      console.log(`Fetching ${nameArray.length} emojis for guild ${guildId}:`, nameArray);
       const fetchedEmojis = await this.fetchBatch(guildId, nameArray);
-      console.log('Fetched emojis:', fetchedEmojis);
       if (fetchedEmojis && fetchedEmojis.length > 0) {
         emojis.push(...fetchedEmojis);
       } else {
         console.warn(`No emojis returned for guild ${guildId}`);
       }
     }
-
-    console.log('Fetched emojis:', emojis);
 
     if (emojis.length === 0) {
       return;
@@ -548,7 +551,6 @@ class DiscordEmojiNameLoader extends TemplateLoader {
     elements.each((index, element) => {
       const emojiName = $(element).data('discord-emoji-name')?.toString().trim();
       const gId = $(element).data('discord-emoji-guild')?.toString().trim();
-      console.log("emoji", emojiName, gId);
       const emoji = emojis.find((e) => {
         return e && e.name && e.name.toString().trim() === emojiName.toString()
           && e.guild_id && e.guild_id.toString().trim() === gId.toString();
@@ -559,6 +561,296 @@ class DiscordEmojiNameLoader extends TemplateLoader {
         ImageErrorHandler.register($('img[data-img-error]', element));
       } else {
         $(element).text(`:${emojiName}:`);
+      }
+    });
+  }
+}
+
+class DiscordChannelLoader extends TemplateLoader {
+  constructor() {
+    super();
+    console.log('Initialized DiscordChannelLoader');
+  }
+
+  // helper function to convert the channel type to a font-awesome icon class
+  channelTypeToIcon(type) {
+    switch (type) {
+      case "text": return 'fas fa-hashtag'; // text channel
+      case "voice": return 'fas fa-headphones'; // voice channel
+      case "category": return 'fas fa-book'; // category
+      case "news": return 'fas fa-bell-slash'; // announcement channel
+      case "stage": return 'fas fa-video'; // stage channel
+      default: return 'fas fa-question'; // unknown
+    }
+  }
+
+  async fetch(guild, id) {
+    if (!id || !guild) {
+      return null;
+    }
+    const channelId = id.toString().trim();
+    const guildId = guild.toString().trim();
+    const cacheKey = `${guildId}/${channelId}`;
+    if (this.cache.has(cacheKey)) {
+      return this.cache.get(cacheKey);
+    }
+
+    // Use the batch endpoint, even for a single id
+    const response = await $.ajax({
+      url: `/api/v1/channels/${guildId}/batch/ids`,
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify([channelId]),
+    });
+
+    if (Array.isArray(response) && response.length > 0) {
+      // add the faType property for icon rendering
+      response[0].faType = this.channelTypeToIcon(response[0].type);
+      // cache by guild/channel
+      this.cache.set(cacheKey, response[0]);
+      return response[0];
+    }
+    return null;
+  }
+
+  async fetchBatch(guild, ids) {
+    if (!ids || ids.length === 0 || !guild) {
+      return [];
+    }
+    const guildId = guild.toString().trim();
+    const uncachedIds = ids.filter(id => {
+      const cacheKey = `${guildId}/${id.toString().trim()}`;
+      return !this.cache.has(cacheKey);
+    });
+    if (uncachedIds.length > 0) {
+      const response = await $.ajax({
+        url: `/api/v1/channels/${guildId}/batch/ids`,
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(uncachedIds),
+      });
+      if (Array.isArray(response)) {
+        response.forEach(channel => {
+          if (channel && channel.id && channel.guild_id) {
+            // add the faType property for icon rendering
+            channel.faType = this.channelTypeToIcon(channel.type);
+            // cache by guild/channel
+            const cacheKey = `${channel.guild_id.toString().trim()}/${channel.id.toString().trim()}`;
+            this.cache.set(cacheKey, channel);
+          }
+        });
+      }
+    }
+    return ids.map(id => {
+      const cacheKey = `${guildId}/${id.toString().trim()}`;
+      return this.cache.get(cacheKey) || null;
+    });
+  }
+
+  async render(element, id) {
+    const channelId = id?.toString().trim();
+    const gId = $(element).data('discord-channel-guild')?.toString().trim();
+    if (!channelId || !gId) {
+      console.warn('Missing channel ID or guild ID for DiscordChannelLoader', { channelId, gId });
+      $(element).text(`#unknown-channel`);
+      return;
+    }
+    try {
+      const channel = await this.fetch(gId, channelId);
+      $(element).empty().removeClass('loading');
+      if (channel) {
+        Templates.render($(element), 'discord-channel', channel);
+      } else {
+        $(element).text(`#unknown-channel`);
+      }
+    } catch (error) {
+      console.error('Error rendering channel by ID:', error);
+      $(element).empty().removeClass('loading').text(`#error-channel`);
+    }
+  }
+
+  async renderBatch(elements) {
+    const channels = [];
+    const batchMap = new Map();
+
+    elements.each((index, element) => {
+      const channelId = $(element).data('discord-channel')?.toString().trim();
+      const gId = $(element).data('discord-channel-guild')?.toString().trim();
+      if (!gId) {
+        console.warn('No guild ID specified for DiscordChannelLoader', element);
+        return;
+      }
+      if (channelId) {
+        if (!batchMap.has(gId)) {
+          batchMap.set(gId, new Set());
+        }
+        batchMap.get(gId).add(channelId);
+      }
+    });
+
+    if (batchMap.size === 0) {
+      console.warn('No valid guild/channel ID pairs found for DiscordChannelLoader');
+      return;
+    }
+
+    for (const [guildId, idSet] of batchMap.entries()) {
+      const idArray = Array.from(idSet);
+      const fetchedChannels = await this.fetchBatch(guildId, idArray);
+      if (fetchedChannels && fetchedChannels.length > 0) {
+        channels.push(...fetchedChannels);
+      }
+    }
+
+    if (channels.length === 0) {
+      console.warn('No channels found for DiscordChannelLoader');
+      return;
+    }
+
+    console.log('Fetched channels:', channels);
+    elements.each((index, element) => {
+      const channelId = $(element).data('discord-channel')?.toString().trim();
+      const gId = $(element).data('discord-channel-guild')?.toString().trim();
+      const channel = channels.find(c => c && c.id && c.id.toString().trim() === channelId && c.guild_id && c.guild_id.toString().trim() === gId);
+      $(element).empty().removeClass('loading');
+      if (channel) {
+        Templates.render($(element), 'discord-channel', channel);
+      } else {
+        $(element).text(`#unknown-channel`);
+      }
+    });
+  }
+}
+
+class DiscordRoleLoader extends TemplateLoader {
+  constructor() {
+    super();
+    console.log('Initialized DiscordRoleLoader');
+  }
+
+  async fetch(guild, id) {
+    if (!id || !guild) {
+      return null;
+    }
+    const roleId = id.toString().trim();
+    const guildId = guild.toString().trim();
+    const cacheKey = `${guildId}/${roleId}`;
+    if (this.cache.has(cacheKey)) {
+      return this.cache.get(cacheKey);
+    }
+
+    const response = await $.ajax({
+      url: `/api/v1/roles/${guildId}/batch/ids`,
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify([roleId]),
+    });
+
+    if (Array.isArray(response) && response.length > 0) {
+      this.cache.set(cacheKey, response[0]);
+      return response[0];
+    }
+    return null;
+  }
+
+  async fetchBatch(guild, ids) {
+    if (!ids || ids.length === 0 || !guild) {
+      return [];
+    }
+    const guildId = guild.toString().trim();
+    const uncachedIds = ids.filter(id => {
+      const cacheKey = `${guildId}/${id.toString().trim()}`;
+      return !this.cache.has(cacheKey);
+    });
+    if (uncachedIds.length > 0) {
+      const response = await $.ajax({
+        url: `/api/v1/roles/${guildId}/batch/ids`,
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(uncachedIds),
+      });
+      if (Array.isArray(response)) {
+        response.forEach(role => {
+          if (role && role.id && role.guild_id) {
+            const cacheKey = `${role.guild_id.toString().trim()}/${role.id.toString().trim()}`;
+            this.cache.set(cacheKey, role);
+          }
+        });
+      }
+    }
+    return ids.map(id => {
+      const cacheKey = `${guildId}/${id.toString().trim()}`;
+      return this.cache.get(cacheKey) || null;
+    });
+  }
+
+  async render(element, id) {
+    const roleId = id?.toString().trim();
+    const gId = $(element).data('discord-role-guild')?.toString().trim();
+    if (!roleId || !gId) {
+      console.warn('Missing role ID or guild ID for DiscordRoleLoader', { roleId, gId });
+      $(element).text(`@unknown-role`);
+      return;
+    }
+    try {
+      const role = await this.fetch(gId, roleId);
+      $(element).empty().removeClass('loading');
+      if (role) {
+        Templates.render($(element), 'discord-role', role);
+      } else {
+        $(element).text(`@unknown-role`);
+      }
+    } catch (error) {
+      console.error('Error rendering role by ID:', error);
+      $(element).empty().removeClass('loading').text(`@error-role`);
+    }
+  }
+
+  async renderBatch(elements) {
+    const roles = [];
+    const batchMap = new Map();
+
+    elements.each((index, element) => {
+      const roleId = $(element).data('discord-role')?.toString().trim();
+      const gId = $(element).data('discord-role-guild')?.toString().trim();
+      if (!gId) {
+        console.warn('No guild ID specified for DiscordRoleLoader', element);
+        return;
+      }
+      if (roleId) {
+        if (!batchMap.has(gId)) {
+          batchMap.set(gId, new Set());
+        }
+        batchMap.get(gId).add(roleId);
+      }
+    });
+
+    if (batchMap.size === 0) {
+      console.warn('No valid guild/role ID pairs found for DiscordRoleLoader');
+      return;
+    }
+
+    for (const [guildId, idSet] of batchMap.entries()) {
+      const idArray = Array.from(idSet);
+      const fetchedRoles = await this.fetchBatch(guildId, idArray);
+      if (fetchedRoles && fetchedRoles.length > 0) {
+        roles.push(...fetchedRoles);
+      }
+    }
+
+    if (roles.length === 0) {
+      console.warn('No roles found for DiscordRoleLoader');
+      return;
+    }
+
+    elements.each((index, element) => {
+      const roleId = $(element).data('discord-role')?.toString().trim();
+      const gId = $(element).data('discord-role-guild')?.toString().trim();
+      const role = roles.find(r => r && r.id && r.id.toString().trim() === roleId && r.guild_id && r.guild_id.toString().trim() === gId);
+      $(element).empty().removeClass('loading');
+      if (role) {
+        Templates.render($(element), 'discord-role', role);
+      } else {
+        $(element).text(`@unknown-role`);
       }
     });
   }
