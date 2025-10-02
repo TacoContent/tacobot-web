@@ -41,8 +41,8 @@ export default {
   },
   settingFieldLabel: function (...args: any[]): any {
     const [key, metadata] = Reflection.getArguments(args, ['key', 'metadata'], [{}]);
-    if (metadata && metadata[key] && metadata[key].name) {
-      return metadata[key].name;
+    if (metadata && metadata[key] && metadata[key].label) {
+      return metadata[key].label;
     }
     if (!key) return '';
     // Fallback to key with capitalization and spaces
