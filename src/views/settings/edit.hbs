@@ -1,9 +1,13 @@
 {{#with item}}
-<div>{{name}}</div>
+<h2>{{or metadata.label name}}</h2>
+<h3 class="text-muted">{{or metadata.description ""}}</h3>
 {{> discord/guild id=guild_id}}
 <div>
 {{> date date=timestamp unknown="Never Updated"}}
 </div>
+
+  {{> settings/metadata/deprecated/alert level="danger" metadata=metadata key=item.name title="This configuration is deprecated" message=(concat "The " name " configuration is deprecated and will be removed in a future release. Please migrate to the new configuration options as soon as possible.") dismissible=false}}
+
 {{/with}}
 
 <form method="post" action="/settings/save">

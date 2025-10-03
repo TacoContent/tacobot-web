@@ -727,6 +727,14 @@ class DiscordRoleLoader extends TemplateLoader {
     console.log('Initialized DiscordRoleLoader');
   }
 
+  roleColorToCssValue(color) {
+    if (typeof color === 'number' && color > 0) {
+      return `#${color.toString(16).padStart(6, '0')}`;
+    }
+
+    return 'light-dark(var(--bs-light-text-emphasis), var(--bs-dark-text-emphasis))';
+  }
+
   async fetch(guild, id) {
     if (!id || !guild) {
       return null;
@@ -746,6 +754,8 @@ class DiscordRoleLoader extends TemplateLoader {
     });
 
     if (Array.isArray(response) && response.length > 0) {
+      // add the cssColor property for color rendering
+      response[0].cssColor = this.roleColorToCssValue(response[0].color);
       this.cache.set(cacheKey, response[0]);
       return response[0];
     }
@@ -771,6 +781,9 @@ class DiscordRoleLoader extends TemplateLoader {
       if (Array.isArray(response)) {
         response.forEach(role => {
           if (role && role.id && role.guild_id) {
+            // add the cssColor property for color rendering
+            role.cssColor = this.roleColorToCssValue(role.color);
+            // cache by guild/role
             const cacheKey = `${role.guild_id.toString().trim()}/${role.id.toString().trim()}`;
             this.cache.set(cacheKey, role);
           }
@@ -841,7 +854,7 @@ class DiscordRoleLoader extends TemplateLoader {
       console.warn('No roles found for DiscordRoleLoader');
       return;
     }
-
+    console.log('Fetched roles:', roles);
     elements.each((index, element) => {
       const roleId = $(element).data('discord-role')?.toString().trim();
       const gId = $(element).data('discord-role-guild')?.toString().trim();
