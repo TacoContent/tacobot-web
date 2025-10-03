@@ -104,7 +104,7 @@ export function renderSidebar(this: any, sitemap: any[], currentPath: string, se
         children.push({
           id: `settings_${group.name}`,
           type: 'group',
-          title: _titleCase(group.name),
+          title: group.displayName || _titleCase(group.name),
           icon: 'cog',
           children: guildChildren
         });

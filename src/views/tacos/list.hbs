@@ -27,7 +27,7 @@
       {{#each items}}
       <tr>
         <td class="text-nowrap p-1 text-start">{{> discord/guild id=this.guild_id}}</td>
-        <td class="text-nowrap p-1 text-start">{{> discord/user user_id=this.user_id guild_id=this.guild_id}}</td>
+        <td class="text-nowrap p-1 text-start">{{> discord/user user=this.user_id guild=this.guild_id}}</td>
         <td class="text-nowrap p-1 text-end me-1">{{> taco count=this.count}}</td>
         <td class="text-nowrap">
           <a href="/tacos/edit/{{this.guild_id}}/{{this.user_id}}" class="btn btn-sm btn-action text-primary" title="Edit"><i class="fas fa-edit"></i></a>

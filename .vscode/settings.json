@@ -9,6 +9,7 @@
     "healthz",
     "hljs",
     "livez",
+    "Mentionables",
     "nobraces",
     "nodemon",
     "readyz",

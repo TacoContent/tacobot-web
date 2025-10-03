@@ -2,7 +2,7 @@
   <div class="card-header text-muted">
     <h5 class="card-title">
       <span class="badge bg-primary text-bg-primary text-uppercase float-start">{{length this.permissions}}</span>
-      <div class="fs-2 text-truncate ms-4 me-4 ps-2 pe-2" title="">{{> discord/user user_id=this.user_id guild_id=this.guild_id }}</div>
+      <div class="fs-2 text-truncate ms-4 me-4 ps-2 pe-2" title="">{{> discord/user user=this.user_id guild=this.guild_id }}</div>
     </h5>
   </div>
   <div class="card-body">
@@ -13,7 +13,7 @@
       </div>
       <div class="col">
         <div class="card-header text-uppercase"><span class="mb-1">User</span></div>
-        <div class="mt-1">{{> discord/user user_id=this.user_id guild_id=this.guild_id }}</div>
+        <div class="mt-1">{{> discord/user user=this.user_id guild=this.guild_id }}</div>
       </div>
     </div>
     <div class="row mt-3">

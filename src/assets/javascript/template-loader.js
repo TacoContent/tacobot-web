@@ -23,6 +23,10 @@ $(() => {
   const drElements = $('[data-discord-role]');
   discordRoleLoader.renderBatch(drElements);
 
+  const discordMentionableLoader = new DiscordMentionableLoader();
+  const dmElements = $('[data-discord-mentionable]');
+  discordMentionableLoader.renderBatch(dmElements);
+
   // const twitchUserLoader = new TwitchUserLoader();
   // const tuElements = $('[data-twitch-user]');
   // twitchUserLoader.renderBatch(tuElements);
@@ -864,6 +868,175 @@ class DiscordRoleLoader extends TemplateLoader {
         Templates.render($(element), 'discord-role', role);
       } else {
         $(element).text(`@unknown-role`);
+      }
+    });
+  }
+}
+
+class DiscordMentionableLoader extends TemplateLoader {
+  constructor() {
+    super();
+    console.log('Initialized DiscordMentionableLoader');
+  }
+
+  roleColorToCssValue(color) {
+    if (typeof color === 'number' && color > 0) {
+      return `#${color.toString(16).padStart(6, '0')}`;
+    }
+    return 'light-dark(var(--bs-light-text-emphasis), var(--bs-dark-text-emphasis))';
+  }
+
+  async fetch(guild, id) {
+    if (!id || !guild) {
+      return null;
+    }
+    const mentionableId = id.toString().trim();
+    const guildId = guild.toString().trim();
+    const cacheKey = `${guildId}/${mentionableId}`;
+    if (this.cache.has(cacheKey)) {
+      return this.cache.get(cacheKey);
+    }
+
+    const response = await $.ajax({
+      url: `/api/v1/mentionables/${guildId}/batch/ids`,
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify([mentionableId]),
+    });
+
+    if (Array.isArray(response) && response.length > 0) {
+      const m = response[0];
+      if (m && m.type === 'role') {
+        m.cssColor = this.roleColorToCssValue(m.color);
+      }
+      this.cache.set(cacheKey, m);
+      return m;
+    }
+    return null;
+  }
+
+  async fetchBatch(guild, ids) {
+    if (!ids || ids.length === 0 || !guild) {
+      return [];
+    }
+    const guildId = guild.toString().trim();
+    const uncachedIds = ids.filter(id => {
+      const cacheKey = `${guildId}/${id.toString().trim()}`;
+      return !this.cache.has(cacheKey);
+    });
+    if (uncachedIds.length > 0) {
+      const response = await $.ajax({
+        url: `/api/v1/mentionables/${guildId}/batch/ids`,
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(uncachedIds),
+      });
+      if (Array.isArray(response)) {
+        response.forEach(m => {
+          if (m && m.id && m.guild_id) {
+            if (m.type === 'role') {
+              m.cssColor = this.roleColorToCssValue(m.color);
+            }
+            const cacheKey = `${m.guild_id.toString().trim()}/${m.id.toString().trim()}`;
+            this.cache.set(cacheKey, m);
+          }
+        });
+      }
+    }
+    return ids.map(id => {
+      const cacheKey = `${guildId}/${id.toString().trim()}`;
+      return this.cache.get(cacheKey) || null;
+    });
+  }
+
+  renderFailure(element, id, gId, reason) {
+    $(element).empty().removeClass('loading');
+    const tpl = 'discord-user-field';
+    Templates.render($(element), tpl, { id, guild_id: gId, name: reason, displayname: reason, type: 'user' });
+    ImageErrorHandler.register($('img[data-img-error]', element));
+    $('.role-icon-label', element).remove();
+  }
+
+  async render(element, id) {
+    const mentionableId = id?.toString().trim();
+    const gId = $(element).data('discord-mentionable-guild')?.toString().trim();
+    if (!mentionableId || !gId) {
+      console.warn('Missing mentionable ID or guild ID for DiscordMentionableLoader', { mentionableId, gId });
+      $(element).text(`@unknown`);
+      return;
+    }
+    try {
+      const m = await this.fetch(gId, mentionableId);
+      $(element).empty().removeClass('loading');
+      if (m) {
+        const tpl = m.type === 'role' ? 'discord-role' : 'discord-user-field';
+        Templates.render($(element), tpl, m);
+        ImageErrorHandler.register($('img[data-img-error]', element));
+        if (!m.icon && !m.avatar) {
+          // remove the image container
+          $('.role-icon-label', element).remove();
+        }
+      } else {
+        this.renderFailure(element, mentionableId, gId, "Unknown");
+      }
+    } catch (error) {
+      console.error('Error rendering mentionable by ID:', error);
+      this.renderFailure(element, mentionableId, gId, "Error");
+    }
+  }
+
+  async renderBatch(elements) {
+    const results = [];
+    const batchMap = new Map();
+
+    elements.each((index, element) => {
+      const id = $(element).data('discord-mentionable')?.toString().trim();
+      const gId = $(element).data('discord-mentionable-guild')?.toString().trim();
+      if (!gId) {
+        console.warn('No guild ID specified for DiscordMentionableLoader', element);
+        return;
+      }
+      if (id) {
+        if (!batchMap.has(gId)) {
+          batchMap.set(gId, new Set());
+        }
+        batchMap.get(gId).add(id);
+      }
+    });
+
+    if (batchMap.size === 0) {
+      console.warn('No valid guild/mentionable ID pairs found for DiscordMentionableLoader');
+      return;
+    }
+
+    for (const [guildId, idSet] of batchMap.entries()) {
+      const idArray = Array.from(idSet);
+      const fetched = await this.fetchBatch(guildId, idArray);
+      if (fetched && fetched.length > 0) {
+        results.push(...fetched);
+      }
+    }
+
+    if (results.length === 0) {
+      console.warn('No mentionables found for DiscordMentionableLoader');
+      return;
+    }
+
+    elements.each((index, element) => {
+      const id = $(element).data('discord-mentionable')?.toString().trim();
+      const gId = $(element).data('discord-mentionable-guild')?.toString().trim();
+      const m = results.find(x => x && x.id && x.id.toString().trim() === id && x.guild_id && x.guild_id.toString().trim() === gId);
+      $(element).empty().removeClass('loading');
+      if (m) {
+        const tpl = m.type === 'role' ? 'discord-role' : 'discord-user-field';
+        Templates.render($(element), tpl, m);
+        ImageErrorHandler.register($('img[data-img-error]', element));
+        if (!m.icon && !m.avatar) {
+          // remove the image container
+          $('.role-icon-label', element).remove();
+        }
+      } else {
+        this.renderFailure(element, id, gId, "Unknown");
       }
     });
   }
