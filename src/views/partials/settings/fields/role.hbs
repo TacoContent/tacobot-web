@@ -31,14 +31,12 @@
             type="label"}}" 
           for="field-{{id}}"
           id="field-{{id}}-label">{{label}}</label>
+
+    {{> discord/role role=value guild=@root.discordGuild}}
+
     <input 
-      type="text" 
-      class="form-control {{> 
-        settings/metadata/deprecated/class 
-        level="warning" 
-        metadata=metadata 
-        key=key 
-        type="field"}}" 
+      type="hidden" 
+      class="form-control" 
       placeholder="{{label}}" 
       aria-label="{{label}}" 
       aria-describedby="field-{{id}}-label" 

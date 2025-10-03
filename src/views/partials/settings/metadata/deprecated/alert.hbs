@@ -1,4 +1,4 @@
 
 {{#if (settingMetadata metadata=metadata key="deprecated")}}
-  {{> alert level=(or level "info") message="This setting is deprecated and will be removed in a future release." dismissible=true title="Deprecated Setting" reason=(settingMetadata metadata=metadata key="deprecationReason")}}
+  {{> alert level=(or level "info") message=(or message (concat "The " key " setting is deprecated and will be removed in a future release.")) dismissible=dismissible title=(or title "Deprecated Setting") reason=(or reason (settingMetadata metadata=metadata key="deprecationReason"))}}
 {{/if}}

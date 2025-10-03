@@ -3,6 +3,7 @@
   inputs:
     - data: the object value
     - key: the key name of the value (if any)
+    - label: the label for the input group (if any)
     - parentKey: the parent key name of the value (if any) - used for nested naming
     - type: the type of the value (if known, otherwise it will be inferred)
     - metadata: the metadata for the setting (if any)
@@ -17,7 +18,7 @@
   {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
 
   <div class="mb-1 input-group" data-setting-type="object">
-    <label class="input-group-text" title="{{key}}">{{key}}</label>
+    <label class="input-group-text" title="{{or label key}}">{{or label key}}</label>
     <ul class="list-group form-control">
     {{#each data}}
       <li class="list-group-item border-0">

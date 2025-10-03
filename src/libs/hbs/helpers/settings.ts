@@ -53,6 +53,12 @@ export default {
     let forceMetadataType = force === true;
 
     if (forceMetadataType) {
+      console.log('metadata:', metadata);
+      console.log('key:', key);
+      console.log('metadata[key]:', metadata ? metadata[key] : null);
+      console.log('metadata[key].type:', metadata && metadata[key] ? metadata[key].type : null);
+
+      
       if (metadata && metadata[key] && metadata[key].type) {
         return metadata[key].type;
       }

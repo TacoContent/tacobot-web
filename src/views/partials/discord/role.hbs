@@ -1,0 +1,7 @@
+<span class="" data-discord-role="{{role}}" data-discord-role-guild="{{or guild @root.discordGuild config.tacobot.primaryGuildId}}">
+  <div class="placeholder-glow input-group discord-role" data-template="discord-role">
+  {{!-- <label class="input-group-text ">[0]</label> --}}
+  <label class="input-group-text placeholder rounded-0"><i class="fas fa-hashtag"></i></label>
+  <div class="placeholder form-control">{{or guild @root.discordGuild config.tacobot.primaryGuildId}}/{{role}}</div>
+  </div>
+</span>

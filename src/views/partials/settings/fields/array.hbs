@@ -14,7 +14,7 @@
 {{#if (eq (settingsGetMetadata metadata=metadata key="hidden") true)}}
   {{!-- do not render anything if this field is marked as not visible --}}
 {{else}}
-  {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
+  {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key dismissible=true}}
 
 
   <div class="mb-1 input-group" data-setting-type="{{or type 'any'}}[]">

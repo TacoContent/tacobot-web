@@ -1,0 +1,30 @@
+{{!-- settings/fields/mentionable.hbs --}}
+{{!--
+  inputs:
+    - value: the mentionable id value
+    - label: the label for the input (if any)
+    - id: the id for the input (if any)
+    - name: the name for the input (if any)
+    - multiline: boolean to indicate if this is a multiline string
+    - metadata: the metadata for the setting (if any)
+    - path: the path to the metadata (if any)
+    - isChild: whether this field is a child field (boolean, default: false)
+--}}
+{{> settings/fields/debug this}}
+{{#if (eq (settingsGetMetadata metadata=metadata key="hidden") true)}}
+  <input type="hidden" name="{{or name label}}" value="{{value}}" />
+{{else}}
+  {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
+
+  <div class="input-group mb-1" data-setting-type="mentionable">
+    <label class="input-group-text" for="field-{{id}}" id="field-{{id}}-label">{{label}}</label>
+    <label class="input-group-text" for="field-{{id}}" id="field-{{id}}-at"><i class="fas fa-at"></i></label>
+    <input type="text" class="form-control" placeholder="{{label}}" aria-label="{{label}}" aria-describedby="field-{{id}}-label" value="{{value}}" name="{{or name label}}" id="field-{{id}}"{{#if (settingsHasMetadataKey metadata=metadata key="validate")}} pattern="{{settingsGetMetadata metadata=metadata key="validate"}}{{/if}}" />
+  </div>
+
+  {{#if (not isChild) }}
+  {{> settings/metadata/description metadata=metadata }}
+  {{else}}
+  <div class="mb-3"></div>
+  {{/if}}
+{{/if}}

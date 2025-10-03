@@ -38,6 +38,20 @@ class Templates {
     }
   }
 
+  static styleReplacer(key, data, parent) {
+    if (!data[key]) {
+      return;
+    }
+    const target = $(parent).find(`[data-style-replace="${key}"]`);
+    // find the css property to replace
+    const cssProperty = target.data('style-replace-property') || 'NONE';
+    if (target && cssProperty !== 'NONE' && data[key]) {
+      console.log(`styleReplacer: ${key} => ${cssProperty} => ${data[key]}`);
+      
+      target.css(cssProperty, data[key]);
+    }
+  }
+
   static render(parent, templateId, data) {
     if (!data) {
       return;
@@ -58,7 +72,8 @@ class Templates {
         const targetAttr = target.data(`bind-${key.toLowerCase()}-attr`);
         const emptyOnBind = Boolean(target.data('bind-empty') || "false");
         if (target) {
-          Templates.classSetter(key, data);
+          Templates.classSetter(key, data, clonedTemplate);
+          Templates.styleReplacer(key, data, clonedTemplate);
           if (targetAttr) {
             if (emptyOnBind) {
               target.empty();

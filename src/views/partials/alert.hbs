@@ -9,6 +9,9 @@
 --}}
 
 <div class="alert alert-{{or level "info"}} p-1" role="alert">
+  {{#if dismissible}}
+    <button type="button" class="btn btn-sm btn-close float-end mt-0 me-1" data-bs-dismiss="alert" aria-label="Close"><i class="fas fa-times"></i></button>
+  {{/if}}
   <h4 class="alert-heading mt-1 mb-1">{{title}}</h4>
   <p class="mb-0 p-0">{{message}}</p>
   {{#if reason}}

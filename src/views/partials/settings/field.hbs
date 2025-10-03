@@ -68,6 +68,18 @@
     isChild=isChild
   }}
 
+{{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'regex')}}
+
+  {{> settings/fields/regex 
+    value=data 
+    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    id=(uuid 's') 
+    name=(concat parentKey (or idx key)) 
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    path=(settingsCleanPath (concat path '.' key))
+    isChild=isChild
+  }}
+
 {{!-- special types --}}
 {{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'url') }}
 
@@ -146,6 +158,18 @@
     label=(settingFieldLabel key=(or idx key) metadata=metadata) 
     id=(uuid 's') 
     name=(concat parentKey (or idx key))
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    path=(settingsCleanPath (concat path '.' key))
+    isChild=isChild
+  }}
+
+{{else if (eq (settingFieldType value=data key=key metadata=metadata type=type) 'mentionable')}}
+
+  {{> settings/fields/mentionable 
+    value=data 
+    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    id=(uuid 's') 
+    name=(concat parentKey (or idx key))
     metadata=(or (settingMetadata metadata=metadata key=(or key parentKey)) metadata)
     path=(settingsCleanPath (concat path '.' key))
     isChild=isChild
@@ -167,6 +191,7 @@
 {{!-- These are handled different to recursively call back to this view for each item --}}
 {{else if (eq (settingFieldType value=data key=key metadata=metadata) 'array')}}
 {{!-- (settingMetadata metadata=metadata key=(or key parentKey)) --}}
+    {{!-- metadata=(or (settingMetadata metadata=metadata key=(or key parentKey)) metadata) --}}
 
   {{!--
     For arrays, we pass:
@@ -184,8 +209,8 @@
     parentKey=(or key parentKey) 
     label=(settingFieldLabel key=(or idx key) metadata=metadata) 
     key=(or key parentKey)
-    metadata=(or (settingMetadata metadata=metadata key=(or key parentKey)) metadata)
-    type=(settingFieldType value=data key=key metadata=metadata force=true)
+    metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    type=(settingFieldType value=data key=(or idx key) metadata=metadata force=true)
     path=(settingsCleanPath (concat path '.' key))
     isChild=isChild
   }}
@@ -195,7 +220,7 @@
   {{> settings/fields/object 
     data=data 
     parentKey=(or key parentKey) 
-    label=(settingFieldLabel key=(or idx key) metadata=metadata) 
+    label=(settingFieldLabel key=(or idx key) metadata=metadata)
     key=(or idx key)
     metadata=(or (settingMetadata metadata=metadata key=(or key parentKey)) metadata)
     type=(settingFieldType value=data key=key metadata=metadata force=true)
