@@ -27,7 +27,7 @@
       {{#each items}}
       <tr>
         <td class="text-nowrap p-1 text-start">{{> discord/guild id=this.guild_id}}</td>
-        <td class="text-nowrap p-1 text-start">{{> discord/user id=this.user_id}}</td>
+        <td class="text-nowrap p-1 text-start">{{> discord/user user=this.user_id guild=this.guild_id}}</td>
         <td class="text-nowrap p-1 text-start">{{> minecraft/user uuid=this.uuid username=this.username}}</td>
         <td class="text-nowrap">{{> yes-no value=this.whitelist}}</td>
         <td class="text-nowrap"></td>

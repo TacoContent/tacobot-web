@@ -62,11 +62,30 @@ export default class SettingsMongoClient extends DatabaseMongoClient<Setting> {
         }
       ]
      */
+      // filter out any that have metadata.hidden = true
+      // we can do this by looking up one of the entries with this name and checking its metadata.hidden
+      // if multiple entries have different metadata.hidden, just pick one arbitrarily
+      // if none have metadata.hidden, include it
 
+      // aggregate by name, and get a list of guilds for each name
+      // also get the displayName from metadata.label if it exists
+      // if multiple entries have different metadata.label, just pick one arbitrarily
+      // if none have metadata.label, use the name as displayName
       const results = await collection.aggregate([
+        // Only include documents that are NOT hidden
+        {
+          $match: {
+            $or: [
+              { 'metadata.hidden': { $exists: false } },
+              { 'metadata.hidden': { $ne: true } }
+            ]
+          }
+        },
         {
           $group: {
             _id: '$name',
+            // Prefer the first label seen; can be null/undefined
+            displayName: { $first: '$metadata.label' },
             guilds: { $addToSet: '$guild_id' },
           },
         },
@@ -74,16 +93,27 @@ export default class SettingsMongoClient extends DatabaseMongoClient<Setting> {
           $project: {
             _id: 0,
             name: '$_id',
+            // Fallback to the section name when there is no label
+            displayName: { $ifNull: ['$displayName', '$_id'] },
             guilds: 1,
           },
         },
-      ]).sort({ name: 1 }).toArray();
+        {
+          $sort: { displayName: 1, name: 1 }
+        }
+      ]).toArray();
 
-      // create a map that includes the name, and the guild.
-      return results.map(r => ({
-        name: r.name,
-        guilds: r.guilds.map((g: string) => ({ guild_id: g })),
-      }));
+      // create a map that includes the name, and the guild, with guilds sorted
+      return results.map(r => {
+        const sortedGuilds: string[] = (r.guilds || [])
+          .map((g: any) => g?.toString?.() ?? String(g))
+          .sort((a: string, b: string) => a.localeCompare(b));
+        return {
+          name: r.name,
+          displayName: r.displayName,
+          guilds: sortedGuilds.map((g: string) => ({ guild_id: g })),
+        };
+      });
     } catch (err: any) {
       await logger.error(`${MODULE}.${method}`, err.message, { stack: err.stack });
       return [];

@@ -59,7 +59,7 @@
     <footer class="bg-dark-subtle text-center text-lg-start">
       <!-- Copyright -->
       <div class="float-start ms-3 p-3">
-        <i class="fas fa-copyright me-1" title="©"></i>{{thisYear}} Copyright<a class="text-body" href="https://darthminos.com/">{{> discord/user guild_id=config.tacobot.primaryGuildId user_id=config.tacobot.ownerUserId}}</a>All rights reserved.
+        <i class="fas fa-copyright me-1" title="©"></i>{{thisYear}} Copyright<a class="text-body" href="https://darthminos.com/">{{> discord/user guild=(or @root.discordGuild config.tacobot.primaryGuildId) user=config.tacobot.ownerUserId}}</a>All rights reserved.
       </div>
       <div class="float-end me-3 p-3">Version: {{ config.app.version }} - <a href="https://github.com/camalot/glucose-monitor/commit/{{ config.app.buildSha }}">{{ config.app.buildSha }}</a></div>
       <!-- Copyright -->

@@ -225,7 +225,23 @@ export interface DiscordRole {
   hoist?: boolean | null;
   icon?: string | null;
   unicode_emoji?: string | null;
+  type?: 'role';
+  mention?: string;
 }
+
+export interface DiscordUser {
+  type: 'user';
+  id: string;
+  guild_id: string;
+  username?: string | null;
+  display_name?: string | null;
+  discriminator?: string | null;
+  avatar?: string | null;
+  bot?: boolean | null;
+  mention: string;
+}
+
+export type DiscordMentionable = DiscordRole | DiscordUser;
 
 export interface ApiClientConfig {
   baseUrl: string;

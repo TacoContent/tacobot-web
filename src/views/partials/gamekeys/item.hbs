@@ -14,13 +14,13 @@
       </div>
       <div class="col">
         <div class="card-header text-uppercase"><span class="mb-1">Submitter</span></div>
-        <div class="mt-1">{{> discord/user user_id=this.user_owner guild_id=this.guild_id }}</div>
+        <div class="mt-1">{{> discord/user user=this.user_owner guild=this.guild_id }}</div>
       </div>
       <div class="col">
         <div class="card-header text-uppercase"><span class="me-2">Redeemed</span>{{> yes-no value=this.redeemed_by}}</div>
         {{#if this.redeemed_by}}
         <div class="mt-2">
-          <span>{{> discord/user user_id=this.redeemed_by guild_id=this.guild_id}}</span>
+          <span>{{> discord/user user=this.redeemed_by guild=this.guild_id}}</span>
           <div class="text-muted ms-1 mt-2"><i class="fas fa-clock me-1"></i> {{> date date=this.redeemed_timestamp unknown="UNKNOWN"}}</div>
         </div>
         {{/if}}

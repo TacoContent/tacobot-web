@@ -9,6 +9,7 @@ import {
   DiscordCategory,
   DiscordEmoji,
   DiscordRole,
+  DiscordMentionable,
   MinecraftUser,
   MinecraftOpUser,
   MinecraftWhiteListUser,
@@ -157,6 +158,11 @@ export class TacoBotApiClient {
 
   async getGuildRolesByIds(guildId: string, roleIds: string[]): Promise<ApiResponse<DiscordRole[]>> {
     return this.makeRequest<DiscordRole[]>('POST', `/api/v1/guild/${guildId}/roles/batch/ids`, roleIds);
+  }
+
+  // Mentionables endpoints (users or mentionable roles)
+  async getGuildMentionablesByIds(guildId: string, ids: string[]): Promise<ApiResponse<DiscordMentionable[]>> {
+    return this.makeRequest<DiscordMentionable[]>('POST', `/api/v1/guild/${guildId}/mentionables/batch/ids`, ids);
   }
 
   // Minecraft endpoints
