@@ -312,7 +312,7 @@ class DiscordEmojiIdLoader extends TemplateLoader {
         url: `/api/v1/emojis/${guildId}/batch/ids`,
         method: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify({ ids: uncachedIds }),
+        data: JSON.stringify(uncachedIds),
       });
 
       response.forEach(emoji => {
