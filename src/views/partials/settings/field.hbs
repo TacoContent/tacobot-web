@@ -28,6 +28,7 @@
     id=(uuid 's') 
     name=(concat parentKey (or idx key)) 
     metadata=(settingMetadata metadata=metadata key=(or key parentKey))
+    multiline=(eq (settingsGetMetadata metadata=(settingMetadata metadata=metadata key=(or key parentKey)) key="multiline") true)
     path=(settingsCleanPath (concat path '.' key))
     isChild=isChild
   }}
