@@ -902,7 +902,7 @@ class DiscordMentionableLoader extends TemplateLoader {
     console.log('Initialized DiscordMentionableLoader');
   }
 
-  roleColorToCssValue(color) {
+  intColorToCssValue(color) {
     if (typeof color === 'number' && color > 0) {
       return `#${color.toString(16).padStart(6, '0')}`;
     }
@@ -929,9 +929,7 @@ class DiscordMentionableLoader extends TemplateLoader {
 
     if (Array.isArray(response) && response.length > 0) {
       const m = response[0];
-      if (m && m.type === 'role') {
-        m.cssColor = this.roleColorToCssValue(m.color);
-      }
+      m.cssColor = this.intColorToCssValue(m.color);
       this.cache.set(cacheKey, m);
       return m;
     }
@@ -957,9 +955,7 @@ class DiscordMentionableLoader extends TemplateLoader {
       if (Array.isArray(response)) {
         response.forEach(m => {
           if (m && m.id && m.guild_id) {
-            if (m.type === 'role') {
-              m.cssColor = this.roleColorToCssValue(m.color);
-            }
+            m.cssColor = this.intColorToCssValue(m.color);
             const cacheKey = `${m.guild_id.toString().trim()}/${m.id.toString().trim()}`;
             this.cache.set(cacheKey, m);
           }
@@ -1054,6 +1050,9 @@ class DiscordMentionableLoader extends TemplateLoader {
       $(element).empty().removeClass('loading');
       if (m) {
         const tpl = m.type === 'role' ? 'discord-role-field' : 'discord-user-field';
+        console.log("Rendering mentionable:", m);
+        console.log("Using template:", tpl);
+        console.log("Element:", element);
         Templates.render($(element), tpl, m);
         if (!m.icon && !m.avatar) {
           // remove the image container
