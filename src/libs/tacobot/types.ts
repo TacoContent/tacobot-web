@@ -203,6 +203,7 @@ export interface DiscordGuildChannels {
 }
 
 export interface DiscordEmoji {
+  type?: 'emoji';
   id: string;
   guild_id: string;
   name: string;
@@ -210,14 +211,19 @@ export interface DiscordEmoji {
   available?: boolean;
   managed?: boolean;
   require_colons?: boolean;
+  created_at?: string; // ISO date-time
   url?: string;
 }
 
 export interface DiscordRole {
+  type?: 'role';
   id: string;
   guild_id: string;
   name: string;
   color?: number | null;
+  created_at?: string | null; // ISO date-time
+  display_icon?: string | null;
+  flags?: Record<string, any>;
   position?: number | null;
   permissions?: number | null;
   managed?: boolean | null;
@@ -225,20 +231,30 @@ export interface DiscordRole {
   hoist?: boolean | null;
   icon?: string | null;
   unicode_emoji?: string | null;
-  type?: 'role';
   mention?: string;
+  secondary_color?: number | null;
+  tertiary_color?: number | null;
 }
 
 export interface DiscordUser {
   type: 'user';
   id: string;
   guild_id: string;
+  accent_color?: number | null;
+  color?: number | null;
+  created_at?: string | null; // ISO date-time
+  banner?: string | null;
+  name?: string | null;
   username?: string | null;
   display_name?: string | null;
+  global_name?: string | null;
   discriminator?: string | null;
   avatar?: string | null;
+  default_avatar?: string | null;
   bot?: boolean | null;
+  system?: boolean | null;
   mention: string;
+  display_avatar?: string | null;
 }
 
 export type DiscordMentionable = DiscordRole | DiscordUser;

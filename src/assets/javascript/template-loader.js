@@ -296,8 +296,8 @@ class DiscordEmojiIdLoader extends TemplateLoader {
     this.cache.set(cacheKey, response);
     return response;
   }
-  
-  async fetchBatch(guild, ids) { 
+
+  async fetchBatch(guild, ids) {
     if (!ids || ids.length === 0 || !guild) {
       return [];
     }
@@ -314,7 +314,7 @@ class DiscordEmojiIdLoader extends TemplateLoader {
         contentType: 'application/json',
         data: JSON.stringify({ ids: uncachedIds }),
       });
-      
+
       response.forEach(emoji => {
         console.log("response.forEach => emoji", emoji);
         if (emoji && emoji.id && emoji.guild_id) {
@@ -335,21 +335,21 @@ class DiscordEmojiIdLoader extends TemplateLoader {
       return this.cache.get(cacheKey) || null;
     });
   }
-  
+
   async render(element, id) {
     const emojiId = id?.toString().trim();
     const gId = $(element).data('discord-emoji-guild')?.toString().trim();
-    
+
     if (!emojiId || !gId) {
       console.warn('Missing emoji ID or guild ID for DiscordEmojiIdLoader', { emojiId, gId });
       $(element).text(`<:unknown:${emojiId || 'invalid'}>`);
       return;
     }
-    
+
     try {
       const emoji = await this.fetch(gId, emojiId);
       $(element).empty().removeClass('loading');
-      
+
       if (emoji) {
         Templates.render($(element), 'discord-emoji', emoji);
         ImageErrorHandler.register($('img[data-img-error]', element));
@@ -361,8 +361,8 @@ class DiscordEmojiIdLoader extends TemplateLoader {
       $(element).empty().removeClass('loading').text(`<:error:${emojiId}>`);
     }
   }
-  
-  async renderBatch(elements) { 
+
+  async renderBatch(elements) {
     const emojis = [];
     const batchMap = new Map();
 
@@ -433,26 +433,26 @@ class DiscordEmojiNameLoader extends TemplateLoader {
     console.log('Initialized DiscordEmojiNameLoader');
   }
   async fetch(guild, name) {
-      if (!name || !guild) {
-        return null;
-      }
-      const emojiName = name.toString().trim();
-      const guildId = guild.toString().trim();
-      const cacheKey = `${guildId}/${emojiName}`;
-      if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
-      }
+    if (!name || !guild) {
+      return null;
+    }
+    const emojiName = name.toString().trim();
+    const guildId = guild.toString().trim();
+    const cacheKey = `${guildId}/${emojiName}`;
+    if (this.cache.has(cacheKey)) {
+      return this.cache.get(cacheKey);
+    }
 
-      const response = await $.ajax({
-        url: `/api/v1/emoji/${guildId}/lookup/${emojiName}`,
-        method: 'GET',
-        contentType: 'application/json',
-      });
+    const response = await $.ajax({
+      url: `/api/v1/emoji/${guildId}/lookup/${emojiName}`,
+      method: 'GET',
+      contentType: 'application/json',
+    });
 
-      this.cache.set(cacheKey, response);
-      return response;
+    this.cache.set(cacheKey, response);
+    return response;
   }
-  async fetchBatch(guild, names) { 
+  async fetchBatch(guild, names) {
     if (!names || names.length === 0 || !guild) {
       return [];
     }
@@ -468,7 +468,7 @@ class DiscordEmojiNameLoader extends TemplateLoader {
         contentType: 'application/json',
         data: JSON.stringify(uncachedNames),
       });
-      
+
       response.forEach(emoji => {
         if (emoji && emoji.id && emoji.guild_id && emoji.name) {
           // const keyById = `${emoji.guild_id.toString().trim()}/${emoji.id.toString().trim()}`;
@@ -487,17 +487,17 @@ class DiscordEmojiNameLoader extends TemplateLoader {
   async render(element, name) {
     const emojiName = name?.toString().trim();
     const gId = $(element).data('discord-emoji-guild')?.toString().trim();
-    
+
     if (!emojiName || !gId) {
       console.warn('Missing emoji name or guild ID for DiscordEmojiNameLoader', { emojiName, gId });
       $(element).text(`:${emojiName || 'invalid'}:`);
       return;
     }
-    
+
     try {
       const emoji = await this.fetch(gId, emojiName);
       $(element).empty().removeClass('loading');
-      
+
       if (emoji) {
         Templates.render($(element), 'discord-emoji', emoji);
         ImageErrorHandler.register($('img[data-img-error]', element));
@@ -509,8 +509,8 @@ class DiscordEmojiNameLoader extends TemplateLoader {
       $(element).empty().removeClass('loading').text(`:${emojiName}:`);
     }
   }
-  
-  async renderBatch(elements) { 
+
+  async renderBatch(elements) {
     const emojis = [];
     const batchMap = new Map();
 
@@ -663,7 +663,7 @@ class DiscordChannelLoader extends TemplateLoader {
       const channel = await this.fetch(gId, channelId);
       $(element).empty().removeClass('loading');
       if (channel) {
-        Templates.render($(element), 'discord-channel', channel);
+        Templates.render($(element), 'discord-channel-field', channel);
       } else {
         $(element).text(`#unknown-channel`);
       }
@@ -717,7 +717,7 @@ class DiscordChannelLoader extends TemplateLoader {
       const channel = channels.find(c => c && c.id && c.id.toString().trim() === channelId && c.guild_id && c.guild_id.toString().trim() === gId);
       $(element).empty().removeClass('loading');
       if (channel) {
-        Templates.render($(element), 'discord-channel', channel);
+        Templates.render($(element), 'discord-channel-field', channel);
       } else {
         $(element).text(`#unknown-channel`);
       }
@@ -800,6 +800,15 @@ class DiscordRoleLoader extends TemplateLoader {
     });
   }
 
+  renderFailure(element, id, gId, reason) {
+    $(element).empty().removeClass('loading');
+    const tpl = 'discord-user-field';
+    Templates.render($(element), tpl, { id, guild_id: gId, name: reason, displayname: reason, type: 'user' });
+    ImageErrorHandler.register($('img[data-img-error]', element));
+    $('.role-icon-label', element).remove();
+  }
+
+
   async render(element, id) {
     const roleId = id?.toString().trim();
     const gId = $(element).data('discord-role-guild')?.toString().trim();
@@ -812,13 +821,20 @@ class DiscordRoleLoader extends TemplateLoader {
       const role = await this.fetch(gId, roleId);
       $(element).empty().removeClass('loading');
       if (role) {
-        Templates.render($(element), 'discord-role', role);
+        Templates.render($(element), 'discord-role-field', role);
+        if (!role.icon) {
+          // remove the image container
+          $('.role-icon-label', element).remove();
+        } else {
+          $('img.placeholder', element).removeClass('placeholder');
+          ImageErrorHandler.register($('img[data-img-error]', element));
+        }
       } else {
-        $(element).text(`@unknown-role`);
+        this.renderFailure(element, roleId, gId, '@unknown-role');
       }
     } catch (error) {
       console.error('Error rendering role by ID:', error);
-      $(element).empty().removeClass('loading').text(`@error-role`);
+      this.renderFailure(element, roleId, gId, '@error-role');
     }
   }
 
@@ -865,9 +881,16 @@ class DiscordRoleLoader extends TemplateLoader {
       const role = roles.find(r => r && r.id && r.id.toString().trim() === roleId && r.guild_id && r.guild_id.toString().trim() === gId);
       $(element).empty().removeClass('loading');
       if (role) {
-        Templates.render($(element), 'discord-role', role);
+        Templates.render($(element), 'discord-role-field', role);
+        if (!role.icon) {
+          // remove the image container
+          $('.role-icon-label', element).remove();
+        } else {
+          $('img.placeholder', element).removeClass('placeholder');
+          ImageErrorHandler.register($('img[data-img-error]', element));
+        }
       } else {
-        $(element).text(`@unknown-role`);
+        this.renderFailure(element, roleId, gId, '@unknown-role');
       }
     });
   }
@@ -969,12 +992,14 @@ class DiscordMentionableLoader extends TemplateLoader {
       const m = await this.fetch(gId, mentionableId);
       $(element).empty().removeClass('loading');
       if (m) {
-        const tpl = m.type === 'role' ? 'discord-role' : 'discord-user-field';
+        const tpl = m.type === 'role' ? 'discord-role-field' : 'discord-user-field';
         Templates.render($(element), tpl, m);
-        ImageErrorHandler.register($('img[data-img-error]', element));
         if (!m.icon && !m.avatar) {
           // remove the image container
           $('.role-icon-label', element).remove();
+        } else {
+          $('img.placeholder', element).removeClass('placeholder');
+          ImageErrorHandler.register($('img[data-img-error]', element));
         }
       } else {
         this.renderFailure(element, mentionableId, gId, "Unknown");
@@ -1028,12 +1053,14 @@ class DiscordMentionableLoader extends TemplateLoader {
       const m = results.find(x => x && x.id && x.id.toString().trim() === id && x.guild_id && x.guild_id.toString().trim() === gId);
       $(element).empty().removeClass('loading');
       if (m) {
-        const tpl = m.type === 'role' ? 'discord-role' : 'discord-user-field';
+        const tpl = m.type === 'role' ? 'discord-role-field' : 'discord-user-field';
         Templates.render($(element), tpl, m);
-        ImageErrorHandler.register($('img[data-img-error]', element));
         if (!m.icon && !m.avatar) {
           // remove the image container
           $('.role-icon-label', element).remove();
+        } else {
+          $('img.placeholder', element).removeClass('placeholder');
+          ImageErrorHandler.register($('img[data-img-error]', element));
         }
       } else {
         this.renderFailure(element, id, gId, "Unknown");
