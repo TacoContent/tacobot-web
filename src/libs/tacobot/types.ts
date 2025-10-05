@@ -215,6 +215,42 @@ export interface DiscordEmoji {
   url?: string;
 }
 
+export interface DiscordMessage {
+  type?: 'message';
+  id: string;
+  channel_id: string;
+  guild_id: string;
+  author_id: string;
+  content: string;
+  created_at: number;
+  jump_url?: string | null;
+  edited_at?: number;
+  mention_everyone?: boolean;
+  mentions?: { id: string; username: string }[];
+  attachments?: { id: string; url: string }[];
+  embeds?: any[];
+  reactions?: { emoji: string; count: number }[];
+  nonce?: string | null;
+  pinned?: boolean;
+  message_type?: number;
+}
+
+export interface IPagedResults<T> {
+  total: number;
+  skip: number;
+  take: number;
+  items: T[];
+}
+
+// Join Whitelist
+export interface JoinWhitelistUser {
+  guild_id: string;
+  user_id: string;
+  added_by?: string | null;
+  timestamp?: number | null;
+}
+
+
 export interface DiscordRole {
   type?: 'role';
   id: string;
