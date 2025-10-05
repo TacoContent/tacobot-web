@@ -1,3 +1,9 @@
+{{!--
+  Renders a Discord channel mention.
+  Parameters:
+    - channel: The Discord channel ID.
+    - guild: (Optional) The Discord guild ID to fetch the channel from. Defaults to the primary guild ID from config if not provided.
+--}}
 <span class="" data-discord-channel="{{channel}}" data-discord-channel-guild="{{or guild @root.discordGuild config.tacobot.primaryGuildId}}">
   <div class="placeholder-glow input-group discord-channel" data-template="discord-channel">
   {{!-- <label class="input-group-text ">[0]</label> --}}

@@ -598,14 +598,18 @@ class DiscordChannelLoader extends TemplateLoader {
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey);
     }
-
-    // Use the batch endpoint, even for a single id
-    const response = await $.ajax({
-      url: `/api/v1/channels/${guildId}/batch/ids`,
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify([channelId]),
-    });
+    try {
+      // Use the batch endpoint, even for a single id
+      const response = await $.ajax({
+        url: `/api/v1/channels/${guildId}/batch/ids`,
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify([channelId]),
+      });
+    } catch (error) {
+      console.error('Error fetching channel by ID:', error);
+      return null;
+    }
 
     if (Array.isArray(response) && response.length > 0) {
       // add the faType property for icon rendering
@@ -627,22 +631,26 @@ class DiscordChannelLoader extends TemplateLoader {
       return !this.cache.has(cacheKey);
     });
     if (uncachedIds.length > 0) {
-      const response = await $.ajax({
-        url: `/api/v1/channels/${guildId}/batch/ids`,
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(uncachedIds),
-      });
-      if (Array.isArray(response)) {
-        response.forEach(channel => {
-          if (channel && channel.id && channel.guild_id) {
-            // add the faType property for icon rendering
-            channel.faType = this.channelTypeToIcon(channel.type);
-            // cache by guild/channel
-            const cacheKey = `${channel.guild_id.toString().trim()}/${channel.id.toString().trim()}`;
-            this.cache.set(cacheKey, channel);
-          }
+      try {
+        const response = await $.ajax({
+          url: `/api/v1/channels/${guildId}/batch/ids`,
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(uncachedIds),
         });
+        if (Array.isArray(response)) {
+          response.forEach(channel => {
+            if (channel && channel.id && channel.guild_id) {
+              // add the faType property for icon rendering
+              channel.faType = this.channelTypeToIcon(channel.type);
+              // cache by guild/channel
+              const cacheKey = `${channel.guild_id.toString().trim()}/${channel.id.toString().trim()}`;
+              this.cache.set(cacheKey, channel);
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching channels in batch:', error);
       }
     }
     return ids.map(id => {
@@ -665,7 +673,7 @@ class DiscordChannelLoader extends TemplateLoader {
       if (channel) {
         Templates.render($(element), 'discord-channel-field', channel);
       } else {
-        $(element).text(`#unknown-channel`);
+        $(element).text(`#${channelId}`); // show the ID if not found
       }
     } catch (error) {
       console.error('Error rendering channel by ID:', error);
@@ -719,7 +727,7 @@ class DiscordChannelLoader extends TemplateLoader {
       if (channel) {
         Templates.render($(element), 'discord-channel-field', channel);
       } else {
-        $(element).text(`#unknown-channel`);
+        $(element).text(`#${channelId}`);
       }
     });
   }
@@ -830,11 +838,11 @@ class DiscordRoleLoader extends TemplateLoader {
           ImageErrorHandler.register($('img[data-img-error]', element));
         }
       } else {
-        this.renderFailure(element, roleId, gId, '@unknown-role');
+        this.renderFailure(element, roleId, gId, `@${roleId}`); // show the ID if not found
       }
     } catch (error) {
       console.error('Error rendering role by ID:', error);
-      this.renderFailure(element, roleId, gId, '@error-role');
+      this.renderFailure(element, roleId, gId, `@${roleId}`);
     }
   }
 
@@ -890,7 +898,7 @@ class DiscordRoleLoader extends TemplateLoader {
           ImageErrorHandler.register($('img[data-img-error]', element));
         }
       } else {
-        this.renderFailure(element, roleId, gId, '@unknown-role');
+        this.renderFailure(element, roleId, gId, `@${roleId}`); // show the ID if not found
       }
     });
   }
@@ -981,7 +989,7 @@ class DiscordMentionableLoader extends TemplateLoader {
     const gId = $(element).data('discord-mentionable-guild')?.toString().trim();
     if (!mentionableId || !gId) {
       console.warn('Missing mentionable ID or guild ID for DiscordMentionableLoader', { mentionableId, gId });
-      $(element).text(`@unknown`);
+      $(element).text(`@unknown-mentionable`);
       return;
     }
     try {
@@ -998,11 +1006,11 @@ class DiscordMentionableLoader extends TemplateLoader {
           ImageErrorHandler.register($('img[data-img-error]', element));
         }
       } else {
-        this.renderFailure(element, mentionableId, gId, "Unknown");
+        this.renderFailure(element, mentionableId, gId, `@${mentionableId}`);
       }
     } catch (error) {
       console.error('Error rendering mentionable by ID:', error);
-      this.renderFailure(element, mentionableId, gId, "Error");
+      this.renderFailure(element, mentionableId, gId, `@${mentionableId}`);
     }
   }
 
@@ -1050,9 +1058,6 @@ class DiscordMentionableLoader extends TemplateLoader {
       $(element).empty().removeClass('loading');
       if (m) {
         const tpl = m.type === 'role' ? 'discord-role-field' : 'discord-user-field';
-        console.log("Rendering mentionable:", m);
-        console.log("Using template:", tpl);
-        console.log("Element:", element);
         Templates.render($(element), tpl, m);
         if (!m.icon && !m.avatar) {
           // remove the image container
@@ -1062,7 +1067,7 @@ class DiscordMentionableLoader extends TemplateLoader {
           ImageErrorHandler.register($('img[data-img-error]', element));
         }
       } else {
-        this.renderFailure(element, id, gId, "Unknown");
+        this.renderFailure(element, id, gId, `@${id}`);
       }
     });
   }
