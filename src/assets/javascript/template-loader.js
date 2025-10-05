@@ -582,7 +582,7 @@ class DiscordChannelLoader extends TemplateLoader {
       case "text": return 'fas fa-hashtag'; // text channel
       case "voice": return 'fas fa-headphones'; // voice channel
       case "category": return 'fas fa-book'; // category
-      case "news": return 'fas fa-bell-slash'; // announcement channel
+      case "news": return 'fas fa-bullhorn'; // announcement channel
       case "stage": return 'fas fa-video'; // stage channel
       default: return 'fas fa-question'; // unknown
     }
