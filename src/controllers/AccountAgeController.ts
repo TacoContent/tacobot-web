@@ -29,4 +29,26 @@ export default class AccountAgeController {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }
+
+  async events(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const page = Math.max(1, parseInt(req.query.page as string) || 1);
+      const pageSize = 10;
+      const search: string | undefined = (req.query.search as string) || undefined;
+      const client = new AccountAgeMongoClient();
+      const pagedResults = await client.getAccountAgeEvents((page - 1) * pageSize, pageSize, search);
+
+      res.render('accountage/events', {
+        ...res.locals,
+        title: 'Account Age: Events',
+        items: pagedResults.items,
+        pager: pagedResults.getPager(),
+      });
+    } catch (error: any) {
+      // this.logger.error(METHOD, error);
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
 }

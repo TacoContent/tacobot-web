@@ -3,6 +3,11 @@ import PagedResults from '../../models/PagedResults';
 import moment from 'moment-timezone';
 import DiscordUsersMongoClient from './Users';
 import AccountAgeWhiteListEntry from '../../models/AccountAgeWhiteListEntry';
+import SystemActionEventEntry from '../../models/SystemActionEventEntry';
+import NewAccountKickSystemActionEvent from '../../models/NewAccountKickSystemActionEvent';
+import { SystemActions } from '../consts/TacoBot/SystemActions';
+import JoinWhitelistRemoveSystemActionEvent from '../../models/JoinWhitelistRemoveSystemActionEvent';
+import JoinWhitelistAddSystemActionEvent from '../../models/JoinWhitelistAddSystemActionEvent';
 
 class AccountAgeMongoClient extends DatabaseMongoClient<AccountAgeWhiteListEntry> {
   constructor() {
@@ -38,6 +43,55 @@ class AccountAgeMongoClient extends DatabaseMongoClient<AccountAgeWhiteListEntry
       }
     }
     const items = await collection.find(filter).skip(skip).limit(take).sort({ count: -1 }).toArray();
+    const totalItems = await collection.countDocuments(filter);
+
+    return new PagedResults({
+      items,
+      totalItems,
+      currentPage: Math.floor(skip / take) + 1,
+      pageSize: take,
+    });
+  }
+
+  async getAccountAgeEvents(skip: number = 0, take: number = 100, search?: string): Promise<
+    PagedResults<
+      SystemActionEventEntry<
+        NewAccountKickSystemActionEvent |
+        JoinWhitelistAddSystemActionEvent |
+        JoinWhitelistRemoveSystemActionEvent
+      >
+    >
+  > {
+    const collection = await this.getCollectionOf<
+      SystemActionEventEntry<
+        NewAccountKickSystemActionEvent |
+        JoinWhitelistAddSystemActionEvent |
+        JoinWhitelistRemoveSystemActionEvent
+      >
+    >('system_actions');
+    const users = new DiscordUsersMongoClient();
+
+    if (skip < 0) skip = 0;
+    if (take <= 0 || take > 100) take = 100;
+
+    const filteredUsers = await users.get(search);
+    const filteredUserMap = new Map(filteredUsers.map(user => [user.user_id, user.displayname]));
+    let filter: any = [
+      { action: 'NEW_ACCOUNT_KICK' },
+      { action: 'JOIN_WHITELIST_ADD' },
+      { action: 'JOIN_WHITELIST_REMOVE' },
+    ];
+    if (filteredUserMap.size > 0) {
+      filter = {
+        $or: [
+          ...filter,
+          { user_id: { $in: Array.from(filteredUserMap.keys()) } },
+        ]
+      };
+    }
+    console.log("filter: ", filter);
+    const items = await collection.find(filter).skip(skip).limit(take).sort({ timestamp: -1 }).toArray();
+    console.log("Fetched items:", items.length);
     const totalItems = await collection.countDocuments(filter);
 
     return new PagedResults({
