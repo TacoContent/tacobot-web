@@ -20,5 +20,11 @@ export default {
     if (value === undefined) return 'undefined';
     if (value === null) return 'null';
     return String(value);
+  },
+  truncate: function (this: any, ...args: any[]): string {
+    const [value, length] = Reflection.getArguments(args, ['value', 'length'], ['', 100]);
+    if (typeof value !== 'string') return '';
+    if (value.length <= length) return value;
+    return value.substring(0, length) + '...';
   }
 }

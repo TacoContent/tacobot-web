@@ -1,3 +1,10 @@
+{{!--
+  Renders a Discord user mention with avatar and username.
+  Parameters:
+    - user: The Discord user ID.
+    - guild: (Optional) The Discord guild ID to fetch the user from. Defaults to the primary guild ID from config if not provided.
+--}}
+
 <span class="discord-user btn btn-link" data-discord-user="{{user}}" data-discord-user-guild="{{or guild @root.discordGuild config.tacobot.primaryGuildId}}">
   <div class="placeholder-glow" data-template="discord-user">
     <img data-img-error src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" 

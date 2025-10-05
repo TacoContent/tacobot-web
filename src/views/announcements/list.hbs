@@ -1,0 +1,50 @@
+<div class="container mt-4">
+  <div class="justify-content-center">
+    <div class="row mb-3">
+      <div class="col"></div>
+      <div class="col">
+        {{> search id="search" name="search" placeholder="Search by ..." }}
+      </div>
+      <div class="col"></div>
+    </div>
+    <div class="row mb-3">
+      <div class="col d-flex justify-content-center">
+        {{> pager this.pager search=this.search }}
+      </div>
+    </div>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr class="table-active">
+        <th class="text-uppercase">Guild</th>
+        <th class="text-uppercase">Channel</th>
+        <th class="text-uppercase">Author</th>
+        <th class="text-uppercase">Created</th>
+        <th class="text-uppercase">Updated</th>
+        <th class="text-uppercase">Tracked</th>
+        <th class="text-uppercase">Message</th>
+        <th class="text-uppercase"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each items}}
+      <tr>
+        <td class="text-nowrap p-1 text-start">{{> discord/guild id=(or this.guild_id @root.discordGuild config.tacobot.primaryGuildId)}}</td>
+        <td class="text-nowrap p-1 text-start">{{> discord/channel channel=this.channel_id guild=(or this.guild_id @root.discordGuild config.tacobot.primaryGuildId)}}</td>
+        <td class="text-nowrap p-1 text-start">{{> discord/user user=this.author_id guild=(or this.guild_id @root.discordGuild config.tacobot.primaryGuildId)}}</td>
+        <td class="text-nowrap">{{unixFromNow this.created_at}}</td>
+        <td class="text-nowrap">{{unixFromNow this.updated_at}}</td>
+        <td class="text-nowrap">{{unixFromNow this.tracked_at}}</td>
+        <td class="text-nowrap text-start">{{truncate (or this.message.content '') 50}}</td>
+      {{/each}}
+    </tbody>
+  </table>
+  <div class="justify-content-center">
+    <div class="row mt-3">
+      <div class="col d-flex justify-content-center">
+        {{> pager this.pager search=this.search }}
+      </div>
+    </div>
+  </div>
+</div>
