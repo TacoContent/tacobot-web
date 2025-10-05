@@ -8,7 +8,7 @@
 import { tacoBotApiClient, createTacoBotApiClient } from './index';
 import { TacoBotApiClient } from './ApiClient';
 import { handleApiError, isApiError, retryApiCall, isValidGuildId, isValidUserId } from './utils';
-import { TacoMinecraftWorlds } from './types';
+import { TacoMinecraftWorlds, JoinWhitelistUser } from './types';
 
 /**
  * Example: Basic health check
@@ -326,6 +326,46 @@ export async function demonstrateErrorHandling(): Promise<void> {
   }
 }
 
+/**
+ * Example: Join Whitelist management
+ */
+export async function manageJoinWhitelist(
+  guildId: string,
+  userId: string,
+  addedBy?: string
+): Promise<void> {
+  if (!isValidGuildId(guildId) || !isValidUserId(userId)) {
+    console.error('Invalid guild or user ID');
+    return;
+  }
+
+  try {
+    // Add user
+    const added = await tacoBotApiClient.addJoinWhitelistUser(guildId, userId, addedBy);
+    console.log('Added to whitelist:', added.data);
+
+    // List full (use sparingly if large)
+    const fullList = await tacoBotApiClient.getJoinWhitelist(guildId);
+    console.log(`Whitelist size: ${fullList.data.length}`);
+
+    // Paginated view
+    const page = await tacoBotApiClient.getJoinWhitelistPage(guildId, 0, 10);
+    console.log('First page (size 10):', page.data.items.map(u => u.user_id));
+
+    // Update (re-add) with possibly different added_by
+    if (addedBy) {
+      const updated = await tacoBotApiClient.updateJoinWhitelistUser(guildId, userId, addedBy);
+      console.log('Updated whitelist entry:', updated.data);
+    }
+
+    // Remove user
+    await tacoBotApiClient.removeJoinWhitelistUser(guildId, userId);
+    console.log('Removed user from whitelist:', userId);
+  } catch (error) {
+    console.error('Join whitelist operation failed:', handleApiError(error, 'JoinWhitelist'));
+  }
+}
+
 // Export all example functions for easy testing
 export const examples = {
   checkApiHealth,
@@ -339,5 +379,6 @@ export const examples = {
   getUserPermissions,
   sendTacosWebhook,
   getMultipleGuildsInfo,
-  demonstrateErrorHandling
+  demonstrateErrorHandling,
+  manageJoinWhitelist
 };

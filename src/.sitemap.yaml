@@ -10,6 +10,32 @@
     icon: gauge
   - type: separator
   - type: group
+    title: Announcements
+    id: announcements
+    icon: bullhorn
+    children:
+      - type: link
+        title: View Announcements
+        href: /announcements
+        icon: list
+      - type: link
+        title: Post Announcement
+        href: /announcements/add
+        icon: plus
+  - type: group
+    title: Account Age
+    id: accountage
+    icon: calendar
+    children:
+      - type: link
+        title: View Join Whitelist
+        href: /accountage
+        icon: user-check
+      - type: link
+        title: Events
+        href: /accountage/events
+        icon: calendar-days
+  - type: group
     title: Birthdays
     id: birthdays
     icon: cake

@@ -1,0 +1,14 @@
+
+{{> pager this.pager }}
+
+{{#each items}}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">{{> discord/user user=this.user_id guild=this.guild_id}}</h5>
+      <h6 class="card-subtitle mb-2 text-muted">Added by: {{#if this.added_by}}{{> discord/user user=this.added_by guild=this.guild_id}}{{else}}Unknown{{/if}} on {{#if this.timestamp}}{{formatDate this.timestamp}}{{else}}Unknown{{/if}}</h6>
+      <p class="card-text">{{> discord/guild id=this.guild_id}}</p>
+    </div>
+  </div>
+{{/each}}
+
+{{> pager this.pager }}

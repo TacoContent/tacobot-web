@@ -60,6 +60,14 @@ const customClient = new TacoBotApiClient({
 - `getGuildRoles(guildId)` - Get guild roles
 - `getGuildRolesByIds(guildId, roleIds)` - Get multiple roles by IDs (batch)
 
+### Join Whitelist
+
+- `getJoinWhitelist(guildId)` - Get entire join whitelist for a guild (avoid for very large lists)
+- `getJoinWhitelistPage(guildId, skip?, take?)` - Get paginated join whitelist entries
+- `addJoinWhitelistUser(guildId, userId, addedBy?)` - Add (upsert) a user to the whitelist
+- `updateJoinWhitelistUser(guildId, userId, addedBy?)` - Update (re-add) a whitelist entry
+- `removeJoinWhitelistUser(guildId, userId)` - Remove a user from the whitelist
+
 ### Minecraft
 
 - `getMinecraftStatus()` - Get server status
@@ -166,6 +174,7 @@ See `examples.ts` for comprehensive usage examples including:
 - Error handling patterns
 - Batch operations
 - Webhook usage
+- Join whitelist management
 - Custom client configuration
 
 ## API Endpoints Covered
@@ -180,3 +189,23 @@ The client covers all endpoints from the Swagger specification:
 - **Twitch**: `/tacobot/guild/*/invite/*`
 
 For a complete list of available methods, see the `TacoBotApiClient` class documentation.
+
+### Join Whitelist Example
+
+```typescript
+import { tacoBotApiClient } from './libs/tacobot';
+
+// Add a user
+const added = await tacoBotApiClient.addJoinWhitelistUser('123456789012345678', '555555555555555555', '111111111111111111');
+console.log('Added:', added.data);
+
+// Paginated list
+const page = await tacoBotApiClient.getJoinWhitelistPage('123456789012345678', 0, 25);
+console.log('First page users:', page.data.items.map(u => u.user_id));
+
+// Update (re-add)
+await tacoBotApiClient.updateJoinWhitelistUser('123456789012345678', '555555555555555555', '222222222222222222');
+
+// Remove user
+await tacoBotApiClient.removeJoinWhitelistUser('123456789012345678', '555555555555555555');
+```

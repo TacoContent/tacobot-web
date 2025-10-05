@@ -10,10 +10,24 @@
     - isChild: whether this field is a child field (boolean, default: false)
 --}}
 {{> settings/fields/debug this}}
-
 {{#if (eq (settingsGetMetadata metadata=metadata key="hidden") true)}}
-  {{!-- do not render anything if this field is marked as not visible --}}
+  <input type="hidden" name="{{or name label}}" value="{{value}}" />
 {{else}}
+  {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
+
+  <div class="input-group mb-1" data-setting-type="string">
+    <label class="input-group-text" for="field-{{id}}" id="field-{{id}}-label">{{label}}</label>
+    <label class="input-group-text" for="field-{{id}}" id="field-{{id}}-emoji">
+      <i class="fas fa-calendar" aria-hidden="true"></i>
+    </label>
+    {{#if (eq (settingsGetMetadata metadata=metadata key="disabled") true)}}
+      <input type="hidden" name="{{or name label}}" value="{{value}}" />
+      <div title="{{unixToDate value 'YYYY-MM-DD hh:mm a z'}}" class="text-start form-control" aria-label="{{label}}" aria-describedby="field-{{id}}-label">{{unixFromNow value}} - {{unixToDate value 'YYYY-MM-DD hh:mm a z'}}</div>
+    {{else}}
+      <input type="datetime" class="form-control" placeholder="{{label}}" aria-label="{{label}}" aria-describedby="field-{{id}}-label" value="{{value}}" name="{{or name label}}" id="field-{{id}}"{{#if (settingsHasMetadataKey metadata=metadata key="validate")}} pattern="{{settingsGetMetadata metadata=metadata key="validate"}}{{/if}}" />
+    {{/if}}
+  </div>
+
   {{#if (not isChild) }}
   {{> settings/metadata/description metadata=metadata }}
   {{else}}

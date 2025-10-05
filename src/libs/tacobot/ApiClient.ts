@@ -10,6 +10,9 @@ import {
   DiscordEmoji,
   DiscordRole,
   DiscordMentionable,
+  DiscordMessage,
+  JoinWhitelistUser,
+  IPagedResults,
   MinecraftUser,
   MinecraftOpUser,
   MinecraftWhiteListUser,
@@ -151,6 +154,20 @@ export class TacoBotApiClient {
     return this.makeRequest<DiscordEmoji[]>('POST', `/api/v1/guild/${guildId}/emojis/names/batch`, emojiNames);
   }
 
+  // Message endpoints
+  async getChannelMessages(guildId: string, channelId: string, limit?: number): Promise<ApiResponse<DiscordMessage[]>> {
+    const query = limit ? `?limit=${limit}` : '';
+    return this.makeRequest<DiscordMessage[]>('GET', `/api/v1/guild/${guildId}/channel/${channelId}/messages${query}`);
+  }
+
+  async getChannelMessage(guildId: string, channelId: string, messageId: string): Promise<ApiResponse<DiscordMessage>> {
+    return this.makeRequest<DiscordMessage>('GET', `/api/v1/guild/${guildId}/channel/${channelId}/message/${messageId}`);
+  }
+
+  async getChannelMessagesByIds(guildId: string, channelId: string, messageIds: string[]): Promise<ApiResponse<DiscordMessage[]>> {
+    return this.makeRequest<DiscordMessage[]>('POST', `/api/v1/guild/${guildId}/channel/${channelId}/messages/batch/ids`, messageIds);
+  }
+
   // Role endpoints
   async getGuildRoles(guildId: string): Promise<ApiResponse<DiscordRole[]>> {
     return this.makeRequest<DiscordRole[]>('GET', `/api/v1/guild/${guildId}/roles`);
@@ -163,6 +180,35 @@ export class TacoBotApiClient {
   // Mentionables endpoints (users or mentionable roles)
   async getGuildMentionablesByIds(guildId: string, ids: string[]): Promise<ApiResponse<DiscordMentionable[]>> {
     return this.makeRequest<DiscordMentionable[]>('POST', `/api/v1/guild/${guildId}/mentionables/batch/ids`, ids);
+  }
+
+  // Join Whitelist endpoints
+  async getJoinWhitelist(guildId: string): Promise<ApiResponse<JoinWhitelistUser[]>> {
+    return this.makeRequest<JoinWhitelistUser[]>('GET', `/api/v1/guild/${guildId}/join-whitelist`);
+  }
+
+  async getJoinWhitelistPage(guildId: string, skip = 0, take = 50): Promise<ApiResponse<IPagedResults<JoinWhitelistUser>>> {
+    const params = new URLSearchParams();
+    if (skip) params.set('skip', String(skip));
+    if (take) params.set('take', String(take));
+    const qs = params.toString();
+  return this.makeRequest<IPagedResults<JoinWhitelistUser>>('GET', `/api/v1/guild/${guildId}/join-whitelist/page${qs ? `?${qs}` : ''}`);
+  }
+
+  async addJoinWhitelistUser(guildId: string, user_id: string, added_by?: string): Promise<ApiResponse<JoinWhitelistUser>> {
+    const payload: Record<string, string> = { user_id };
+    if (added_by) payload.added_by = added_by;
+    return this.makeRequest<JoinWhitelistUser>('POST', `/api/v1/guild/${guildId}/join-whitelist`, payload);
+  }
+
+  async updateJoinWhitelistUser(guildId: string, user_id: string, added_by?: string): Promise<ApiResponse<JoinWhitelistUser>> {
+    const payload: Record<string, string> = {};
+    if (added_by) payload.added_by = added_by;
+    return this.makeRequest<JoinWhitelistUser>('PUT', `/api/v1/guild/${guildId}/join-whitelist/${user_id}`, Object.keys(payload).length ? payload : undefined);
+  }
+
+  async removeJoinWhitelistUser(guildId: string, user_id: string): Promise<ApiResponse<void>> {
+    return this.makeRequest<void>('DELETE', `/api/v1/guild/${guildId}/join-whitelist/${user_id}`);
   }
 
   // Minecraft endpoints
