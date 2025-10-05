@@ -1,0 +1,53 @@
+<div class="container mt-4">
+  <div class="justify-content-center">
+    <div class="row mb-3">
+      <div class="col"></div>
+      <div class="col">
+        {{> search id="search" name="search" placeholder="Search by World Name or ID" }}
+      </div>
+      <div class="col"></div>
+    </div>
+    <div class="row mb-3">
+      <div class="col d-flex justify-content-center">
+        {{> pager this.pager search=this.search }}
+      </div>
+    </div>
+  </div>
+  <table class="table">
+    <thead>
+      <tr class="table-active">
+        <th class="text-uppercase">Guild</th>
+        <th class="text-uppercase">Action</th>
+        <th class="text-uppercase"><i class="fas fa-clock" title="Timestamp"></i></th>
+        <th class="text-uppercase">User</th>
+        <th class="text-uppercase">Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each items}}
+      <tr>
+        <td class="text-nowrap p-1 text-start">{{> discord/guild id=this.guild_id}}</td>
+        <td class="text-nowrap p-1 text-start">{{this.action}}</td>
+        <td class="text-nowrap"><span title="{{unixToDate this.timestamp 'YYYY-MM-DD hh:mm a z'}}">{{unixFromNow this.timestamp}}</span></td>
+        <td class="text-nowrap">
+          {{!-- {{> discord/user user_id=this.data.user_id guild=this.guild_id}} --}}
+          {{ this.data.user_id }}
+        </td>
+        {{#if this.data.reason}}
+          <td class="text-nowrap">Reason: {{this.data.reason}}</td>
+        {{else if this.data.added_by}}
+          <td class="text-nowrap">Added by {{> discord/user user_id=this.data.added_by guild=this.guild_id}}</td>
+        {{else if this.data.removed_by}}
+          <td class="text-nowrap">Removed by {{> discord/user user_id=this.data.removed_by guild=this.guild_id}}</td>
+        {{/if}}
+      {{/each}}
+    </tbody>
+  </table>
+  <div class="justify-content-center">
+    <div class="row mt-3">
+      <div class="col d-flex justify-content-center">
+        {{> pager this.pager search=this.search }}
+      </div>
+    </div>
+  </div>
+</div>
