@@ -229,11 +229,21 @@ export interface DiscordMessage {
   mentions?: { id: string; username: string }[];
   attachments?: { id: string; url: string }[];
   embeds?: any[];
-  reactions?: { emoji: string; count: number }[];
+  reactions?: DiscordMessageReaction[];
   nonce?: string | null;
   pinned?: boolean;
   message_type?: number;
 }
+
+// Reusable reaction payload returned either embedded in a DiscordMessage or
+// aggregated by the batch reactions endpoint.
+export interface DiscordMessageReaction {
+  emoji: string;
+  count: number;
+}
+
+// Mapping of message_id -> reactions[] returned by the batch reactions endpoint
+export type DiscordChannelMessageReactions = Record<string, DiscordMessageReaction[]>;
 
 export interface IPagedResults<T> {
   total: number;
