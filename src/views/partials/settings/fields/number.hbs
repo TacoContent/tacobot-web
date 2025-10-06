@@ -16,28 +16,13 @@
 
   {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
 
-  <div class="input-group mb-1 {{> 
-          settings/metadata/deprecated/class 
-          level="warning" 
-          metadata=metadata 
-          key=key 
-          type="group"}}" data-setting-type="number">
-    <label class="input-group-text {{> 
-            settings/metadata/deprecated/class 
-            level="warning" 
-            metadata=metadata 
-            key=key 
-            type="label"}}"
+  <div class="input-group mb-1" data-setting-type="number" {{> settings/metadata/deprecated/attrs level="warning" metadata=metadata key=key}}>
+    <label class="input-group-text"
           for="field-{{id}}" 
           id="field-{{id}}-label">{{label}}</label>
     <input 
       type="number"
-      class="form-control {{> 
-        settings/metadata/deprecated/class 
-        level="warning" 
-        metadata=metadata 
-        key=key 
-        type="field"}}"
+      class="form-control"
       placeholder="{{label}}"
       aria-label="{{label}}"
       aria-describedby="field-{{id}}-label"

@@ -4,6 +4,7 @@ import Reflection from '../../Reflection';
 export default {
   formatDate: function (this: any, ...args: any[]) {
     const [date, format] = Reflection.getArguments(args, ['date', 'format']);
+    // check if we need to take the d
     return moment.utc(date).format(format);
   },
   unixToDate: function (this: any, ...args: any[]) {

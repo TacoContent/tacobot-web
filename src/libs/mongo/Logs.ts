@@ -2,6 +2,8 @@ import DatabaseMongoClient from './Database';
 import config from '../../config';
 import clc from 'cli-color';
 import { Collection, Document } from 'mongodb';
+import PagedResults from '../../models/PagedResults';
+import LogEntry from '../../models/LogEntry';
 
 interface LogData extends Document {
   [key: string]: any;
@@ -12,6 +14,54 @@ export default class LogsMongoClient extends DatabaseMongoClient<LogData> {
   constructor() {
     super();
     this.collectionName = 'logs';
+  }
+
+  async clear(): Promise<boolean> {
+    try {
+      const collection = await this.getCollection();
+      const result = await collection.deleteMany({});
+      return result.acknowledged;
+    } catch (err: any) {
+      this._consoleWriter('FATAL', 'LogsMongoClient.clear', err.message, { stack: err.stack });
+      return false;
+    }
+  }
+
+  async get(skip: number = 0, take: number = 100, search?: string): Promise<PagedResults<LogEntry>> {
+    const collection = await this.getCollectionOf<LogEntry>('logs');
+    
+    if (skip < 0) skip = 0;
+    if (take <= 0 || take > 100) take = 100;
+    let filter: any = {};
+
+    if (!search) {
+      filter = {};
+    } else {
+      search = search.trim();
+      if (search.length === 0) {
+        filter = {};
+      } else {
+        filter = {
+          $or: [
+            { message: { "$regex": search, $options: 'i' } },
+            { method: { "$regex": search, $options: 'i' } },
+            { level: { "$regex": search, $options: 'i' } },
+            { stack: { "$regex": search, $options: 'i' } },
+            { channel: { "$regex": search, $options: 'i' } },
+          ],
+        };
+      }
+    }
+
+    const items = await collection.find(filter).skip(skip).limit(take).sort({ timestamp: -1 }).toArray();
+    const totalItems = await collection.countDocuments(filter);
+
+    return new PagedResults({
+      items,
+      totalItems,
+      currentPage: Math.floor(skip / take) + 1,
+      pageSize: take,
+    });
   }
 
   async debug(source: string, message: string, data?: LogData): Promise<boolean> {

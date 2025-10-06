@@ -8,6 +8,10 @@
     title: Dashboard
     href: https://grafana.bit13.local/d/GnSFRx0Vz/tacobot
     icon: gauge
+  - type: link
+    title: Logs
+    href: /logs
+    icon: file-text
   - type: separator
   - type: group
     title: Announcements

@@ -1,0 +1,14 @@
+{{!-- settings/metadata/deprecated/attrs.hbs --}}
+{{!--
+  Emits data-* attributes if the setting is deprecated so styling can be applied
+  via CSS without sprinkling conditional class partials on every element.
+
+  Inputs:
+    - metadata: full metadata object
+    - key: the key for the setting (optional, if needed by helpers)
+    - level: fallback deprecation level (e.g. "warning") if metadata doesn't specify one
+--}}
+{{#if (settingsGetMetadata metadata=metadata key="deprecated")}}
+  data-deprecated="true" 
+  data-deprecated-level="{{or (settingsGetMetadata metadata=metadata key="deprecatedLevel") level "warning"}}"
+{{/if}}

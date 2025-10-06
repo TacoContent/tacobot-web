@@ -16,7 +16,7 @@
 {{else}}
   {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
 
-  <div class="input-group mb-1" data-setting-type="regex">
+  <div class="input-group mb-1" data-setting-type="regex" {{> settings/metadata/deprecated/attrs level="warning" metadata=metadata key=key}}>
     <label class="input-group-text" for="field-{{id}}" id="field-{{id}}-label">{{label}}</label>
       <input type="text" class="form-control" placeholder="{{label}}" aria-label="{{label}}" aria-describedby="field-{{id}}-label" value="{{value}}" name="{{or name label}}" id="field-{{id}}" pattern="^(?!/)(?:[^\\]|\\.)*(?<!/)$" />
   </div>

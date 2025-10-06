@@ -15,7 +15,7 @@
   {{!-- do not render anything if this field is marked as not visible --}}
 {{else}}
 
-  <div class="input-group mb-1" data-setting-type="image-url">
+  <div class="input-group mb-1" data-setting-type="image-url" {{> settings/metadata/deprecated/attrs level="warning" metadata=metadata key=key}}>
     <label class="input-group-text" for="field-{{id}}">{{label}}</label>
     <input type="text" class="form-control" placeholder="{{label}}" aria-label="{{label}}" aria-describedby="field-{{id}}" value="{{value}}" name="{{or name label}}" id="field-{{id}}"/>
   </div>

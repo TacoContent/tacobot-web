@@ -16,7 +16,7 @@
 {{else}}
   {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
 
-  <div class="input-group mb-1" data-setting-type="string">
+  <div class="input-group mb-1" data-setting-type="string" {{> settings/metadata/deprecated/attrs level="warning" metadata=metadata key=key}}>
     <label class="input-group-text" for="field-{{id}}" id="field-{{id}}-label">{{label}}</label>
     {{#if multiline}}
       <textarea class="form-control" placeholder="{{label}}" aria-label="{{label}}" aria-describedby="field-{{id}}-label" name="{{or name label}}" id="field-{{id}}"{{#if (settingsHasMetadataKey metadata=metadata key="validate")}} pattern="{{settingsGetMetadata metadata=metadata key="validate"}}{{/if}}">{{value}}</textarea>

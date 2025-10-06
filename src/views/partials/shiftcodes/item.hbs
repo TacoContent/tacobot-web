@@ -36,36 +36,17 @@
           {{/each}}
         </ul>
       </div>
-    </div>
-
-    <div class="row">
       <div class="col">
         <div class="card-header">Reactions</div>
         <ul class="mb-0 ps-3 list-group list-group-flush">
-          {{> highlight (json (flattenObject this.reactions))}}
-          {{!-- 
-          {
-            "1423859742299783282": [
-              {
-                "emoji": "✅",
-                "count": 2
-              },
-              {
-                "emoji": "❌",
-                "count": 1
-              }
-            ]
-          }--}}
-
           {{#each (flattenObject this.reactions)}}
-
             <li class="list-group-item d-flex justify-content-between align-items-center">
               <span>{{this.emoji}}</span>
               <span class="badge bg-primary rounded-pill">{{this.count}}</span>
             </li>
           {{/each}}
         </ul>
-    </div>
+      </div>
     </div>
     
   </div>

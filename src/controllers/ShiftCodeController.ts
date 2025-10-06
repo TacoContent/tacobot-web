@@ -140,16 +140,9 @@ export default class ShiftCodeController {
             if (ids.length === 0) continue;
             tasks.push(async () => {
               try {
-                console.log(`Fetching reactions (global) guild ${guildId} channel ${channelId} messages ${ids.length}`);
                 const resp = await apiClient.getChannelMessagesReactionsBatch(guildId, channelId, ids);
                 const mapping = resp.data || {};
                 // Log the raw mapping (truncated if very large)
-                try {
-                  const serialized = JSON.stringify(mapping);
-                  console.log(`Reactions batch response guild ${guildId} channel ${channelId}:`, serialized.length > 5000 ? serialized.substring(0, 5000) + '...<truncated>' : serialized);
-                } catch (serr) {
-                  console.warn('Failed to serialize reactions mapping for logging', serr);
-                }
                 const guildBucket = globalReactions[guildId] ?? (globalReactions[guildId] = {});
                 guildBucket[channelId] = mapping;
               } catch (e) {

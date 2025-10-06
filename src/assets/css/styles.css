@@ -31,6 +31,36 @@ body {
   max-width: 16px;
 }
 
+.log-entry {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  line-height: 1.4rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.log-entry.debug td {
+  color: var(--bs-text-secondary, #6c757d);
+}
+
+.log-entry.info td {
+  color: var(--bs-text-info, #0dcaf0);
+}
+
+.log-entry.warning td {
+  color: var(--bs-text-warning, #ffc107);
+}
+
+.log-entry.error td {
+  color: var(--bs-text-danger, #dc3545);
+}
+
+.log-entry.critical td,
+.log-entry.fatal td {
+  color: var(--bs-text-danger, #dc3545);
+  font-weight: bold;
+}
+
 code.spoiler {
   background-color: var(--bs-dark, #212529);
   color: var(--bs-dark, #212529);
@@ -139,6 +169,97 @@ a, .btn-link {
   text-decoration: none !important;
   color: #ccc;
 }
+
+/* --------------------------------------------------------
+   Deprecated settings scaffolding (data-attribute based)
+   Elements that include the partial `settings/metadata/deprecated/attrs`
+   will receive:
+     data-deprecated="true"
+     data-deprecated-level="<level>" (e.g. warning, info, error)
+
+   Customize appearance per level below. Keep styles subtle to avoid
+   overwhelming the UI while still signalling status.
+--------------------------------------------------------- */
+
+/* Base container styling */
+.input-group[data-deprecated="true"] {
+  position: relative; /* for pseudo badge */
+  border: 1px dashed var(--deprecated-border-color, var(--bs-border-color, #ced4da));
+  border-radius: .375rem;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+
+/* Slightly reduce prominence of form control content */
+.input-group[data-deprecated="true"] .form-control,
+.input-group[data-deprecated="true"] .input-group-text {
+  opacity: .85;
+}
+
+/* Hover focus to reinforce still interactive (if not disabled) */
+.input-group[data-deprecated="true"]:hover {
+  border-style: solid;
+}
+
+/* Level specific tokens (extend as needed) */
+.input-group[data-deprecated="true"][data-deprecated-level="warning"] {
+  --deprecated-border-color: var(--bs-warning, #ffc107);
+  background-color: rgba(255, 193, 7, 0.08);
+}
+
+.input-group[data-deprecated="true"][data-deprecated-level="info"] {
+  --deprecated-border-color: var(--bs-info, #0dcaf0);
+  background-color: rgba(13, 202, 240, 0.08);
+}
+
+.input-group[data-deprecated="true"][data-deprecated-level="error"],
+.input-group[data-deprecated="true"][data-deprecated-level="danger"] {
+  --deprecated-border-color: var(--bs-danger, #dc3545);
+  background-color: rgba(220, 53, 69, 0.08);
+}
+
+/* Optional corner badge showing level (only if space allows) */
+.input-group[data-deprecated="true"]::before {
+  content: attr(data-deprecated-level);
+  text-transform: uppercase;
+  font-size: .55rem;
+  line-height: 1;
+  letter-spacing: .05em;
+  position: absolute;
+  top: -0.55rem;
+  right: .5rem;
+  padding: .2rem .35rem;
+  border-radius: .25rem;
+  background: var(--deprecated-border-color, var(--bs-warning, #ffc107));
+  color: #000;
+  font-weight: 600;
+  opacity: .85;
+  pointer-events: none;
+}
+
+/* If you find the badge too noisy, you can disable it globally: */
+/* .input-group[data-deprecated="true"]::before { display: none; } */
+
+/* Inside deprecated containers, disabled fields stay visibly distinct */
+.input-group[data-deprecated="true"] input:disabled + label,
+.input-group[data-deprecated="true"] input:disabled,
+.input-group[data-deprecated="true"] .form-control:disabled {
+  opacity: .55;
+}
+
+/* Focus ring adaptation */
+.input-group[data-deprecated="true"] .form-check-input:focus {
+  box-shadow: 0 0 0 .20rem rgba(255, 193, 7, 0.3);
+}
+
+/* Dark mode adjustments (if using light-dark()) */
+@media (prefers-color-scheme: dark) {
+  .input-group[data-deprecated="true"][data-deprecated-level="warning"] { background-color: rgba(255, 193, 7, 0.12); }
+  .input-group[data-deprecated="true"][data-deprecated-level="info"] { background-color: rgba(13, 202, 240, 0.12); }
+  .input-group[data-deprecated="true"][data-deprecated-level="danger"],
+  .input-group[data-deprecated="true"][data-deprecated-level="error"] { background-color: rgba(220, 53, 69, 0.12); }
+}
+
+/* End deprecated scaffolding */
 
 @keyframes fadein {
   0% { opacity: 0; }

@@ -17,7 +17,7 @@
   {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
 
 
-  <div class="input-group mb-1" data-setting-type="duration">
+  <div class="input-group mb-1" data-setting-type="duration" {{> settings/metadata/deprecated/attrs level="warning" metadata=metadata key=key}}>
     <label class="input-group-text" for="field-{{id}}" id="field-{{id}}-label">{{label}}</label>
     <input
       data-type="duration"

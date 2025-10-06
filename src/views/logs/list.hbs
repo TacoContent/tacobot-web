@@ -1,0 +1,87 @@
+
+
+<div class="containerx mt-4">
+
+  <div class="justify-content-center">
+    <div class="row mb-3">
+      <div class="col"></div>
+      <div class="col">
+        {{> search id="search" name="search" placeholder="Search by Level, Method, Message, Channel" }}
+      </div>
+      <div class="col">
+        <div class="float-end">
+          <button type="button" class="btn btn-sm btn-danger" id="clear-logs-button" data-bs-toggle="modal" data-bs-target="#clear-logs-modal">
+            <i class="fas fa-trash-alt"></i> Clear Logs
+          </button>
+          {{> modal id="clear-logs-modal" title="Clear All Logs" body="Are you sure you want to clear all logs? This action cannot be undone." buttonText="Clear Logs" buttonClass="btn-danger" formAction="/logs/clear" formMethod="POST" }}
+        </div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col d-flex justify-content-center">
+        {{> pager this.pager search=this.search }}
+      </div>
+    </div>
+  </div>
+
+  
+  <table class="table table-borderless table-striped">
+    <thead>
+      <tr class="table-active">
+        <th class="text-uppercase">Timestamp</th>
+        <th class="text-uppercase">Level</th>
+        <th class="text-uppercase">Method</th>
+        <th class="text-uppercase">Channel</th>
+        <th class="text-uppercase">Guild</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#if (eq items.length 0)}}
+      <tr>
+        <td colspan="5" class="text-center"><strong>No log entries found.</strong></td>
+      </tr>
+      {{else}}
+        {{#each items}}
+        <tr class="log-entry {{lowercase this.level}}">
+          <td class="text-start text-nowrap text-start timestamp">{{unixToDate this.timestamp 'YYYY-MM-DD HH:mm:ss'}}</td>
+          <td class="text-start text-nowrap text-start level">{{this.level}}</td>
+          <td class="text-start text-nowrap method">{{this.method}}</td>
+          <td class="text-start text-nowrap channel">{{this.channel}}</td>
+          <td class="text-start text-nowrap text-start guild">{{> discord/guild id=this.guild_id}}</td>
+        </tr>
+        <tr>
+          <td colspan="5">
+            <table class="table mb-0 table-borderless">
+              <tr class="log-entry {{lowercase this.level}}">
+                <td class="text-start message">{{this.message}}</td>
+              </tr>
+              {{#if this.stack_trace}}
+              <tr class="log-entry {{lowercase this.level}}">
+                <td class="text-start stack">{{> code value=this.stack_trace}}</td>
+              </tr>
+              {{/if}}
+            </table>
+        </tr>
+        {{/each}}
+      {{/if}}
+    </tbody>
+  </table>
+  <div class="justify-content-center">
+    <div class="row mt-3">
+      <div class="col d-flex justify-content-center">
+        {{> pager this.pager search=this.search }}
+      </div>
+    </div>
+  </div>
+</div>
+
+{{#section "scripts"}}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/json.min.js"></script>
+  <script>$(() => { hljs.highlightAll(); });</script>
+{{/section}}
+
+{{#section "head"}}
+  {{!-- https://highlightjs.org/demo --}}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/panda-syntax-dark.min.css" />
+{{/section}}

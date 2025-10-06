@@ -16,18 +16,8 @@
 {{else}}
   {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
 
-  <div class="input-group mb-1 {{> 
-          settings/metadata/deprecated/class 
-          level="warning" 
-          metadata=metadata 
-          key=key 
-          type="group"}}" data-setting-type="boolean">
-    <div class="input-group-text {{> 
-          settings/metadata/deprecated/class 
-          level="warning" 
-          metadata=metadata 
-          key=key 
-          type="label"}}">
+  <div class="input-group mb-1" data-setting-type="boolean" {{> settings/metadata/deprecated/attrs level="warning" metadata=metadata key=key}}>
+    <div class="input-group-text" {{> settings/metadata/deprecated/attrs level="warning" metadata=metadata key=key}}>
       <input 
         class="form-check-input mt-0"
         id="field-{{id}}"
@@ -40,12 +30,7 @@
         {{#if (eq (settingsGetMetadata metadata=metadata key="disabled") true)}}disabled{{/if}}
       />
     </div>
-    <label class="form-control text-start {{> 
-        settings/metadata/deprecated/class 
-        level="warning" 
-        metadata=metadata 
-        key=key 
-        type="field"}}"
+    <label class="form-control text-start" {{> settings/metadata/deprecated/attrs level="warning" metadata=metadata key=key}}
       for="field-{{id}}"
       id="field-{{id}}-label">{{label}}</label>
   </div>

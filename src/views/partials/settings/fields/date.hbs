@@ -15,7 +15,7 @@
 {{else}}
   {{> settings/metadata/deprecated/alert level="warning" metadata=metadata key=key}}
 
-  <div class="input-group mb-1" data-setting-type="string">
+  <div class="input-group mb-1" data-setting-type="string" {{> settings/metadata/deprecated/attrs level="warning" metadata=metadata key=key}}>
     <label class="input-group-text" for="field-{{id}}" id="field-{{id}}-label">{{label}}</label>
     <label class="input-group-text" for="field-{{id}}" id="field-{{id}}-emoji">
       <i class="fas fa-calendar" aria-hidden="true"></i>

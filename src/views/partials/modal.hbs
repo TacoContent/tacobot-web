@@ -1,0 +1,71 @@
+{{!--
+  Generic Bootstrap 5 modal partial
+
+  Usage example:
+  {{> modal 
+      id="clear-logs-modal" 
+      title="Clear All Logs" 
+      body="Are you sure you want to clear all logs? This action cannot be undone." 
+      buttonText="Clear Logs" 
+      buttonClass="btn-danger" 
+      formAction="/logs/clear" 
+      formMethod="POST" }}
+
+  Optional block form (overrides body param):
+  {{#> modal id="example" title="Example" buttonText="Do It" buttonClass="btn-primary"}}
+    <p>Custom <strong>HTML</strong> body via block.</p>
+  {{/modal}}
+
+  Parameters:
+    id           : required, unique ID used for modal targeting
+    title        : required, modal title text
+    body         : optional, plain text/HTML (escaped) if no block supplied
+    buttonText   : required, primary action button label
+    buttonClass  : optional, additional classes for primary button (defaults: btn-primary)
+    cancelText   : optional, cancel button label (default: Cancel)
+    formAction   : optional, if set renders a form wrapping the primary button
+    formMethod   : optional, defaults to POST when formAction provided
+    size         : optional, one of (sm, lg, xl) to adjust dialog size
+    centered     : optional truthy flag to vertically center the modal
+    scrollable   : optional truthy flag to make dialog body scrollable
+
+  Exposes a data attribute data-modal-confirm on the non-form primary button variant
+  to simplify attaching JS handlers if needed.
+--}}
+
+{{!-- Compute dialog classes based on size/flags --}}
+{{#*inline "dialogClasses"}}
+  modal-dialog{{#if size}} modal-{{size}}{{/if}}{{#if centered}} modal-dialog-centered{{/if}}{{#if scrollable}} modal-dialog-scrollable{{/if}}
+{{/inline}}
+
+<div class="modal fade" id="{{id}}" tabindex="-1" aria-labelledby="{{id}}-label" aria-hidden="true">
+  <div class="{{> dialogClasses}}">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="{{id}}-label">{{title}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      {{#if @partial-block}}
+        <div class="modal-body">
+          {{> @partial-block }}
+        </div>
+      {{else if body}}
+        <div class="modal-body">
+          {{body}}
+        </div>
+      {{/if}}
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{#if cancelText}}{{cancelText}}{{else}}Cancel{{/if}}</button>
+        {{#if formAction}}
+          <form method="{{#if formMethod}}{{formMethod}}{{else}}POST{{/if}}" action="{{formAction}}" class="d-inline m-0 p-0">
+            <button type="submit" class="btn {{#if buttonClass}}{{buttonClass}}{{else}}btn-primary{{/if}}">{{buttonText}}</button>
+          </form>
+        {{else}}
+          <button type="button" class="btn {{#if buttonClass}}{{buttonClass}}{{else}}btn-primary{{/if}}" data-modal-confirm data-bs-dismiss="modal">{{buttonText}}</button>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>

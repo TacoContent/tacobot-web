@@ -26,5 +26,15 @@ export default {
     if (typeof value !== 'string') return '';
     if (value.length <= length) return value;
     return value.substring(0, length) + '...';
+  },
+  lowercase: function (this: any, ...args: any[]): string {
+    const [value] = Reflection.getArguments(args, ['value'], ['']);
+    if (typeof value !== 'string') return '';
+    return value.toLowerCase();
+  },
+  uppercase: function (this: any, ...args: any[]): string {
+    const [value] = Reflection.getArguments(args, ['value'], ['']);
+    if (typeof value !== 'string') return '';
+    return value.toUpperCase();
   }
 }
