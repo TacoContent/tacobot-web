@@ -25,7 +25,8 @@ import {
   TacoWebhookMinecraftTacosPayload,
   TacoWebhookMinecraftTacosResponsePayload,
   TacoWebhookGamePayload,
-  ShiftCodePayload
+  ShiftCodePayload,
+  DiscordChannelMessageReactions
 } from './types';
 
 export class TacoBotApiClient {
@@ -166,6 +167,24 @@ export class TacoBotApiClient {
 
   async getChannelMessagesByIds(guildId: string, channelId: string, messageIds: string[]): Promise<ApiResponse<DiscordMessage[]>> {
     return this.makeRequest<DiscordMessage[]>('POST', `/api/v1/guild/${guildId}/channel/${channelId}/messages/batch/ids`, messageIds);
+  }
+
+  /**
+   * Get per-message reactions across a batch of messages.
+   * Body: array of message IDs (string[])
+   * Response: { "<message_id>": [ { emoji, count }, ... ], ... }
+   * Messages that cannot be fetched (missing / no access) are omitted.
+   */
+  async getChannelMessagesReactionsBatch(
+    guildId: string,
+    channelId: string,
+    messageIds: string[]
+  ): Promise<ApiResponse<DiscordChannelMessageReactions>> {
+    return this.makeRequest<DiscordChannelMessageReactions>(
+      'POST',
+      `/api/v1/guild/${guildId}/channel/${channelId}/messages/batch/reactions`,
+      messageIds
+    );
   }
 
   // Role endpoints

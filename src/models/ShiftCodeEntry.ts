@@ -1,4 +1,5 @@
 import { Document } from 'mongodb';
+import { DiscordMessageReaction } from '../libs/tacobot/types';
 
 
 export interface ShiftCodeGame {
@@ -24,6 +25,7 @@ export default class ShiftCodeEntry implements Document {
 	source_id: string = '';
 	created_at: number = Date.now();
 	tracked_in: ShiftCodeTrackedIn[] = [];
+	reactions?: DiscordMessageReaction[];
 
 	constructor(data: Partial<ShiftCodeEntry> = {}) {
 		Object.assign(this, data);

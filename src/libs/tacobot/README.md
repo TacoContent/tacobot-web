@@ -60,6 +60,13 @@ const customClient = new TacoBotApiClient({
 - `getGuildRoles(guildId)` - Get guild roles
 - `getGuildRolesByIds(guildId, roleIds)` - Get multiple roles by IDs (batch)
 
+### Messages
+
+- `getChannelMessages(guildId, channelId, limit?)` - List recent messages
+- `getChannelMessage(guildId, channelId, messageId)` - Get a single message
+- `getChannelMessagesByIds(guildId, channelId, messageIds)` - Batch fetch specific messages
+- `getChannelMessagesReactionsBatch(guildId, channelId, messageIds)` - Get per-message reactions mapping `{ messageId: [ { emoji, count }, ... ] }`
+
 ### Join Whitelist
 
 - `getJoinWhitelist(guildId)` - Get entire join whitelist for a guild (avoid for very large lists)
@@ -176,6 +183,35 @@ See `examples.ts` for comprehensive usage examples including:
 - Webhook usage
 - Join whitelist management
 - Custom client configuration
+
+### Message Reactions Batch Example
+
+```typescript
+import { tacoBotApiClient } from './libs/tacobot';
+
+const guildId = '123456789012345678';
+const channelId = '234567890123456789';
+const messageIds = [
+  '555555555555555555',
+  '666666666666666666',
+  '777777777777777777'
+];
+
+const reactionsMap = await tacoBotApiClient.getChannelMessagesReactionsBatch(guildId, channelId, messageIds);
+console.log('Per-message reactions:', reactionsMap.data);
+// => {
+//   '555555555555555555': [ { emoji: ':taco:', count: 2 }, { emoji: '👍', count: 1 } ],
+//   '666666666666666666': [ { emoji: ':taco:', count: 3 } ],
+//   '777777777777777777': []
+// }
+
+// To aggregate yourself:
+const total = Object.values(reactionsMap.data).reduce((acc, list) => {
+  for (const r of list) acc.set(r.emoji, (acc.get(r.emoji) || 0) + r.count);
+  return acc;
+}, new Map<string, number>());
+console.log('Aggregated:', Array.from(total, ([emoji, count]) => ({ emoji, count })));
+```
 
 ## API Endpoints Covered
 

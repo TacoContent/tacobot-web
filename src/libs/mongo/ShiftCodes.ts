@@ -6,6 +6,7 @@ import { Collection, InsertManyResult, InsertOneResult } from 'mongodb';
 import PagedResults from '../../models/PagedResults';
 
 class ShiftCodesMongoClient extends DatabaseMongoClient<ShiftCodeEntry> {
+  tacoBotApiClient: any;
   constructor() {
     super();
     this.collectionName = 'shift_codes';

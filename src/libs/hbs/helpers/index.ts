@@ -7,6 +7,7 @@ import numbers from './numbers';
 import strings from './strings';
 import settings from './settings';
 import discord from './discord';
+import objects from './objects';
 
 const helpers = {
   ...dates,
@@ -18,6 +19,7 @@ const helpers = {
   ...strings,
   ...settings,
   ...discord,
+  ...objects,
 };
 
 export default helpers;
