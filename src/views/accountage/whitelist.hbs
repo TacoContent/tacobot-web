@@ -32,3 +32,35 @@
   {{> pager this.pager}}
   </div>
 </div>
+
+{{!-- Floating Action Button (FAB) for adding new whitelist entry --}}
+<button 
+  type="button" 
+  class="btn btn-primary rounded-circle shadow position-fixed btn-fab"
+  aria-label="Add Whitelist Entry"
+  data-bs-toggle="modal" 
+  data-bs-target="#add-whitelist-entry-modal">
+  <i class="fas fa-plus" aria-hidden="true"></i>
+</button>
+
+{{!-- Mock Add Whitelist Entry Modal --}}
+{{#> modal 
+    id="add-whitelist-entry-modal" 
+    title="Add Whitelist Entry" 
+    buttonText="Add" 
+    buttonClass="btn-success" 
+    cancelText="Cancel" 
+    formAction="/accountage/whitelist" 
+    formMethod="POST"}}
+  <p class="mb-3">This is a placeholder form. Components to select a Guild and User will be added here.</p>
+  <div class="alert alert-info py-2 mb-3">Mock form only – no real submission fields yet.</div>
+  <div class="mb-3">
+    <label for="mock-guild" class="form-label">Guild (mock)</label>
+    <input type="text" id="mock-guild" class="form-control" placeholder="Enter guild id (mock)" disabled>
+  </div>
+  <div class="mb-3">
+    <label for="mock-user" class="form-label">User (mock)</label>
+    <input type="text" id="mock-user" class="form-control" placeholder="Enter user id (mock)" disabled>
+  </div>
+  <input type="hidden" name="_mock" value="true" />
+{{/modal}}

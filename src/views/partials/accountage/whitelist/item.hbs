@@ -1,7 +1,31 @@
 <div class="card mb-3">
   <div class="card-body">
     <h5 class="card-title">{{> discord/user user=this.user_id guild=this.guild_id}}</h5>
-    <h6 class="card-subtitle mb-2 text-muted">Added by: {{#if this.added_by}}{{> discord/user user=this.added_by guild=this.guild_id}}{{else}}Unknown{{/if}} on {{#if this.timestamp}}{{formatDate this.timestamp}}{{else}}Unknown{{/if}}</h6>
+    <h6 class="card-subtitle mb-2 text-muted">Added by: {{#if this.added_by}}{{> discord/user user=this.added_by guild=this.guild_id}}{{else}}Unknown{{/if}} on {{#if this.timestamp}}<span title="{{unixToDate this.timestamp 'YYYY-MM-DD HH:mm:ss z'}}">{{unixFromNow this.timestamp}}{{else}}Unknown{{/if}}</span></h6>
     <div class="card-text">{{> discord/guild id=this.guild_id}}</div>
+  </div>
+  <div class="card-footer text-end">
+    {{!-- Delete button triggers confirmation modal --}}
+    {{!-- Build a unique modal id using guild and user ids --}}
+    {{#with this}}
+      {{!-- Define modal id inline (cannot assign, so replicate logic in attributes) --}}
+      <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#delete-whitelist-{{guild_id}}-{{user_id}}">
+        <i class="fas fa-trash" aria-hidden="true"></i> Delete
+      </button>
+
+      {{!-- Confirmation modal using generic modal partial --}}
+      {{#> modal 
+          id=(concat 'delete-whitelist-' guild_id '-' user_id) 
+          title='Remove From Whitelist' 
+          buttonText='Delete Entry' 
+          buttonClass='btn-danger' 
+          cancelText='Keep' 
+          formAction=(concat '/accountage/whitelist/' guild_id '/' user_id) 
+          formMethod='POST'}}
+        <div class="mb-2">Are you sure you want to remove {{> discord/user user=user_id guild=guild_id}} from the whitelist?</div>
+        <p class="text-warning small mb-0">This action cannot be undone.</p>
+        <input type="hidden" name="_method" value="DELETE" />
+      {{/modal}}
+    {{/with}}
   </div>
 </div>

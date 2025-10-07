@@ -20,7 +20,15 @@
       <div class="col">
 
         <div class="card-header">
-          <a href="/permissions/add/{{this.user_id}}" class="btn text-success btn-sm float-end p-0"><i class="fas fa-plus"></i></a>
+          <button 
+            type="button" 
+            class="btn text-success btn-sm float-end p-0" 
+            aria-label="Add Permission" 
+            title="Add Permission"
+            data-bs-toggle="modal" 
+            data-bs-target="#add-permission-{{this.guild_id}}-{{this.user_id}}">
+            <i class="fas fa-plus" aria-hidden="true"></i>
+          </button>
           <div class="text-uppercase">Permissions</div>
         </div>
         {{#each this.permissions}}
@@ -30,6 +38,34 @@
           </div>
         </div>
         {{/each}}
+        {{!-- Add Permission Modal (scoped to this user & guild) --}}
+        {{#> modal 
+            id=(concat 'add-permission-' this.guild_id '-' this.user_id)
+            title='Add Permission'
+            buttonText='Add Permission'
+            buttonClass='btn-success'
+            cancelText='Cancel'
+            formAction=(concat '/permissions/add/' this.guild_id '/' this.user_id)
+            formMethod='POST'}}
+          <div class="mb-3">
+            <div class="mb-2">
+              Add a new permission for {{> discord/user user=this.user_id guild=this.guild_id }}
+            </div>
+            <div class="input-group">
+              <label class="input-group-text" for="permission-name-{{this.guild_id}}-{{this.user_id}}">Permission Name</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="permission-name-{{this.guild_id}}-{{this.user_id}}" 
+                name="permission" 
+                placeholder="e.g. CLAIM_GAME_DISABLED" 
+                required 
+                maxlength="64"
+                autofocus />
+            </div>
+          </div>
+          <p class="small text-muted mb-0">Provide the exact permission key.</p>
+        {{/modal}}
       </div>
     </div>
   </div>

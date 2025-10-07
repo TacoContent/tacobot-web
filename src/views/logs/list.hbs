@@ -57,7 +57,7 @@
               </tr>
               {{#if this.stack_trace}}
               <tr class="log-entry {{lowercase this.level}}">
-                <td class="text-start stack">{{> code value=this.stack_trace}}</td>
+                <td class="text-start stack">{{> highlight (pythonObject value=this.stack_trace)}}</td>
               </tr>
               {{/if}}
             </table>
