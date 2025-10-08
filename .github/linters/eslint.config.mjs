@@ -157,6 +157,8 @@ export default defineConfig([
       }],
       // Allow extensionless imports (disable requirement to specify file extensions)
       'n/file-extension-in-import': 'off',
+      // Application code, not a published package – disable unpublished import rule
+      'n/no-unpublished-import': 'off',
     },
   },
 ]);

@@ -118,7 +118,7 @@ function normalizePort(value: string): number | string | false {
 
 const port = normalizePort(process.env.PORT || '3000') || 3000;
 console.log("begin listen action");
-app.listen(port, async () => {
+const server = app.listen(port, async () => {
   console.log("Attempting to log server start");
   try {
     await logger.info('tacobot.www', `tacobot listening → ':${port}'`);
@@ -137,8 +137,10 @@ const shutdown = async () => {
   } catch (err) {
     console.error('Error during shutdown:', err);
   }
-  // eslint-disable-next-line no-process-exit
-  process.exit(0);
+  // Close the HTTP server; process will exit when event loop drains
+  server.close(() => {
+    console.log('HTTP server closed.');
+  });
 };
 
 process.on('SIGINT', shutdown);
