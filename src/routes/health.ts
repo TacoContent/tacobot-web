@@ -1,6 +1,4 @@
-// import config from '../config';
 import { Router, Request, Response } from 'express';
-// import SettingsMongoClient from '../libs/mongo/Settings';
 
 const router = Router();
 
@@ -10,7 +8,8 @@ async function getHealth(req: Request, res: Response ) {
     //await settingsClient.connect();
     //await settingsClient.list();
     res.status(200).json({ status: 'ok' });
-  } catch (err: any) {
+  } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+    console.error('Health check failed:', err);
     res.status(500).json({ status: 'error', message: err.message });
   }
 }

@@ -28,14 +28,28 @@
     </thead>
     <tbody>
       {{#each items}}
-      <tr>
+      <tr data-op-row data-guild-id="{{this.guild_id}}" data-user-id="{{this.user_id}}">
         <td class="text-nowrap p-1 text-start">{{> discord/guild id=this.guild_id}}</td>
         <td class="text-nowrap p-1 text-start">{{> discord/user user=this.user_id guild=this.guild_id}}</td>
         <td class="text-nowrap p-1 text-start">{{> minecraft/user uuid=this.uuid username=this.username}}</td>
         <td class="text-nowrap">{{> yes-no value=this.whitelist}}</td>
         <td class="text-nowrap">{{> minecraft/op-level level=this.op.level}}</td>
         <td class="text-nowrap">{{> yes-no value=this.op.bypassesPlayerLimit}}</td>
-        <td class="text-nowrap"></td>
+        <td class="text-nowrap">
+          <a href="/minecraft/ops/edit/{{this.guild_id}}/{{this.user_id}}" class="btn btn-sm btn-action text-primary" title="Edit"><i class="fas fa-edit" aria-hidden="true"></i></a>
+          <button 
+            type="button" 
+            class="btn btn-sm text-danger btn-action btn-remove-op" 
+            title="Remove" 
+            data-bs-toggle="modal" 
+            data-bs-target="#remove-op-modal"
+            data-guild-id="{{this.guild_id}}"
+            data-user-id="{{this.user_id}}"
+            data-uuid="{{this.uuid}}"
+            data-username="{{this.username}}">
+            <i class="fas fa-trash" aria-hidden="true"></i>
+          </button>
+        </td>
       </tr>
       {{/each}}
     </tbody>
@@ -48,3 +62,48 @@
     </div>
   </div>
 </div>
+
+{{!-- Reusable Remove Operator Modal using modal partial form wrapper --}}
+{{#> modal 
+    id="remove-op-modal" 
+    title="Remove Minecraft Operator" 
+    buttonText="Remove" 
+    buttonClass="btn-danger" 
+    cancelText="Cancel" 
+    formAction="#" 
+    formMethod="POST" }}
+  <input type="hidden" name="_method" value="DELETE" />
+  <input type="hidden" name="guildId" id="remove-op-guildId" value="" />
+  <input type="hidden" name="userId" id="remove-op-userId" value="" />
+  <input type="hidden" name="uuid" id="remove-op-uuid" value="" />
+  <div id="remove-op-alert" class="alert alert-danger d-none py-1 px-2 small mb-2"></div>
+  <div class="mb-2">
+    <strong>Guild:</strong> <span id="remove-op-guild-display" class="text-muted"></span><br/>
+    <strong>User:</strong> <span id="remove-op-user-display" class="text-muted"></span><br/>
+    <strong>Minecraft:</strong> <span id="remove-op-mc-display" class="text-muted"></span>
+  </div>
+  <p class="text-warning small mb-2">This action cannot be undone.</p>
+{{/modal}}
+
+{{!-- Floating Action Button to Add Operator --}}
+<button
+  type="button"
+  class="btn btn-primary rounded-circle shadow position-fixed fab-add-operator btn-fab"
+  aria-label="Add Minecraft Operator"
+  title="Add Minecraft Operator"
+  data-bs-toggle="modal"
+  data-bs-target="#add-op-modal">
+  <i class="fas fa-plus" aria-hidden="true"></i>
+</button>
+
+{{!-- Mock Add Operator Modal --}}
+{{#> modal 
+    id="add-op-modal" 
+    title="Add Minecraft Operator" 
+    buttonText="Add" 
+    buttonClass="btn-success" 
+    cancelText="Cancel" 
+    formAction="/minecraft/ops/add" 
+    formMethod="POST" }}
+  {{> minecraft/new-op-modal}}
+{{/modal}}

@@ -47,6 +47,7 @@ export default class ScriptsController {
         'template-loader.js',
         'code-field.js',
         'on-ready.js',
+        'minecraft-ops.js'
       ];
 
       res.setHeader('Content-Type', 'application/javascript');

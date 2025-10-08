@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 import GameKeysController from '../controllers/GameKeysController';
 import * as ui from '../middleware/ui';
 

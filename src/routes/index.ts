@@ -19,7 +19,7 @@ function isRouterFile(filePath: string) {
 function importRouter(filePath: string) {
 	// Remove extension for require
 	const relPath = './' + path.relative(ROUTES_DIR, filePath).replace(/\\/g, '/').replace(/\.(ts|js)$/, '');
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	// eslint-disable-next-line @typescript-eslint/no-var-requires @typescript-eslint/no-require-imports
 	const mod = require(relPath);
 	// Support both default and named export
 	return mod.default || mod;
@@ -37,7 +37,7 @@ function loadRouters(dir: string) {
 				if (typeof dynamicRouter === 'function' || typeof dynamicRouter === 'object') {
 					router.use('/', dynamicRouter);
 				}
-			} catch (err) {
+			} catch {
 				// Optionally log error
 			}
 		}

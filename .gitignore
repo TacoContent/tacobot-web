@@ -9,6 +9,7 @@
 .data/
 files/certificates/
 !files/certificates/.gitkeep
+super-linter-output/
 
 app/
 !app/package.json

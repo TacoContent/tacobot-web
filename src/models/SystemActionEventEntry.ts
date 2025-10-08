@@ -11,4 +11,4 @@ export default class SystemActionEventEntry<T = SystemActionEventData | null | u
   }
 }
 
-export interface SystemActionEventData {}
+export interface SystemActionEventData { } // eslint-disable-line @typescript-eslint/no-empty-object-type

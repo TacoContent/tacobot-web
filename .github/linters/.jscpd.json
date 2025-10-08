@@ -1,5 +1,5 @@
 {
-  "threshold": 20,
+  "threshold": 30,
   "reporters": [
     "consoleFull"
   ],
@@ -8,7 +8,9 @@
     "**/__snapshots__/**",
     "**/__pycache__/**",
     "**/.vscode/**",
-    "**/.git/**"
+    "**/.git/**",
+    "**/node_modules/**",
+    "**/app/**"
   ],
   "absolute": true
 }

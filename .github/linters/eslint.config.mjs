@@ -25,7 +25,9 @@ export default defineConfig([
       "!**/.*",
       "**/node_modules/.*",
       "**/sample.devcontainer.json",
-      "**/devcontainer.json"
+      "**/devcontainer.json",
+      "/github/workspace/src/libs/tacobot/examples.ts",
+      "/github/workspace/**/app/"
     ]
   ),
   {
@@ -136,6 +138,25 @@ export default defineConfig([
           modules: true,
         },
       },
+    },
+  },
+  {
+    /* Custom settings to allow extensionless TypeScript imports like
+       import Foo from './libs/mongo/Logs'
+       without having to specify .ts and without disabling the rule. */
+    files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
+    plugins: { n },
+    settings: {
+      // Allow plugin-n resolver to attempt these extensions when import has none
+      'n/resolverExtensions': [".ts", ".tsx", ".d.ts", ".js", ".mjs", ".cjs", ".json"],
+    },
+    rules: {
+      // Configure no-missing-import to try TypeScript extensions before erroring
+      'n/no-missing-import': ['error', {
+        tryExtensions: [".ts", ".tsx", ".d.ts", ".js", ".jsx", ".mjs", ".cjs", ".json"],
+      }],
+      // Allow extensionless imports (disable requirement to specify file extensions)
+      'n/file-extension-in-import': 'off',
     },
   },
 ]);

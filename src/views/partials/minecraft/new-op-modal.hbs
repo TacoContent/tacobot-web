@@ -1,0 +1,53 @@
+<p class="mb-3 small text-muted">Mock form – fields are placeholders; wiring & validation to be implemented.</p>
+
+<div class="input-group mb-3">
+  <label class="input-group-text" for="add-op-guild" id="add-op-guild-label">Guild (mock)</label>
+  <input type="text" class="form-control" placeholder="Enter Guild ID" aria-label="Enter Guild ID" aria-describedby="add-op-guild-label" value="" name="guildId" id="add-op-guild" />
+</div>
+
+<div class="input-group mb-3">
+  <label class="input-group-text" for="add-op-user" id="add-op-user-label">User (mock)</label>
+  <input type="text" class="form-control" placeholder="Enter User ID" aria-label="Enter User ID" aria-describedby="add-op-user-label" value="" name="userId" id="add-op-user" />
+</div>
+
+<div class="input-group mb-3">
+  <label class="input-group-text" for="add-op-mc-username" id="add-op-mc-username-label">Minecraft Username (mock)</label>
+  <input type="text" class="form-control" placeholder="Enter Minecraft Username" aria-label="Enter Minecraft Username" aria-describedby="add-op-mc-username-label" value="" name="mcUsername" id="add-op-mc-username" />
+</div>
+
+
+<div class="input-group mb-3">
+  <label class="input-group-text" for="add-op-mc-uuid" id="add-op-mc-uuid-label">Minecraft UUID (mock)</label>
+  <input type="text" class="form-control" placeholder="Enter Minecraft UUID" aria-label="Enter Minecraft UUID" aria-describedby="add-op-mc-uuid-label" value="" name="mcUuid" id="add-op-mc-uuid" />
+</div>
+
+<div class="input-group mb-3">
+  <label class="input-group-text" for="add-op-level" id="add-op-level-label">Operator Level (mock)</label>
+  <select id="add-op-level" name="opLevel" class="form-select form-control">
+    <option value="">Select Level</option>
+    <option value="1">1 - Visitor</option>
+    <option value="2">2 - Member</option>
+    <option value="3">3 - Operator</option>
+    <option value="4">4 - Admin</option>
+  </select>
+</div>
+
+<div class="input-group mb-1">
+  <div class="input-group-text">
+    <input 
+      class="form-check-input mt-0"
+      id="add-op-bpl"
+      name="bypassesPlayerLimit"
+      type="checkbox"
+      value="true"
+      checked
+      aria-label="Bypasses Player Limit"
+      aria-describedby="add-op-bpl-label"
+    />
+  </div>
+  <label class="form-control text-start"
+    for="add-op-bpl"
+    id="add-op-bpl-label">Bypasses Player Limit</label>
+</div>
+<input type="hidden" name="_mock" value="true" />
+<p class="small text-warning mb-0">Submission currently non-functional (mock).</p>

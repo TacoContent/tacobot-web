@@ -8,11 +8,10 @@ import * as fs from 'fs';
 import * as bodyParser from 'body-parser';
 import { engine as hbsEngine } from 'express-handlebars';
 import LogsMongoClient from './libs/mongo/Logs';
-import config from './config';
 import routes from './routes';
 import * as middleware from './middleware';
-import * as FileNotFoundHandler from './libs/express/handlers/FileNotFoundHandler';
-import * as ErrorHandler from './libs/express/handlers/ErrorHandler';
+// import * as FileNotFoundHandler from './libs/express/handlers/FileNotFoundHandler';
+// import * as ErrorHandler from './libs/express/handlers/ErrorHandler';
 import MigrationRunner from './libs/migrations';
 import helpers from './libs/hbs/helpers';
 
@@ -138,6 +137,7 @@ const shutdown = async () => {
   } catch (err) {
     console.error('Error during shutdown:', err);
   }
+  // eslint-disable-next-line no-process-exit
   process.exit(0);
 };
 
@@ -155,15 +155,18 @@ process.on('uncaughtException', async (error: NodeJS.ErrnoException) => {
   switch (error.code) {
     case 'EACCES':
       await logger.error('tacobot.bin.www', `${bind} requires elevated privileges`);
-      process.exit(1);
+      throw new Error(`EACCES: ${bind} requires elevated privileges`);
+      // process.exit(1);
       break;
     case 'EADDRINUSE':
       await logger.error('tacobot.bin.www', `${bind} is already in use`);
-      process.exit(1);
+      throw new Error(`EADDRINUSE: ${bind} is already in use`);
+      // process.exit(1);
       break;
     case 'ECONNREFUSED':
       await logger.error('tacobot.bin.www', `${bind} connection refused`);
-      process.exit(1);
+      throw new Error(`ECONNREFUSED: ${bind} connection refused`);
+      // process.exit(1);
       break;
     default:
       throw error;

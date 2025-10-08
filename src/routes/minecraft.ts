@@ -1,6 +1,5 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 import MinecraftUsersController from '../controllers/MinecraftController';
-import Games from '../libs/consts/SHiFTCodes/Games';
 import * as ui from '../middleware/ui';
 
 const router = Router();

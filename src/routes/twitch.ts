@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 import * as ui from '../middleware/ui';
 import TwitchController from '../controllers/TwitchController';
 
