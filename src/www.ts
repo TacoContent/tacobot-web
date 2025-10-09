@@ -84,8 +84,6 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname, 'assets')));
 
 app.get('/', middleware.ui.allow, (req: Request, res: Response) => {
-  console.log('In route - res.locals.config:', res.locals.config);
-  console.log('In route - config debug:', res.locals.config?.debug);
   return res.render('index', { title: 'TacoBot' });
 });
 

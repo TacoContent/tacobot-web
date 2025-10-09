@@ -1,0 +1,65 @@
+<div class="card border-primary mb-4 shadow-sm bg-primary-subtle text-bg-primary">
+  <div class="card-header text-muted">
+    <h5 class="card-title">
+      <span class="badge bg-primary text-bg-primary text-uppercase float-start">{{this.type}}</span>
+      <span class="float-end badge bg-success text-bg-success">{{> taco count=this.cost}}</span>
+      <div class="fs-2 text-truncate ms-4 me-4 ps-2 pe-2" title="{{this.title}}">{{this.title}}</div>
+    </h5>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col">
+        <div class="card-header text-uppercase"><span class="mb-1">Guild</span></div>
+        <div class="mt-1">{{> discord/guild id=this.guild_id}}</div>
+      </div>
+      <div class="col">
+        <div class="card-header text-uppercase"><span class="mb-1">Submitter</span></div>
+        <div class="mt-1">{{> discord/user user=this.user_owner guild=this.guild_id }}</div>
+      </div>
+      <div class="col">
+        <div class="card-header text-uppercase"><span class="me-2">Expires</span></div>
+        <div class="mt-1">{{unixFromNow expires}}</div>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="input-group mb-0">
+      {{> code value=this.key copy=true spoiler=true class="fs-2 mw-100" }}
+    </div>
+  </div>
+
+  <div class="card-footer text-muted text-end">
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#{{this.message_id}}">
+      <i class="fas fa-power-off me-1"></i> Remove & Create New
+    </button>
+  </div>
+  
+  {{#> modal id=this.message_id title='Replace Offer' buttonText='Remove & Create New' buttonClass='btn-danger' centered=true}}
+    <p>Are you sure you want to remove this offer and create a new one?</p>
+    <ul class="small text-muted mb-0">
+      <li>Guild: {{this.guild_id}}</li>
+      <li>Channel: {{this.channel_id}}</li>
+      <li>Message: {{this.message_id}}</li>
+    </ul>
+  {{/modal}}
+
+  <script>
+    (function() {
+      document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.getElementById('{{this.message_id}}');
+        if (!modal) return;
+        var confirmBtn = modal.querySelector('[data-modal-confirm]');
+        if (!confirmBtn) return;
+        confirmBtn.addEventListener('click', function() {
+          var url = '/gamekeys/offer/new'
+            + '?replace=true'
+            + '&guild_id=' + encodeURIComponent('{{this.guild_id}}')
+            + '&channel_id=' + encodeURIComponent('{{this.channel_id}}')
+            + '&message_id=' + encodeURIComponent('{{this.message_id}}')
+            + '&game_key_id=' + encodeURIComponent('{{this.game_key_id}}');
+          window.location.href = url;
+        });
+      });
+    })();
+  </script>
+</div>

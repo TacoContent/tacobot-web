@@ -16,10 +16,14 @@ export default class GameKeysController {
     // Get paginated game keys
     const results = await client.get((page - 1) * pageSize, pageSize, search);
 
+    const offers = await client.getOffers();
+    console.log('Offers:', offers);
+
     res.render('gamekeys/list', {
       ...res.locals,
       title: 'Game Keys',
       items: results.items,
+      offers: offers,
       pager: results.getPager(),
     });
   };
