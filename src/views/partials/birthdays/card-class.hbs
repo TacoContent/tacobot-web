@@ -1,1 +1,1 @@
-{{#if (within timeframe=7 unit="days" month=this.month day=this.day)}} text-bg-success{{else}}{{#if (within timeframe=14 unit="days" month=this.month day=this.day)}} text-bg-primary{{/if}}{{/if}}
+{{#if (within timeframe=7 unit="days" month=this.month day=this.day)}} text-bg-success-subtle border-success bg-success{{else}}{{#if (within timeframe=14 unit="days" month=this.month day=this.day)}} text-bg-primary-subtle border-primary bg-primary{{else}} {{/if}}{{/if}}

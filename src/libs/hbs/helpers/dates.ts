@@ -1,7 +1,26 @@
-import moment, { unix } from 'moment-timezone';
+import moment, { isDate, unix } from 'moment-timezone';
 import Reflection from '../../Reflection';
 
+function isTimestampInSeconds(timestamp: number): boolean {
+  // is there a mathematical way to determine if a timestamp is in seconds or milliseconds?
+  return timestamp < 10000000000;
+  // return timestamp.toString().length === 10;
+}
+
+function convertTS(timestamp: number): number {
+  // if the timestamp is in seconds, convert to ms
+  // python sends timestamps in seconds, while js uses milliseconds
+  if (isTimestampInSeconds(timestamp)) {
+    return timestamp * 1000;
+  }
+  return timestamp;
+}
+
 export default {
+  isValidDate: function (this: any, ...args: any[]): boolean {
+    const [date] = Reflection.getArguments(args, ['date']);
+    return moment(date, false).isValid();
+  },
   formatDate: function (this: any, ...args: any[]) {
     const [date, format] = Reflection.getArguments(args, ['date', 'format']);
     // check if we need to take the d
@@ -9,16 +28,26 @@ export default {
   },
   unixToDate: function (this: any, ...args: any[]) {
     const [timestamp, format] = Reflection.getArguments(args, ['timestamp', 'format']);
-    return moment.utc(timestamp * 1000).format(format);
+    return moment.utc(convertTS(timestamp)).format(format);
   },
   unixFromNow: function (this: any, ...args: any[]): string {
     const [timestamp] = Reflection.getArguments(args, ['timestamp']);
-    return moment.utc(timestamp * 1000).fromNow();
+    return moment.utc(convertTS(timestamp)).fromNow();
+  },
+  unixIsAfter: function (this: any, ...args: any[]): boolean {
+    const [timestamp] = Reflection.getArguments(args, ['timestamp']);
+    const now = moment.utc(); // use local time instead of utc here
+    return now.isAfter(moment.utc(convertTS(timestamp)));
   },
   isToday: function (this: any, ...args: any[]): boolean {
-    const [month, day] = Reflection.getArguments(args, ['month', 'day'], [1, 1]);
+    const [month, day, year] = Reflection.getArguments(args, ['month', 'day', 'year'], [1, 1, moment().year()]);
     const now = moment(); // use local time instead of utc here
-    return now.month() + 1 === month && now.date() === day;
+    return now.month() + 1 === month && now.date() === day && (now.year() === year || !year);
+  },
+  isAfter: function (this: any, ...args: any[]): boolean {
+    const [month, day, year] = Reflection.getArguments(args, ['month', 'day', 'year'], [1, 1, moment().year()]);
+    const now = moment.utc(); // use local time instead of utc here
+    return now.isAfter(moment.utc({ year, month: month - 1, day }));
   },
   thisYear: function (this: any): number {
     return moment().year();

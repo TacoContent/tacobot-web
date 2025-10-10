@@ -1,4 +1,4 @@
-<div class="card border-primary mb-4 shadow-sm bg-primary-subtle text-bg-primary">
+<div class="card {{#if (and (unixIsAfter expires) (isValidDate expires))}}border-warning{{else}}border-primary bg-primary-subtle text-bg-primary{{/if}} shadow-sm mb-4"{{#if (and (unixIsAfter expires) (isValidDate expires))}} data-expired="true" data-expired-text="expired"{{/if}}>
   <div class="card-header text-muted">
     <h5 class="card-title">
       <span class="badge bg-primary text-bg-primary text-uppercase float-start">{{this.type}}</span>
@@ -30,7 +30,7 @@
 
   <div class="card-footer text-muted text-end">
     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#{{this.message_id}}">
-      <i class="fas fa-power-off me-1"></i> Remove & Create New
+      <i class="fas fa-power-off me-1"></i> Remove &amp; Create New
     </button>
   </div>
   

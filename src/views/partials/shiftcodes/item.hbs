@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card {{#if (and (unixIsAfter expiry) (isValidDate expiry))}}border-warning{{else}}border-primary{{/if}} bg-primary-subtle text-bg-primary"{{#if (and (unixIsAfter expiry) (isValidDate expiry))}} data-expired="true" data-expired-text="expired"{{/if}}>
   <div class="card-header text-muted">
     <h5 class="card-title">{{this.reward}}</h5>
     {{#if this.notes}}
@@ -22,7 +22,7 @@
     <div class="row">
       <div class="col">
         <div class="card-header">Games</div>
-        <ul class="mb-0 ps-3 list-group list-group-flush">
+        <ul class="mb-0 ps-0 list-group-x list-group-flush">
           {{#each this.games}}
             <li class="list-group-item">{{this.name}}</li>
           {{/each}}
@@ -30,7 +30,7 @@
       </div>
       <div class="col">
         <div class="card-header">Platforms</div>
-        <ul class="mb-0 ps-3 list-group list-group-flush">
+        <ul class="mb-0 ps-0 list-group-x list-group-flush">
           {{#each this.platforms}}
             <li class="list-group-item">{{this}}</li>
           {{/each}}
@@ -38,8 +38,8 @@
       </div>
       <div class="col">
         <div class="card-header">Reactions</div>
-        <ul class="mb-0 ps-3 list-group list-group-flush">
-          {{#each (flattenObject this.reactions)}}
+        <ul class="mb-0 ps-0 list-group-x list-group-flush">
+          {{#each this.reactions}}
             <li class="list-group-item d-flex justify-content-between align-items-center">
               <span>{{this.emoji}}</span>
               <span class="badge bg-primary rounded-pill">{{this.count}}</span>

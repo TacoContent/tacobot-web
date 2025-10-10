@@ -35,7 +35,7 @@ export default class ShiftCodeController {
     // get expiry date as unix timestamp converted from the provided date string
     let expiry: number | null = null;
     if (req.body.expiry) {
-      const m = moment.utc(req.body.expiry) ;
+      const m = moment.utc(req.body.expiry);
       if (m.isValid()) {
         expiry = m.valueOf() / 1000;
       }
@@ -106,88 +106,100 @@ export default class ShiftCodeController {
     const search: string | undefined = (req.query.search as string) || undefined;
     // Get paginated shift codes
     const results = await client.get((page - 1) * pageSize, pageSize, search);
-    // Build per-entry mapping AND a global guild->channel->messageIds map to minimize API calls.
-    interface EntryMessageMap { [guildId: string]: { [channelId: string]: Set<string> } }
-    const perEntryMessages: EntryMessageMap[] = results.items.map(() => ({}));
-    const globalMessages: { [guildId: string]: { [channelId: string]: Set<string> } } = {};
 
-    results.items.forEach((entry: any, entryIdx: number) => {
-      for (const t of entry.tracked_in ?? []) {
-        // Per-entry
-        const entryMap = perEntryMessages[entryIdx];
-        const entryGuildBucket = entryMap[t.guild_id] ?? (entryMap[t.guild_id] = {});
-        const entryChannelSet = entryGuildBucket[t.channel_id] ?? (entryGuildBucket[t.channel_id] = new Set<string>());
-        entryChannelSet.add(t.message_id);
-        // Global
-        const gGuildBucket = globalMessages[t.guild_id] ?? (globalMessages[t.guild_id] = {});
-        const gChannelSet = gGuildBucket[t.channel_id] ?? (gGuildBucket[t.channel_id] = new Set<string>());
-        gChannelSet.add(t.message_id);
-      }
+    // add placeholder reactions data to each entry
+    results.items.forEach((item) => {
+      const target: DiscordChannelMessageReactions = {};
+      target['messageId'] = [
+        { emoji: '✅', count: 0 },
+        { emoji: '❌', count: 0 },
+      ] as DiscordMessageReaction[];
+      item.reactions = target['messageId']; // final shape
     });
+
+
+    // Build per-entry mapping AND a global guild->channel->messageIds map to minimize API calls.
+    // interface EntryMessageMap { [guildId: string]: { [channelId: string]: Set<string> } }
+    // const perEntryMessages: EntryMessageMap[] = results.items.map(() => ({}));
+    // const globalMessages: { [guildId: string]: { [channelId: string]: Set<string> } } = {};
+
+    // results.items.forEach((entry: any, entryIdx: number) => {
+    //   for (const t of entry.tracked_in ?? []) {
+    //     // Per-entry
+    //     const entryMap = perEntryMessages[entryIdx];
+    //     const entryGuildBucket = entryMap[t.guild_id] ?? (entryMap[t.guild_id] = {});
+    //     const entryChannelSet = entryGuildBucket[t.channel_id] ?? (entryGuildBucket[t.channel_id] = new Set<string>());
+    //     entryChannelSet.add(t.message_id);
+    //     // Global
+    //     const gGuildBucket = globalMessages[t.guild_id] ?? (globalMessages[t.guild_id] = {});
+    //     const gChannelSet = gGuildBucket[t.channel_id] ?? (gGuildBucket[t.channel_id] = new Set<string>());
+    //     gChannelSet.add(t.message_id);
+    //   }
+    // });
 
     // Per-entry per-message reactions mapping only
-    const entryMessageReactions: DiscordChannelMessageReactions[] = results.items.map(() => ({}));
+    // const entryMessageReactions: DiscordChannelMessageReactions[] = results.items.map(() => ({}));
 
-    // Global fetched reactions cache: guild -> channel -> mapping(messageId -> reactions[])
-    const globalReactions: { [guildId: string]: { [channelId: string]: DiscordChannelMessageReactions } } = {};
+    // // Global fetched reactions cache: guild -> channel -> mapping(messageId -> reactions[])
+    // const globalReactions: { [guildId: string]: { [channelId: string]: DiscordChannelMessageReactions } } = {};
 
-    // Prepare tasks: one per (guild, channel)
-    const MAX_CONCURRENT = 5;
-    const tasks: (() => Promise<void>)[] = [];
-    for (const [guildId, channels] of Object.entries(globalMessages)) {
-        for (const [channelId, messageIdSet] of Object.entries(channels)) {
-            const ids = Array.from(messageIdSet);
-            if (ids.length === 0) continue;
-            tasks.push(async () => {
-              try {
-                const resp = await apiClient.getChannelMessagesReactionsBatch(guildId, channelId, ids);
-                const mapping = resp.data || {};
-                // Log the raw mapping (truncated if very large)
-                const guildBucket = globalReactions[guildId] ?? (globalReactions[guildId] = {});
-                guildBucket[channelId] = mapping;
-              } catch (e) {
-                console.error(`Error fetching reactions guild ${guildId} channel ${channelId}`, e);
-              }
-            });
-        }
-    }
+    // // Prepare tasks: one per (guild, channel)
+    // const MAX_CONCURRENT = 5;
+    // const tasks: (() => Promise<void>)[] = [];
+    // for (const [guildId, channels] of Object.entries(globalMessages)) {
+    //     for (const [channelId, messageIdSet] of Object.entries(channels)) {
+    //         const ids = Array.from(messageIdSet);
+    //         if (ids.length === 0) continue;
+    //         tasks.push(async () => {
+    //           try {
+    //             const resp = await apiClient.getChannelMessagesReactionsBatch(guildId, channelId, ids);
+    //             const mapping = resp.data || {};
+    //             // Log the raw mapping (truncated if very large)
+    //             const guildBucket = globalReactions[guildId] ?? (globalReactions[guildId] = {});
+    //             guildBucket[channelId] = mapping;
+    //           } catch (e) {
+    //             console.error(`Error fetching reactions guild ${guildId} channel ${channelId}`, e);
+    //           }
+    //         });
+    //     }
+    // }
 
-    // Simple concurrency runner
-    // Concurrency control without relying on non-standard properties
-    const inFlight: Set<Promise<void>> = new Set();
-    for (const task of tasks) {
-      const p = task()
-        .catch(() => { /* already logged */ })
-        .finally(() => { inFlight.delete(p); });
-      inFlight.add(p);
-      if (inFlight.size >= MAX_CONCURRENT) {
-        await Promise.race(inFlight);
-      }
-    }
-    await Promise.all(inFlight);
+    // // Simple concurrency runner
+    // // Concurrency control without relying on non-standard properties
+    // const inFlight: Set<Promise<void>> = new Set();
+    // for (const task of tasks) {
+    //   const p = task()
+    //     .catch(() => { /* already logged */ })
+    //     .finally(() => { inFlight.delete(p); });
+    //   inFlight.add(p);
+    //   if (inFlight.size >= MAX_CONCURRENT) {
+    //     await Promise.race(inFlight);
+    //   }
+    // }
+    // await Promise.all(inFlight);
 
-    // Distribute global reaction data to each entry based on its tracked message IDs
-    results.items.forEach((entry: any, idx: number) => {
-      const entryMap = perEntryMessages[idx];
-      const target: DiscordChannelMessageReactions = {};
-      for (const [guildId, channels] of Object.entries(entryMap)) {
-        const gBucket = globalReactions[guildId];
-        if (!gBucket) continue;
-        for (const [channelId, messageIds] of Object.entries(channels)) {
-          const channelMapping = gBucket[channelId];
-          if (!channelMapping) continue;
-          for (const mid of messageIds) {
-            if (channelMapping[mid]) {
-              target[mid] = channelMapping[mid];
-            } else if (!(mid in target)) {
-              // Ensure message id appears even if no reactions (optional)
-              target[mid] = [];
-            }
-          }
-        }
-      }
-      entry.reactions = target; // final shape
-    });
+    // // Distribute global reaction data to each entry based on its tracked message IDs
+    // results.items.forEach((entry: any, idx: number) => {
+    //   const entryMap = perEntryMessages[idx];
+    //   const target: DiscordChannelMessageReactions = {};
+    //   for (const [guildId, channels] of Object.entries(entryMap)) {
+    //     const gBucket = globalReactions[guildId];
+    //     if (!gBucket) continue;
+    //     for (const [channelId, messageIds] of Object.entries(channels)) {
+    //       const channelMapping = gBucket[channelId];
+    //       if (!channelMapping) continue;
+    //       for (const mid of messageIds) {
+    //         if (channelMapping[mid]) {
+    //           target[mid] = channelMapping[mid];
+    //         } else if (!(mid in target)) {
+    //           // Ensure message id appears even if no reactions (optional)
+    //           target[mid] = [];
+    //         }
+    //       }
+    //     }
+    //   }
+    //   entry.reactions = target; // final shape
+    // });
 
     res.render('shiftcodes/list', {
       ...res.locals,

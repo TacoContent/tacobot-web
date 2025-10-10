@@ -2,7 +2,7 @@
   <div class="card-header text-muted">
     <h5 class="card-title">
       {{#if (isToday month=this.month day=this.day)}}
-        <span class="badge bg-success text-bg-success text-uppercase float-start">Today!</span>
+        <span class="badge bg-success-subtle text-bg-success-subtle border-success text-uppercase float-start">Today!</span>
       {{else}}
         <span class="badge bg-secondary text-bg-secondary text-uppercase float-start">{{until this.month this.day}}</span>
       {{/if}}
