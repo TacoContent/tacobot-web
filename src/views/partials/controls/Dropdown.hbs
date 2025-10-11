@@ -1,0 +1,96 @@
+{{!--
+  Reusable multi/single select dropdown control with token display and freeform filtering.
+
+  Usage (multi-select):
+  {{#> Dropdown id="guilds" name="guild_ids" multiple=true placeholder="Select guild(s)" values=preselectedGuildIds}}
+    <li class="dropdown-item d-flex align-items-center gap-2" data-value="123">
+      <img src="/images/guilds/123.png" width="24" height="24" class="rounded" alt="" /> Guild 123
+    </li>
+    <li class="dropdown-item" data-value="456">Guild 456</li>
+  {{/Dropdown}}
+
+  Usage (single select):
+  {{#> Dropdown id="region" name="region" placeholder="Choose region" multiple=false}}
+    <li class="dropdown-item" data-value="na">North America</li>
+    <li class="dropdown-item" data-value="eu">Europe</li>
+  {{/Dropdown}}
+
+  Params:
+    id (required)            : Unique id for the control root
+    name                     : Name attribute for the hidden backing <select>
+    multiple (default=true)  : Allow multiple selection
+    placeholder              : Placeholder text shown when no selection
+    values                   : Array of pre-selected values (must match data-value of provided <li>)
+    class                    : Extra classes for root wrapper
+    label                    : Optional label text (for accessibility)
+    searchable (default=true): Whether freeform typing / filtering is enabled. Set to false to disable search and require selection from list only.
+
+  Block Content:
+    Provide one or more <li class="dropdown-item" data-value="...">Custom HTML ...</li>
+    Each must have a unique data-value.
+--}}
+
+{{!-- (Optional) could compute classes dynamically if extended later --}}
+
+<div class="dropdown-control position-relative {{#if class}}{{class}}{{/if}}" id="{{id}}-wrapper" data-dropdown
+  data-dropdown-id="{{id}}"
+  data-multiple="{{#if (neq multiple false)}}true{{else}}false{{/if}}"
+  data-searchable="{{#if (neq searchable false)}}true{{else}}false{{/if}}"
+  {{#if closeOnSelect}}data-close-on-select="true"{{/if}}
+  {{#if (gt maxSelected -1)}}data-max-selected="{{maxSelected}}"{{/if}}
+  {{#if sort}}data-sort="{{sort}}"{{/if}}
+  {{#if sortOrder}}data-sort-order="{{sortOrder}}"{{/if}}
+  {{#if minFilterChars}}data-min-filter-chars="{{minFilterChars}}"{{/if}}
+  {{#if noResultsText}}data-no-results-text="{{noResultsText}}"{{/if}}
+  {{#if asyncDebounce}}data-async-debounce="{{asyncDebounce}}"{{/if}}
+  role="combobox"
+  aria-haspopup="listbox"
+  aria-expanded="false"
+  {{#if values}}data-values='{{json values}}'{{/if}}>
+  {{#if label}}
+    <label class="form-label mb-1" for="{{id}}-input">{{label}}</label>
+  {{/if}}
+  <div class="form-control d-flex align-items-start gap-2 p-1 position-relative" id="{{id}}" tabindex="0" aria-controls="{{id}}-listbox" data-role="control-shell">
+    <div class="dropdown-content flex-grow-1 d-flex flex-wrap align-items-center gap-1" data-role="content">
+      <div class="dropdown-selected-tokens d-flex flex-wrap align-items-center gap-1" data-role="tokens">
+        {{#if (and (eq searchable false) placeholder)}}
+          <span class="dropdown-placeholder text-muted ps-1 pt-1" data-role="placeholder">{{placeholder}}</span>
+        {{/if}}
+      </div>
+      {{#if (neq searchable false)}}
+        <input id="{{id}}-input" type="text" class="dropdown-input text-start border-0" autocomplete="off" placeholder="{{placeholder}}" data-role="input" aria-autocomplete="list" aria-activedescendant="" />
+      {{/if}}
+    </div>
+    <div class="dropdown-actions d-flex align-items-start gap-1" data-role="actions">
+      {{#if (neq multiple false)}}
+        <button type="button" class="btn btn-sm btn-outline-secondary d-none btn-dropdown-action" data-role="clear" aria-label="Clear selection"><i class="fas fa-xmark"></i></button>
+      {{/if}}
+        <button type="button" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1 btn-dropdown-action" data-role="toggle" aria-label="Toggle dropdown" aria-haspopup="listbox" aria-expanded="false">
+          <i class="fas fa-caret-down"></i>
+          <span class="spinner-border spinner-border-sm text-secondary d-none" data-role="loading" role="status" aria-label="Loading"></span>
+        </button>
+    </div>
+  </div>
+  <ul class="dropdown-menu shadow" data-role="menu" id="{{id}}-listbox" role="listbox" aria-labelledby="{{id}}-input" style="max-height: 260px; overflow-y: auto;">
+    {{#if @partial-block}}
+      {{> @partial-block }}
+    {{else if itemsPartial}}
+      {{!-- Use lookup to get raw string value (avoids attempting to invoke as helper) --}}
+      {{> (lookup . 'itemsPartial') }}
+    {{else if items}}
+      {{#each items}}
+        <li class="dropdown-item {{#if disabled}}disabled{{/if}} d-flex align-items-center gap-2" data-value="{{value}}" {{#if disabled}}aria-disabled="true"{{/if}}>
+          {{#if html}}
+            {{{html}}}
+          {{else}}
+            {{#if icon}}
+              <img src="{{icon}}" width="24" height="24" class="rounded" alt="" />
+            {{/if}}
+            {{#if text}}{{text}}{{else}}{{value}}{{/if}}
+          {{/if}}
+        </li>
+      {{/each}}
+    {{/if}}
+  </ul>
+  <select class="d-none" {{#if name}}name="{{name}}"{{/if}} {{#if (neq multiple false)}}multiple{{/if}} data-role="backing-select"></select>
+</div>

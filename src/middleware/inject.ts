@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import config from '../config';
 import SettingsMongoClient from '../libs/mongo/Settings';
+import DiscordGuildsMongoClient from '../libs/mongo/Guilds';
 
 
 const configs = async (req: Request, res: Response, next: NextFunction) =>  {
@@ -12,6 +13,17 @@ const discordGuild = async (req: Request, res: Response, next: NextFunction) => 
   const guildId = req.params.guildId || req.query.guildId || req.query.guild_id || req.query.guild || config.tacobot.primaryGuildId;
   res.locals.discordGuild = guildId;
   next();
+};
+
+const guilds = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const guildsClient = new DiscordGuildsMongoClient();
+    const guilds = await guildsClient.getAll();
+    res.locals.guilds = guilds;
+    next();
+  } catch (error) {
+    next(error);
+  }
 };
 
 const pagePath = async(req: Request, res: Response, next: NextFunction) => {
@@ -49,5 +61,5 @@ const searchQuery = async (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-export default { config: configs, pagePath, settingsGroups, searchQuery, discordGuild };
-export { configs as config, pagePath, settingsGroups, searchQuery, discordGuild };
+export default { config: configs, pagePath, settingsGroups, searchQuery, discordGuild, guilds };
+export { configs as config, pagePath, settingsGroups, searchQuery, discordGuild, guilds };

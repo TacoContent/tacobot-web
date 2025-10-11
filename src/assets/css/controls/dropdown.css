@@ -1,0 +1,107 @@
+.dropdown-control {
+  background: var(--bs-body-bg, #212529);
+  color: var(--bs-body-color, #fff);
+  text-align: left;
+}
+
+/* Make internal input blend with the surrounding form-control */
+.dropdown-control .dropdown-input {
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+  padding: 2px 4px;
+  min-width: 80px; /* ensure usable minimum */
+  flex: 1 1 auto;
+  width: 100%;
+  transition: width .18s ease, flex-basis .18s ease, min-width .18s ease, padding .12s ease;
+}
+
+.btn.btn-dropdown-action,
+.dropdown-actions .btn {
+  border-color: var(--bs-border-color, #444);
+}
+
+/* Apply only when an earlier .input-group-text exists before the dropdown-control */
+.input-group .input-group-text ~ .dropdown-control .form-control {
+  border-left: 0; /* avoid double border with input-group-text */
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.input-group .dropdown-control ~ .input-group-text {
+  border-left: 0; /* avoid double border with input-group-text */
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* if the dropdown-control is in an input-group, and it is proceeded by a button, a .btn, a .btn-group or an .input-group-text */
+.input-group .btn + .dropdown-control,
+.input-group .btn-group + .dropdown-control,
+.input-group .input-group-text + .dropdown-control {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 0; /* avoid double border */
+}
+
+/* if the dropdown-control is in an input-group, and it is followed by a button, a .btn, a .btn-group or an .input-group-text */
+/* we need to modify the the parent child .form-control of the .dropdown-control */
+/* When dropdown-control is followed by an addon/button: adjust its internal form-control instead of the following element */
+.input-group .dropdown-control.dropdown-followed-addon .form-control {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: 0; /* avoid double border */
+}
+
+/* When dropdown-control is preceded by an addon/button */
+.input-group .dropdown-control.dropdown-preceded-addon .form-control {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 0; /* avoid double border */
+}
+
+/* Allow tokens to take only needed space; input shrinks as tokens grow */
+.dropdown-control [data-role="tokens"] {
+  flex: 1 1 auto;
+  min-width: 0; /* allow flexbox to shrink properly */
+}
+
+/* Ensure tokens wrap nicely without forcing input to new line prematurely */
+.dropdown-control .badge {
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+/* When no tokens, input can expand full width */
+/* When no tokens (tracked by class), input spans full width */
+.dropdown-control.dropdown-searchable-empty .dropdown-input {
+  flex: 1 1 auto;
+  width: 100%; /* explicit for transition target */
+}
+
+/* When tokens exist, allow input to shrink more aggressively */
+.dropdown-control.dropdown-has-tokens .dropdown-input {
+  flex: 0 1 auto; /* shrink to content while keeping minimum */
+  min-width: 80px; /* consistent minimum */
+  width: auto; /* transition from 100% to auto */
+}
+
+/* New layout containers */
+.dropdown-control [data-role="content"] {
+  min-width: 0; /* allow flex children (tokens/input) to shrink */
+}
+
+.dropdown-control [data-role="actions"] {
+  flex: 0 0 auto;
+  align-self: flex-start;
+}
+
+/* Ensure the input does not get hidden under actions when empty */
+.dropdown-control.dropdown-searchable-empty [data-role="content"] .dropdown-input {
+  width: calc(100% - 0.25rem); /* keep a slight padding balance */
+}
+
+/* Remove default input-group-text styling if inherited */
+.dropdown-control .dropdown-input.input-group-text {
+  background: transparent;
+  border: 0;
+}

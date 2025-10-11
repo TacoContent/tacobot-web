@@ -1,0 +1,6 @@
+{{!-- Items partial for guild dropdown examples --}}
+{{#each guilds}}
+  <li class="dropdown-item d-flex align-items-center gap-2" data-value="{{this.id}}">
+    <img src="{{this.icon}}" width="24" height="24" class="rounded" alt="" /> {{this.name}}
+  </li>
+{{/each}}

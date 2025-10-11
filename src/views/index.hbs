@@ -10,11 +10,23 @@
               <div class="col-lg-8">
                 <div class="xcontainer">
                   <div class="row">
-                    <div class="col-lg-6">
-                      {{!-- {{> glucose-chart }} --}}
+                    <div class="col">
+                      {{!-- Define inline partial for guild items and pass by name to Dropdown via itemsPartial (workaround for block issue) --}}
+                      {{#*inline "guildItems"}}
+                        {{#each guilds}}
+                          <li class="dropdown-item d-flex align-items-center gap-2" data-value="{{this.guild_id}}">
+                            <img src="{{this.icon}}" width="24" height="24" class="rounded" /> {{this.name}}
+                          </li>
+                        {{/each}}
+                      {{/inline}}
+                      {{> Dropdown id="guilds" name="guild_ids" placeholder="Select guilds" searchable=false multiple=false itemsPartial="guildItems"}}
                     </div>
-                    <div class="col-lg-6">
-                      {{!-- {{> weight-chart }} --}}
+                    <div class="col">
+
+                    </div>
+                    <div class="col">
+                      {{!-- Using controls/Dropdown with same inline partial approach --}}
+                      {{> controls/Dropdown id="guilds2" name="guild_ids2" placeholder="Select guilds" searchable=false multiple=true itemsPartial="guildItems"}}
                     </div>
                   </div>
                 </div>
@@ -23,7 +35,7 @@
                 <div class="xcontainer h-100">
                   <div class="row h-100">
                     <div class="col-lg-12">
-                      {{!-- {{> foodentry-card }} --}}
+                      
                     </div>
                   </div>
                 </div>
@@ -34,7 +46,12 @@
         </div>
 
         {{!-- {{#section "head"}}
-        {{/section}}
+        {{/section}} --}}
 
         {{#section "scripts"}}
-        {{/section}} --}}
+        <script src="/javascript/controls/dropdown.js" defer></script>
+        <script>
+          // Debug: list partial names known on server side isn't directly accessible client-side.
+          // We'll inject a data attribute via server log only; real verification handled in server logs.
+        </script>
+        {{/section}}

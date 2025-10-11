@@ -37,6 +37,12 @@ function registerPartials(partialDir: string) {
       const partialContent = fs.readFileSync(partialPath, 'utf8');
       console.log(`Registering partial: ${partialNameClean}`);
       Handlebars.registerPartial(partialNameClean, partialContent);
+      // Also register a basename-only alias if not already (enables {{> Dropdown}} when stored under controls/Dropdown.hbs)
+      const baseOnly = path.basename(partialNameClean);
+      if (!Handlebars.partials[baseOnly]) {
+        console.log(`Registering alias partial: ${baseOnly} -> ${partialNameClean}`);
+        Handlebars.registerPartial(baseOnly, partialContent);
+      }
       continue;
     }
     // if file is directory, recurse
@@ -59,6 +65,9 @@ app.engine(
     helpers: {
       ...helpers
     },
+    // Use the same Handlebars instance we manually registered partials on so
+    // that block partials ({{#> partial}} ... {{/partial}}) propagate correctly.
+    handlebars: Handlebars,
   })
 );
 
@@ -71,6 +80,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(middleware.inject.config);
 app.use(middleware.inject.discordGuild);
+app.use(middleware.inject.guilds);
 app.use(middleware.inject.pagePath);
 app.use(middleware.inject.searchQuery);
 app.use(middleware.inject.settingsGroups);
@@ -84,6 +94,8 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname, 'assets')));
 
 app.get('/', middleware.ui.allow, (req: Request, res: Response) => {
+  // DEBUG: confirm guilds present
+  console.log('Render / locals.guilds count:', Array.isArray((res.locals as any).guilds) ? (res.locals as any).guilds.length : 'none');
   return res.render('index', { title: 'TacoBot' });
 });
 

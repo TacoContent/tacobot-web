@@ -1,0 +1,159 @@
+{{! Dropdown examples page }}
+{{!-- layout provides HTML/head/body scaffolding; title passed from route --}}
+<div class="container py-4">
+  <h1 class="mb-4">Dropdown Control Examples</h1>
+  <p class="text-muted">Demonstrations of the reusable dropdown control in different configurations. Use this page to validate styling, accessibility, and behavior changes. View source in <code>src/views/dropdown/examples.hbs</code>.</p>
+
+  <form>
+  <hr class="my-4" />
+  <h2 id="searchable-multi" class="h4">Searchable Multi-Select</h2>
+  <p class="small text-muted">Typing filters items locally. One guild pre-selected.</p>
+  <div class="input-group mb-3">
+    <div class="input-group-text">Guilds</div>
+    {{> Dropdown id="guilds" name="guild_ids" placeholder="Select guild(s)" values=preselectedGuildIds items=guildItems closeOnSelect=true}}
+  </div>
+  </form>
+
+  <hr class="my-4" />
+  <h2 id="searchable-multi" class="h4">Searchable Multi-Select</h2>
+  <p class="small text-muted">Typing filters items locally. One guild pre-selected.</p>
+  {{> Dropdown id="guilds" name="guild_ids" placeholder="Select guild(s)" values=preselectedGuildIds items=guildItems closeOnSelect=true}}
+
+  <h3 id="searchable-multi-sorted" class="h6 mt-4">Searchable Multi-Select (Sorted Desc, Threshold 3)</h3>
+  <p class="small text-muted">Items sorted descending by label. Filtering/highlighting starts after 3 characters.</p>
+  {{> Dropdown id="guilds-sorted" name="guild_ids_sorted" placeholder="Select guilds" items=guildItems sort="label" sortOrder="desc" minFilterChars=3}}
+
+  <h3 id="custom-no-results" class="h6 mt-4">Custom "No Matches" Text</h3>
+  <p class="small text-muted">Demonstrates a custom no-results message with italic + bold styling.</p>
+  {{> Dropdown id="guilds-custom-noresults" name="guilds_custom_noresults" placeholder="Type gibberish" items=guildItems noResultsText="Nothing found—try refining your search"}}
+
+  <h3 id="hidden-filter-default" class="h6 mt-4">Hidden Filter (Default Threshold 2)</h3>
+  <p class="small text-muted">Non-matching items are hidden immediately. Highlighting appears at 2+ characters.</p>
+  {{> Dropdown id="guilds-hidden-default" name="guilds_hidden_default" placeholder="Filter guilds" items=guildItems}}
+
+  <h3 id="hidden-filter-threshold-3" class="h6 mt-4">Hidden Filter (Threshold 3)</h3>
+  <p class="small text-muted">Same hidden behavior; highlight deferred until 3 characters.</p>
+  {{> Dropdown id="guilds-hidden-threshold3" name="guilds_hidden_threshold3" placeholder="Type 3+ chars" items=guildItems minFilterChars=3}}
+
+  <h3 id="hidden-filter-single" class="h6 mt-4">Hidden Filter (Single-Char Highlight)</h3>
+  <p class="small text-muted">Highlighting enabled from the first character.</p>
+  {{> Dropdown id="guilds-hidden-single" name="guilds_hidden_single" placeholder="Instant highlight" items=guildItems minFilterChars=1}}
+
+  <h3 id="searchable-multi-limited" class="h6 mt-4">Searchable Multi-Select (Max 2)</h3>
+  <p class="small text-muted">Demonstrates <code>maxSelected=2</code>. Additional selections fire <code>dropdown:maxlimit</code>.</p>
+  {{> Dropdown id="guilds-limited" name="guild_ids_limited" placeholder="Pick up to 2 guilds" items=guildItems maxSelected=2}}
+
+  <hr class="my-5" />
+  <h2 id="searchable-single" class="h4">Searchable Single Select</h2>
+  <p class="small text-muted">Single selection with freeform filtering.</p>
+  {{> Dropdown id="region-searchable" name="region_searchable" multiple=false placeholder="Choose region" items=regionItems}}
+
+  <hr class="my-5" />
+  <h2 id="noinput-multi" class="h4">Non-Search (No Input) Multi-Select</h2>
+  <p class="small text-muted">Search disabled; must choose from provided items. Placeholder removed on first selection.</p>
+  {{> Dropdown id="guilds-static" name="guild_ids_static" placeholder="Select guild(s)" searchable=false items=guildItems closeOnSelect=true}}
+
+  <hr class="my-5" />
+  <h2 id="noinput-single" class="h4">Non-Search (No Input) Single Select</h2>
+  <p class="small text-muted">Recommended forced-choice style without input box.</p>
+  {{> Dropdown id="region-static" name="region_static" multiple=false placeholder="Choose region" searchable=false items=regionItems}}
+
+  <hr class="my-5" />
+  <h2 id="async-example" class="h4">Async Search Example</h2>
+  <p class="small text-muted">Remote fetch after typing 2+ characters. Results streamed from <code>/examples/api/guilds</code>.</p>
+  {{> Dropdown id="async-guilds" name="async_guilds" placeholder="Search guilds (remote)" closeOnSelect=true}}
+
+  <h3 id="async-remote-limited" class="h6 mt-4">Async Remote (Limited 10 Results)</h3>
+  <p class="small text-muted">Demonstrates server-side filtering & limit parameter.</p>
+  {{> Dropdown id="async-guilds-remote" name="async_guilds_remote" placeholder="Remote (10 max)" closeOnSelect=true}}
+
+  <h3 id="async-loading-row" class="h6 mt-4">Async Remote with Loading Skeleton + Custom Debounce</h3>
+  <p class="small text-muted">Shows inline skeleton row during fetch; debounce set via template attribute.</p>
+  {{> Dropdown id="async-guilds-skeleton" name="async_guilds_skeleton" placeholder="Skeleton loading" closeOnSelect=true asyncDebounce=500}}
+
+  <h3 id="async-error-demo" class="h6 mt-4 text-danger">Async Remote Error Demo</h3>
+  <p class="small text-muted">Simulates errors when query contains the word <code>fail</code>; displays inline error row with retry.</p>
+  {{> Dropdown id="async-guilds-error" name="async_guilds_error" placeholder="Type 'fail' to test error" closeOnSelect=true}}
+
+  {{#section "scripts"}}
+    <script src="/javascript/controls/dropdown.js" defer></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        console.debug('[examples] DOM ready (examples listener)');
+
+        // Because dropdown.js is loaded with defer, its DOMContentLoaded handler may register after ours.
+        // Poll until each dropdownControl is attached.
+        function whenControlReady(id, cb, attempts = 0) {
+          const wrap = document.getElementById(id + '-wrapper');
+          if (wrap && wrap.dropdownControl) return cb(wrap);
+          if (attempts > 60) return console.warn('[examples] dropdown not ready after waiting:', id);
+          setTimeout(() => whenControlReady(id, cb, attempts + 1), 25);
+        }
+
+        function configureRemote(wrap, opts = {}) {
+          wrap.dropdownControl.configureAsync({
+            debounceMs: 350,
+            minChars: 2,
+            clearOnQuery: true,
+            showLoading: true,
+            fetcher: async (query, signal) => {
+              if (!query) return [];
+              const params = new URLSearchParams({ q: query, ...(opts.limit ? { limit: String(opts.limit) } : {}) });
+              const res = await fetch('/examples/api/guilds?' + params.toString(), { signal });
+              if (!res.ok) throw new Error('Remote fetch failed');
+              const data = await res.json();
+              return data.map(g => ({
+                value: g.id,
+                html: `<div class=\"d-flex align-items-center gap-2\"><img src=\"${g.icon}\" width=24 height=24 class=\"rounded\" alt=\"\"/>${g.name}</div>`
+              }));
+            }
+          });
+        }
+
+        whenControlReady('async-guilds', w => configureRemote(w));
+        whenControlReady('async-guilds-remote', w => configureRemote(w, { limit: 10 }));
+
+        // Skeleton + debounce attribute (asyncDebounce=500)
+        whenControlReady('async-guilds-skeleton', wrap => {
+          wrap.dropdownControl.configureAsync({
+            minChars: 2,
+            clearOnQuery: true,
+            showLoading: true,
+            showLoadingRow: true,
+            fetcher: async (query, signal) => {
+              if (!query) return [];
+              const res = await fetch('/examples/api/guilds?q=' + encodeURIComponent(query), { signal });
+              if (!res.ok) throw new Error('Remote fetch failed');
+              const data = await res.json();
+              await new Promise(r => setTimeout(r, 300));
+              return data.map(g => ({ value: g.id, html: `<div class=\"d-flex align-items-center gap-2\"><img src=\"${g.icon}\" width=24 height=24 class=\"rounded\" alt=\"\"/>${g.name}</div>` }));
+            }
+          });
+        });
+
+        // Error demo (type 'fail')
+        whenControlReady('async-guilds-error', wrap => {
+          wrap.dropdownControl.configureAsync({
+            minChars: 2,
+            clearOnQuery: true,
+            showLoading: true,
+            showLoadingRow: true,
+            errorFadeMs: 0,
+            fetcher: async (query, signal) => {
+              if (!query) return [];
+              if (query.toLowerCase().includes('fail')) {
+                await new Promise(r => setTimeout(r, 200));
+                throw new Error('Simulated failure for query: ' + query);
+              }
+              const res = await fetch('/examples/api/guilds?q=' + encodeURIComponent(query), { signal });
+              if (!res.ok) throw new Error('Remote fetch failed');
+              const data = await res.json();
+              return data.map(g => ({ value: g.id, html: `<div class=\"d-flex align-items-center gap-2\"><img src=\"${g.icon}\" width=24 height=24 class=\"rounded\" alt=\"\"/>${g.name}</div>` }));
+            }
+          });
+          wrap.addEventListener('dropdown:asyncerror', e => console.warn('[examples] async error demo', e.detail.error));
+        });
+      });
+    </script>
+  {{/section}}
+</div>
