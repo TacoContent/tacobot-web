@@ -4,6 +4,35 @@ A reusable multi / single select control with tokenized display, freeform filter
 
 All configuration can be driven directly from the Handlebars partial via parameters that render to `data-*` attributes. The runtime script (`dropdown.js`) reads these to enable features (including automatic async fetching) without extra JS wiring.
 
+### Parameter → data-* Attribute Mapping
+
+| Template Param | Resulting data-* Attribute (wrapper) | Value / Presence | Default (if param omitted) | Notes |
+|----------------|--------------------------------------|------------------|----------------------------|-------|
+| `id` | `data-dropdown-id` | string | (required) | Also used to derive element ids (e.g., `id="{{id}}-wrapper"`) |
+| `multiple` | `data-multiple` | `true` / `false` | `true` | Explicitly pass `multiple=false` to force single-select |
+| `searchable` | `data-searchable` | `true` / `false` | `true` | When `false`, input removed & no async/local filtering triggered |
+| `placeholder` | `data-placeholder` | placeholder text | none | Stored for restoring placeholder in no-input mode |
+| `closeOnSelect` | `data-close-on-select` | attribute present (=true) | false (multi) | Single-select auto-closes regardless |
+| `maxSelected` | `data-max-selected` | integer >= -1 | -1 | -1 = unlimited; enforced only for multi-select |
+| `sort` | `data-sort` | e.g. `label` | none | Only `label` currently supported for alpha sort |
+| `sortOrder` | `data-sort-order` | `asc` / `desc` | `asc` | Used with `sort='label'` |
+| `minFilterChars` | `data-min-filter-chars` | integer | 2 | Controls local filtering + highlighting threshold |
+| `noResultsText` | `data-no-results-text` | string | "No matches" | Custom empty-state row text (italic + semibold) |
+| `values` | `data-values` | JSON array | none | Preselected values; must match `data-value` of items |
+| `asyncDebounce` | `data-async-debounce` | integer ms | 300 | Used for initial async debounce (template or imperative) |
+| `asyncUrl` | `data-async-url` | URL | none | Presence auto-enables async mode (if searchable) |
+| `asyncQueryParam` | `data-async-query-param` | string | `q` | Query string parameter name |
+| `asyncMinChars` | `data-async-min-chars` | integer | 2 | Min chars before remote fetch (template-driven async) |
+| `asyncLimit` | `data-async-limit` | integer | none | Appended as `limit` query param if provided |
+| `asyncShowLoadingRow` | `data-async-show-loading-row` | presence => true | false | Adds skeleton row while loading |
+| `asyncShowPendingRow` | `data-async-show-pending-row` | presence => true | true (implicit) | Omit attribute to keep default true; cannot express false via template (override imperatively if needed) |
+| `asyncPendingText` | `data-async-pending-text` | string | "Searching..." | Pending debounce row text |
+| `asyncClearOnQuery` | `data-async-clear-on-query` | presence => true | true | Present for clarity; default already true |
+| `asyncPreserveStatic` | `data-async-preserve-static` | presence => true | true | Keep original static items alongside async results |
+| `asyncErrorFadeMs` | `data-async-error-fade-ms` | integer ms | 0 | 0 = persist error row until next attempt |
+
+Legend: For boolean-like flags expressed by attribute presence, the attribute does not appear if false/omitted; some defaults (e.g., pending row) are true even when the attribute is absent.
+
 ## Features
 
 - Debounced async loading with automatic cancellation of stale requests (searchable mode only)
