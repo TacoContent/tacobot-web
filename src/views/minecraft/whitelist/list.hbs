@@ -41,3 +41,31 @@
     </div>
   </div>
 </div>
+
+{{!-- Floating Action Button to Add Whitelisted User --}}
+<button
+  type="button"
+  class="btn btn-primary rounded-circle shadow position-fixed fab-add-whitelist btn-fab"
+  aria-label="Add Whitelisted User"
+  title="Add Whitelisted User"
+  data-bs-toggle="modal"
+  data-bs-target="#add-whitelist-modal">
+  <i class="fas fa-plus" aria-hidden="true"></i>
+  <span class="visually-hidden">Add Whitelisted User</span>
+  </button>
+
+{{!-- Add Whitelist User Modal --}}
+{{#> modal 
+    id="add-whitelist-modal" 
+    title="Add Whitelisted User" 
+    buttonText="Add" 
+    buttonClass="btn-success" 
+    cancelText="Cancel" 
+    formAction="/minecraft/whitelist/add" 
+    formMethod="POST" }}
+  {{> minecraft/new-whitelist-modal}}
+{{/modal}}
+
+{{#section 'scripts'}}
+  <script src="/javascript/minecraft-whitelist.js" defer></script>
+{{/section}}
