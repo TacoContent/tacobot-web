@@ -16,6 +16,14 @@
     - ARIA attributes maintained for accessibility
   - Debounced async fetching with cancellation via dropdownControl.configureAsync(...)
 */
+
+function whenControlReady(id, cb, attempts = 0) {
+  const wrap = document.getElementById(id + '-wrapper');
+  if (wrap && wrap.dropdownControl) return cb(wrap);
+  if (attempts > 60) return console.warn('dropdown not ready after waiting:', id);
+  setTimeout(() => whenControlReady(id, cb, attempts + 1), 25);
+}
+
 (function () {
   function initDropdown(root) {
     if (root.__dropdownInitialized) return;
@@ -106,6 +114,12 @@
     let isAsyncLoading = false;
     let pendingAsync = false;
     let pendingRowEl = null;
+  // Timestamp for last successful empty-query fetch (for TTL caching). Stored on root too so any
+  // dynamically re-bound closures (e.g. during test harness eval) can still access/update.
+  root.__emptyQueryCacheTimestamp = 0; // epoch ms of last empty-query fetch
+    // Track initial async load gating for initialFetchOnMount
+    let initialAsyncInProgress = false;
+    let attemptedOpenDuringInitial = false;
 
     const preValuesAttr = root.getAttribute('data-values');
     let preValues = [];
@@ -224,6 +238,7 @@
       const q = query.toLowerCase();
       let anyVisible = false;
       const belowThreshold = q.length > 0 && q.length < minFilterChars;
+      const highlightClass = root.getAttribute('data-highlight-class') || 'text-highlighted';
       items.forEach(li => {
         // No query OR below threshold: show everything, no highlighting
         if (q.length === 0 || belowThreshold) {
@@ -264,6 +279,7 @@
                 if (idx > 0) frag.appendChild(document.createTextNode(remaining.slice(0, idx)));
                 const mark = document.createElement('mark');
                 mark.textContent = remaining.slice(idx, idx + needle.length);
+                if (highlightClass) mark.classList.add(...highlightClass.split(/\s+/));
                 frag.appendChild(mark);
                 remaining = remaining.slice(idx + needle.length);
               }
@@ -297,11 +313,25 @@
     }
 
     function showMenu(force = false) {
+      if (initialAsyncInProgress && items.length === 0) {
+        // Always gate opening during initial async fetch (even if loading indicator would show)
+        attemptedOpenDuringInitial = true;
+        return;
+      }
       if (!force) {
         const hasItems = items.length > 0;
         const pendingVisible = pendingAsync && asyncConfig && asyncConfig.showPendingRow;
         const loadingVisible = isAsyncLoading && asyncConfig && (asyncConfig.showLoadingRow || asyncConfig.showLoading);
         const noResultsVisible = !noResultsEl.classList.contains('d-none');
+        // Async gating: prevent menu from opening below minChars when no initial data yet
+        if (asyncConfig && asyncConfig.minChars > 0) {
+          const currentQuery = input ? input.value : '';
+          const below = currentQuery.length < asyncConfig.minChars;
+          if (below && !hasItems && !pendingVisible && !loadingVisible) {
+            // Allow opening if allowEmptyQuery is enabled (so we can trigger the empty fetch on first open)
+            if (!(asyncConfig.allowEmptyQuery && currentQuery.length === 0)) return;
+          }
+        }
         if (!hasItems && !pendingVisible && !loadingVisible && !noResultsVisible) return; // nothing meaningful to show yet
       }
       if (!menu.classList.contains('show')) {
@@ -459,6 +489,10 @@
         if (menu.classList.contains('show')) hideMenu(); else {
           showMenu();
           if (!searchable) filterItems('');
+          if (asyncConfig && asyncConfig.allowEmptyQuery && items.length === 0) {
+            lastQueriedValue = '';
+            runAsyncFetch('', true);
+          }
         }
       });
     }
@@ -480,6 +514,10 @@
         if (!menu.classList.contains('show')) {
           showMenu();
           if (!searchable) filterItems('');
+          if (asyncConfig && asyncConfig.allowEmptyQuery && items.length === 0) {
+            lastQueriedValue = '';
+            runAsyncFetch('', true);
+          }
         }
         if (input) input.focus();
       });
@@ -544,7 +582,7 @@
       },
       selectValue,
       deselectValue,
-      configureAsync(options) {
+  configureAsync(options) {
         const attrDebounce = parseInt(root.getAttribute('data-async-debounce') || '', 10);
         asyncConfig = Object.assign({
           debounceMs: isNaN(attrDebounce) ? 300 : attrDebounce,
@@ -558,12 +596,21 @@
           pendingText: 'Searching...',
           initialFetchOnMount: false,
           initialQuery: '',
+          allowEmptyQuery: false,
           preserveStatic: true,
           errorFadeMs: 0 // 0 = stay until next attempt
         }, options || {});
         if (asyncConfig.initialFetchOnMount) {
           lastQueriedValue = asyncConfig.initialQuery;
-          runAsyncFetch(asyncConfig.initialQuery, true);
+          initialAsyncInProgress = true;
+          // Suppress showing the menu during the initial fetch until results arrive
+          runAsyncFetch(asyncConfig.initialQuery, true, { suppressShowMenu: true })
+            .finally(() => {
+              initialAsyncInProgress = false;
+              if (attemptedOpenDuringInitial) {
+                showMenu();
+              }
+            });
         }
       },
       refreshAsync() {
@@ -591,7 +638,8 @@
       debounceTimer = setTimeout(() => runAsyncFetch(query), asyncConfig.debounceMs);
     }
 
-    function runAsyncFetch(query, force = false) {
+    function runAsyncFetch(query, force = false, opts = {}) {
+      const { suppressShowMenu = false } = opts || {};
       abortActiveFetch();
       clearErrorRow();
       let controller = null;
@@ -599,12 +647,16 @@
       activeFetchController = controller;
       isAsyncLoading = true;
       pendingAsync = false; // transition from pending to active
-      showMenu(true); // ensure menu visible for loading state
+      if (!suppressShowMenu) {
+        // During the initial async fetch we intentionally suppress auto-open so the dropdown stays hidden
+        // until data is available OR the user explicitly attempted to open it (captured via attemptedOpenDuringInitial).
+        showMenu(true); // ensure menu visible for loading state (unless suppressed)
+      }
       hidePendingRow();
       if (asyncConfig.showLoading) root.dropdownControl.setLoading(true);
       if (asyncConfig.showLoadingRow) showLoadingRow();
       root.dispatchEvent(new CustomEvent('dropdown:asyncstart', { detail: { query } }));
-      Promise.resolve().then(() => asyncConfig.fetcher(query, controller ? controller.signal : undefined))
+      const p = Promise.resolve().then(() => asyncConfig.fetcher(query, controller ? controller.signal : undefined))
         .then(result => {
           if (controller && controller.signal.aborted) return;
           if (query !== lastQueriedValue && !force) return;
@@ -626,6 +678,7 @@
           if (input) filterItems(input.value); else filterItems('');
           root.dispatchEvent(new CustomEvent('dropdown:asyncend', { detail: { query } }));
         });
+      return p;
     }
 
     function abortActiveFetch() {
@@ -663,7 +716,9 @@
             if (typeof obj === 'string') return `<li class="dropdown-item" data-dynamic="true" data-value="${escapeHtml(obj)}">${escapeHtml(obj)}</li>`;
             const value = obj.value != null ? String(obj.value) : '';
             const content = obj.html != null ? obj.html : escapeHtml(value);
-            return `<li class="dropdown-item" data-dynamic="true" data-value="${escapeHtml(value)}">${content}</li>`;
+            const disabled = !!obj.disabled;
+            // We still include data-value so headers can be uniquely identified; selection logic checks .disabled class
+            return `<li class="dropdown-item${disabled ? ' disabled' : ''}" ${disabled ? 'aria-disabled="true"' : ''} data-dynamic="true" data-value="${escapeHtml(value)}">${content}</li>`;
           }).join('');
         }
       }
@@ -792,21 +847,47 @@
       const errorFadeMs = errorFadeMsAttr ? parseInt(errorFadeMsAttr, 10) : undefined;
       const attrDebounce = root.getAttribute('data-async-debounce');
       const debounceMs = attrDebounce ? parseInt(attrDebounce, 10) : undefined;
+  const initialLoad = root.hasAttribute('data-async-initial-load');
+  const initialQuery = root.getAttribute('data-async-initial-query') || '';
+  const allowEmptyQueryAttr = root.hasAttribute('data-async-allow-empty-query');
+  const emptyCacheTtlAttr = root.getAttribute('data-async-empty-cache-ttl-ms');
+  const emptyQueryParam = root.getAttribute('data-async-empty-query-param');
+  const emptyQueryValue = root.getAttribute('data-async-empty-query-value') || 'true';
+  const emptyCacheTtlMs = emptyCacheTtlAttr ? parseInt(emptyCacheTtlAttr, 10) : 0;
 
       // Build fetcher
       function buildUrl(query) {
         const u = new URL(asyncUrl, window.location.origin);
-        if (query != null) u.searchParams.set(qParam, query);
+        // Only append query param if we have non-empty string
+        if (typeof query === 'string' && query.length > 0) {
+          u.searchParams.set(qParam, query);
+        } else if ((!query || query.length === 0) && allowEmptyQueryAttr && emptyQueryParam) {
+          // For empty query fetches, optionally send a distinct param=value instead of q=
+          u.searchParams.set(emptyQueryParam, emptyQueryValue);
+        }
         if (limit) u.searchParams.set('limit', limit);
         return u.toString();
       }
       const fetcher = async (query, signal) => {
-        if (!query) return [];
+        // Enforce minChars unless allowEmptyQuery is set and query is empty
+        const min = typeof minChars === 'number' ? minChars : 2;
+        if ((!query || query.length < min) && !(allowEmptyQueryAttr && (!query || query.length === 0))) return [];
+        if ((!query || query.length === 0) && allowEmptyQueryAttr && emptyCacheTtlMs > 0) {
+          const now = Date.now();
+          const ts = root.__emptyQueryCacheTimestamp || 0;
+          if (ts && (now - ts) < emptyCacheTtlMs && items.length > 0) {
+            // Within cache TTL: skip network and reuse existing items
+            return [];
+          }
+        }
         const res = await fetch(buildUrl(query), { signal });
         if (!res.ok) throw new Error('Async request failed (' + res.status + ')');
         const data = await res.json();
         // Accept formats: array of { id/name/icon }, array of strings, already-conforming objects
         if (!Array.isArray(data)) return [];
+        if ((!query || query.length === 0) && allowEmptyQueryAttr) {
+          root.__emptyQueryCacheTimestamp = Date.now();
+        }
         return data.map(item => {
           if (item == null) return null;
             if (typeof item === 'string') return { value: item };
@@ -836,6 +917,8 @@
         ...(clearOnQuery ? { clearOnQuery: true } : {}),
         ...(preserveStatic ? { preserveStatic: true } : {}),
         ...(typeof errorFadeMs === 'number' ? { errorFadeMs } : {}),
+        ...(initialLoad ? { initialFetchOnMount: true, initialQuery } : {}),
+        ...(allowEmptyQueryAttr ? { allowEmptyQuery: true } : {}),
       });
       root.__dropdownAsyncAutoApplied = true;
     });

@@ -1,7 +1,21 @@
+
+
 .dropdown-control {
   background: var(--bs-body-bg, #212529);
   color: var(--bs-body-color, #fff);
   text-align: left;
+}
+
+.dropdown-control mark.text-highlighted {
+  background: var(--tb-bg-primary-emphasis, #444);
+  color: var(--tb-text-primary-emphasis, #fff);
+}
+
+.dropdown-item.disabled {
+  opacity: 1; /* override bootstrap */
+  color: var(--bs-text-secondary-x, #292a2bff);
+  background: var(--bs-body-bg-x, #597188ff);
+  cursor: default;
 }
 
 /* Make internal input blend with the surrounding form-control */

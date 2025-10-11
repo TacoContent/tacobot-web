@@ -57,5 +57,11 @@ export default {
       console.log("pythonObject returning original value:", fixed);
       return value;
     }
+  },
+  plural: function (this: any, ...args: any[]): string {
+    const [count, singular, plural] = Reflection.getArguments(args, ['count', 'singular', 'plural'], [0, '', '']);
+    if (typeof count !== 'number') return '';
+    if (typeof singular !== 'string' || typeof plural !== 'string') return '';
+    return count === 1 ? singular : plural;
   }
 }

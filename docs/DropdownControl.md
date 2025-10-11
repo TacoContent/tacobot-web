@@ -4,7 +4,7 @@ A reusable multi / single select control with tokenized display, freeform filter
 
 All configuration can be driven directly from the Handlebars partial via parameters that render to `data-*` attributes. The runtime script (`dropdown.js`) reads these to enable features (including automatic async fetching) without extra JS wiring.
 
-### Parameter → data-* Attribute Mapping
+## Parameter → data-* Attribute Mapping
 
 | Template Param | Resulting data-* Attribute (wrapper) | Value / Presence | Default (if param omitted) | Notes |
 |----------------|--------------------------------------|------------------|----------------------------|-------|
@@ -18,6 +18,7 @@ All configuration can be driven directly from the Handlebars partial via paramet
 | `sortOrder` | `data-sort-order` | `asc` / `desc` | `asc` | Used with `sort='label'` |
 | `minFilterChars` | `data-min-filter-chars` | integer | 2 | Controls local filtering + highlighting threshold |
 | `noResultsText` | `data-no-results-text` | string | "No matches" | Custom empty-state row text (italic + semibold) |
+| `highlightClass` | `data-highlight-class` | string (CSS class name) | (none) | Class applied to every generated `<mark>` during filter highlighting for custom styling |
 | `values` | `data-values` | JSON array | none | Preselected values; must match `data-value` of items |
 | `asyncDebounce` | `data-async-debounce` | integer ms | 300 | Used for initial async debounce (template or imperative) |
 | `asyncUrl` | `data-async-url` | URL | none | Presence auto-enables async mode (if searchable) |
@@ -30,6 +31,12 @@ All configuration can be driven directly from the Handlebars partial via paramet
 | `asyncClearOnQuery` | `data-async-clear-on-query` | presence => true | true | Present for clarity; default already true |
 | `asyncPreserveStatic` | `data-async-preserve-static` | presence => true | true | Keep original static items alongside async results |
 | `asyncErrorFadeMs` | `data-async-error-fade-ms` | integer ms | 0 | 0 = persist error row until next attempt |
+| `asyncInitialLoad` | `data-async-initial-load` | presence => true | false | Perform an initial fetch immediately on mount |
+| `asyncInitialQuery` | `data-async-initial-query` | string | "" | Query used for initial fetch (requires `asyncInitialLoad`) |
+| `asyncAllowEmptyQuery` | `data-async-allow-empty-query` | presence => true | false | Permit an empty (zero-length) query to trigger a fetch (popular/default items) when first opening; bypasses `asyncMinChars` for empty string only |
+| `asyncEmptyQueryParam` | `data-async-empty-query-param` | string | none | If set, empty-query fetch adds this param (e.g. `popular`) instead of sending search param |
+| `asyncEmptyQueryValue` | `data-async-empty-query-value` | string | "true" | Value used with `asyncEmptyQueryParam` (e.g. `popular=true`) |
+| `asyncEmptyCacheTtlMs` | `data-async-empty-cache-ttl-ms` | integer ms | 0 | Cache TTL for empty-query results; within TTL further empty opens skip network |
 
 Legend: For boolean-like flags expressed by attribute presence, the attribute does not appear if false/omitted; some defaults (e.g., pending row) are true even when the attribute is absent.
 
@@ -160,6 +167,7 @@ document.getElementById('guilds-wrapper')
 ```
 
 ## Async Loading (Dynamic Items)
+
 You can configure async in two ways: (1) Template-driven (zero custom JS) or (2) Imperative via `configureAsync()`.
 
 ### 1. Template-Driven Async (Recommended for common cases)
@@ -194,7 +202,35 @@ Optional attributes influence behavior:
 | `asyncPreserveStatic=false` | (attr omitted) | When true (default) static `<li>` kept; pass `asyncPreserveStatic=true` to explicitly set |
 | `asyncErrorFadeMs` | `data-async-error-fade-ms` | Auto fade error row after N ms (0 = persist) |
 
+#### Initial Load on Mount
+
+Add `asyncInitialLoad=true` to trigger a fetch as soon as the control initializes (before any typing). Optionally supply `asyncInitialQuery` to seed the first request with a starting term. This maps to `initialFetchOnMount` + `initialQuery` in the underlying imperative API. Useful for loading a default page of popular items or pre-filtered suggestions.
+
+Example:
+
+```hbs
+{{> Dropdown id="guilds-initial" placeholder="Guilds" asyncUrl="/examples/api/guilds" asyncInitialLoad=true asyncInitialQuery="" asyncShowLoadingRow=true }}
+```
+
 The auto fetcher issues GET requests: `asyncUrl?{asyncQueryParam}=userText[&limit=asyncLimit]` with `AbortController` cancellation.
+
+Below the `asyncMinChars` threshold the menu will not open for async-only dropdowns unless there are already items (e.g., from an initial load). The query parameter is only appended when the query is a non-empty string—empty queries do not send the search param at all.
+
+#### Popular Items (Empty Query Fetch)
+
+Set `asyncAllowEmptyQuery=true` (without `asyncInitialLoad`) to support a "popular items on first open" pattern:
+
+* No network call is made on mount.
+* When the user first opens the menu (toggle button or shell click) and there are no items yet, an async fetch with an empty query string is triggered even if `asyncMinChars` > 0.
+* The empty query value is still omitted from the request URL (no `?q=` param is sent unless the user types something non-empty).
+* Subsequent openings without typing do not re-fetch unless you call `refreshAsync()` or clear dynamic items.
+* If both `asyncInitialLoad` and `asyncAllowEmptyQuery` are set, the initial load runs immediately (making the empty-open behavior redundant).
+
+Use cases: displaying trending / frequently used entities or a default slice of data only when the user expresses intent (opens the control) instead of eagerly on page load.
+
+##### Popular Items Extras
+
+Add `asyncEmptyQueryParam` (optionally with `asyncEmptyQueryValue`) to explicitly send a flag like `?popular=true` for empty-query fetches. Specify `asyncEmptyCacheTtlMs` (e.g., `60000`) to cache the empty-query result set; opening again within the TTL reuses existing items without a network call. After the TTL expires the next empty open triggers a refresh and resets the cache timestamp.
 
 ### 2. Imperative Configuration (Custom fetcher / complex logic)
 
@@ -283,6 +319,12 @@ root.dropdownControl.getMaxSelected(): number
 | asyncClearOnQuery (template param) | boolean | true | Clear previous dynamic items before new results (template-driven) |
 | asyncPreserveStatic (template param) | boolean | true | Keep original static items when adding async results |
 | asyncErrorFadeMs (template param) | number | 0 | Fade-out delay for error row |
+| asyncInitialLoad (template param) | boolean | false | If true, perform initial fetch on mount (auto async mode) |
+| asyncInitialQuery (template param) | string | "" | Initial query text for first fetch when initial load enabled |
+| asyncAllowEmptyQuery (template param) | boolean | false | Allow empty query fetch (popular items) on first open; still omits empty query param from URL unless empty param provided |
+| asyncEmptyQueryParam (template param) | string | none | Param name appended for empty-query fetch (e.g. `popular`) |
+| asyncEmptyQueryValue (template param) | string | "true" | Value used with `asyncEmptyQueryParam` |
+| asyncEmptyCacheTtlMs (template param) | number | 0 | TTL for empty-query results cache (ms) |
 
 ## Styling Notes
 
@@ -290,6 +332,39 @@ root.dropdownControl.getMaxSelected(): number
 - Chips: `.badge.text-bg-primary`
 - Active menu items: `.active`
 - Disabled items: `.disabled` (Bootstrap)
+
+### Custom Highlight Styling
+
+When filtering meets the `minFilterChars` threshold, matching substrings are wrapped in `<mark>` elements. By default they inherit the browser / Bootstrap highlight appearance. Provide a `highlightClass` template param (emits `data-highlight-class` on the wrapper) to apply a custom class to every generated `<mark>`:
+
+```hbs
+{{> Dropdown id="guilds-highlight" placeholder="Search" items=guildItems highlightClass="my-highlight" }}
+```
+
+Sample CSS:
+
+```css
+.my-highlight {
+  background: #ffe9a8;      /* Softer yellow */
+  color: #654d00;           /* Higher contrast text */
+  padding: 0 .15em;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px #fff inset; /* Improve readability on dark backgrounds */
+}
+```
+
+To remove background entirely (e.g., underline instead):
+
+```css
+.my-highlight {
+  background: transparent;
+  color: inherit;
+  text-decoration: underline wavy #ffbf00;
+  font-weight: 600;
+}
+```
+
+If `highlightClass` is omitted, standard `<mark>` styling is used.
 
 ## Accessibility
 

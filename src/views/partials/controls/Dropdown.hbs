@@ -32,6 +32,7 @@
     sortOrder="asc|desc"       : Sort direction when sort='label'
     minFilterChars (default 2) : Characters before local filtering + highlight activates
     noResultsText              : Custom text for the no-results row
+  highlightClass             : Custom CSS class applied to <mark> elements created for highlights (default: none extra)
 
   Async Params (auto-configure async if asyncUrl is provided):
     asyncUrl                   : Endpoint to fetch results from. Presence triggers automatic configureAsync()
@@ -45,6 +46,8 @@
     asyncClearOnQuery (default true) : Clear prior dynamic items before new request
     asyncPreserveStatic (default true): Preserve original static <li> items when replacing results
     asyncErrorFadeMs           : Milliseconds before auto fading inline error row (0 = persist)
+    asyncInitialLoad (bool)    : If true, perform an initial fetch immediately on mount (before any typing)
+    asyncInitialQuery          : Optional initial query string for first fetch (default: empty string)
 
   Block Content:
     Provide one or more <li class="dropdown-item" data-value="...">Custom HTML ...</li>
@@ -64,6 +67,7 @@
   {{#if sortOrder}}data-sort-order="{{sortOrder}}"{{/if}}
   {{#if minFilterChars}}data-min-filter-chars="{{minFilterChars}}"{{/if}}
   {{#if noResultsText}}data-no-results-text="{{noResultsText}}"{{/if}}
+  {{#if highlightClass}}data-highlight-class="{{highlightClass}}"{{/if}}
   {{#if asyncDebounce}}data-async-debounce="{{asyncDebounce}}"{{/if}}
   {{#if asyncUrl}}data-async-url="{{asyncUrl}}"{{/if}}
   {{#if asyncQueryParam}}data-async-query-param="{{asyncQueryParam}}"{{/if}}
@@ -75,6 +79,12 @@
   {{#if (neq asyncClearOnQuery false)}}{{#if asyncClearOnQuery}}data-async-clear-on-query="true"{{/if}}{{/if}}
   {{#if (neq asyncPreserveStatic false)}}{{#if asyncPreserveStatic}}data-async-preserve-static="true"{{/if}}{{/if}}
   {{#if asyncErrorFadeMs}}data-async-error-fade-ms="{{asyncErrorFadeMs}}"{{/if}}
+  {{#if asyncInitialLoad}}data-async-initial-load="true"{{/if}}
+  {{#if asyncInitialQuery}}data-async-initial-query="{{asyncInitialQuery}}"{{/if}}
+  {{#if asyncAllowEmptyQuery}}data-async-allow-empty-query="true"{{/if}}
+  {{#if asyncEmptyCacheTtlMs}}data-async-empty-cache-ttl-ms="{{asyncEmptyCacheTtlMs}}"{{/if}}
+  {{#if asyncEmptyQueryParam}}data-async-empty-query-param="{{asyncEmptyQueryParam}}"{{/if}}
+  {{#if asyncEmptyQueryValue}}data-async-empty-query-value="{{asyncEmptyQueryValue}}"{{/if}}
   role="combobox"
   aria-haspopup="listbox"
   aria-expanded="false"

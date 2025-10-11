@@ -75,6 +75,82 @@
   <p class="small text-muted">Simulates errors when query contains the word <code>fail</code>; displays inline error row with retry.</p>
   {{> Dropdown id="async-guilds-error" name="async_guilds_error" placeholder="Type 'fail' to test error" closeOnSelect=true}}
 
+  <h3 id="async-advanced" class="h6 mt-4">Async (Template-Driven Advanced)</h3>
+  <p class="small text-muted">All async + filtering related settings supplied via partial params only (no imperative JS). Includes static items preserved alongside remote results, custom debounce, pending & loading rows, error fade, limit, and single-character threshold.</p>
+  {{> Dropdown id="async-guilds-advanced"
+      name="async_guilds_advanced"
+      placeholder="Advanced async (all template params)"
+      closeOnSelect=true
+      sort="label"
+      sortOrder="asc"
+      minFilterChars=1
+      asyncUrl="/examples/api/guilds"
+      asyncQueryParam="q"
+      asyncMinChars=1
+      asyncDebounce=250
+      asyncLimit=5
+      asyncShowLoadingRow=true
+      asyncPendingText="Hold on..."
+      asyncErrorFadeMs=2000
+      asyncPreserveStatic=true
+      asyncClearOnQuery=true
+      noResultsText="Zero results" }}
+
+  <h3 id="async-initial-load" class="h6 mt-4">Async (Initial Load on Mount)</h3>
+  <p class="small text-muted">Performs an immediate initial fetch on mount (before typing) using an empty query. Adjust with <code>asyncInitialQuery</code> to seed with a starting term.</p>
+  {{> Dropdown id="async-guilds-initial"
+    name="async_guilds_initial"
+    placeholder="Guilds (auto initial load)"
+    closeOnSelect=true
+    asyncUrl="/examples/api/guilds"
+    asyncInitialLoad=true
+    asyncInitialQuery=""
+    asyncMinChars=1
+    asyncDebounce=300
+    asyncShowLoadingRow=true
+    asyncPendingText="Loading initial..."
+    noResultsText="No guilds" }}
+
+  <h3 id="async-initial-load-js" class="h6 mt-4">Async (Initial Load via JS API)</h3>
+  <p class="small text-muted">Same behavior as above but configured entirely through the JavaScript API instead of template <code>async*</code> parameters. Demonstrates imperative setup with <code>configureAsync</code>.</p>
+  {{> Dropdown id="async-guilds-initial-js"
+    name="async_guilds_initial_js"
+    placeholder="Guilds (JS initial load)"
+    closeOnSelect=true
+    minFilterChars=1
+    noResultsText="No guilds" }}
+
+  <h3 id="async-popular-on-open" class="h6 mt-4">Async (Popular Items on First Open)</h3>
+  <p class="small text-muted">Does not fetch until the dropdown is first opened; then issues an empty-query request (omitting the query param) to load a default / popular list. Typing thereafter filters remotely.</p>
+  {{> Dropdown id="async-guilds-popular"
+    name="async_guilds_popular"
+    placeholder="Guilds (popular on open)"
+    closeOnSelect=true
+    asyncUrl="/examples/api/guilds"
+    asyncAllowEmptyQuery=true
+    asyncMinChars=2
+    asyncDebounce=300
+    asyncShowLoadingRow=true
+    asyncPendingText="Fetching..."
+    noResultsText="No guilds" }}
+
+  <h3 id="async-popular-ttl" class="h6 mt-4">Async (Popular with TTL + Param)</h3>
+  <p class="small text-muted">Empty-query fetch sends <code>?popular=true</code> and is cached for 60s; opening again within TTL reuses items instantly without a network call.</p>
+  {{> Dropdown id="async-guilds-popular-ttl"
+    name="async_guilds_popular_ttl"
+    placeholder="Guilds (popular cached)"
+    closeOnSelect=true
+    asyncUrl="/examples/api/guilds"
+    asyncAllowEmptyQuery=true
+    asyncEmptyQueryParam="popular"
+    asyncEmptyQueryValue="true"
+    asyncEmptyCacheTtlMs=60000
+    asyncMinChars=2
+    asyncDebounce=300
+    asyncShowLoadingRow=true
+    asyncPendingText="Fetching popular..."
+    noResultsText="No guilds" }}
+
   {{#section "scripts"}}
     <script src="/javascript/controls/dropdown.js" defer></script>
     <script>
@@ -152,6 +228,32 @@
             }
           });
           wrap.addEventListener('dropdown:asyncerror', e => console.warn('[examples] async error demo', e.detail.error));
+        });
+
+        // JS-configured initial load example
+        whenControlReady('async-guilds-initial-js', wrap => {
+          wrap.dropdownControl.configureAsync({
+            initialFetchOnMount: true,
+            initialQuery: '', // could seed e.g. 'a'
+            minChars: 1,
+            debounceMs: 300,
+            clearOnQuery: true,
+            showLoading: true,
+            showLoadingRow: true,
+            pendingText: 'Loading initial...',
+            fetcher: async (query, signal) => {
+              // Allow empty initial query to load popular/default list
+              const params = new URLSearchParams();
+              if (query) params.set('q', query);
+              const res = await fetch('/examples/api/guilds' + (params.toString() ? ('?' + params.toString()) : ''), { signal });
+              if (!res.ok) throw new Error('Remote fetch failed');
+              const data = await res.json();
+              return data.map(g => ({
+                value: g.id,
+                html: `<div class=\"d-flex align-items-center gap-2\"><img src=\"${g.icon}\" width=24 height=24 class=\"rounded\" alt=\"\"/>${g.name}</div>`
+              }));
+            }
+          });
         });
       });
     </script>

@@ -4,7 +4,7 @@ module.exports = {
     "/node_modules/",
     "/app/"
   ],
-  testEnvironment: "node",
+  testEnvironment: "jsdom",
   transform: {
     "^.+\.tsx?$": ["ts-jest",{}],
   },

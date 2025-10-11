@@ -1,6 +1,9 @@
 :root {
   --tb-expired-border-color: var(--bs-warning, #ffc107);
   --tb-deprecated-border-color: var(--bs-warning, #ffc107);
+
+  --tb-bg-primary-emphasis: rgba(56, 56, 224, 1);
+  --tb-text-primary-emphasis: #f3f3f3ff;
 }
 
 *:focus, *:hover {

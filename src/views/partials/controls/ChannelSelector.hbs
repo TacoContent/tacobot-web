@@ -1,0 +1,135 @@
+
+<div class="input-groupx mb-3">
+  {{!-- <div class="input-groupx-text">{{plural (or maxSelected 1) 'Channel' 'Channels'}}</div> --}}
+  {{> Dropdown id=id
+    name=(or name label id)
+    placeholder=(concat "Select " (plural (or maxSelected 1) 'Channel' 'Channels'))
+    multiple=multiple
+    searchable=(eq searchable true)
+    closeOnSelect=true
+    asyncQueryParam="q"
+    asyncAllowEmptyQuery=true
+    asyncEmptyQueryParam="popular"
+    asyncEmptyQueryValue="true"
+    asyncEmptyCacheTtlMs=60000
+    asyncMinChars=2
+    asyncDebounce=300
+    asyncShowLoadingRow=true
+    asyncPendingText="Searching..."
+    asyncErrorFadeMs=2000
+    asyncPreserveStatic=true
+    asyncClearOnQuery=true
+    noResultsText="Zero results" }}
+</div>
+
+{{#section "scripts"}}
+<script>
+  $(() => {
+    function escapeHtml(str) {
+      return str;
+      //return String(str).replace(/[&<>"']/g, s =>
+      //  ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',\"'\":'&#39;' }[s])
+      //);
+    }
+
+    function channelTypeIcon(type) {
+      switch(type) {
+        case "text": return '<span class="me-1">💬</span>'; // text
+        case "voice": return '<span class="me-1">🔈</span>'; // voice
+        case "news": return '<span class="me-1">📢</span>'; // announcement
+        case "stage": return '<span class="me-1">🎙️</span>'; // stage
+        case "forum": return '<span class="me-1">📝</span>'; // forum
+        default: return '<span class="me-1">📁</span>'; // category or unknown
+      }
+    }
+
+    function categoryItemTemplate(item, fa = false) {
+      return `<span class="dropdown-category d-block text-muted fw-semibold">${fa ? channelTypeFAIcon(item.type) : channelTypeIcon(item.type)} ${escapeHtml(item.name)}</span>`;
+    }
+
+    function channelItemTemplate(item, fa = false) {
+      return `<div class="d-flex align-items-center gap-2">
+        ${fa ? channelTypeFAIcon(item.type) : channelTypeIcon(item.type)} ${escapeHtml(item.name)}
+      </div>`;
+    }
+
+    function channelTypeFAIcon(type) {
+      switch(type) {
+        case "text": return '<i class="fa fa-comment me-1" aria-hidden="true"></i>'; // text
+        case "voice": return '<i class="fa fa-volume-up me-1" aria-hidden="true"></i>'; // voice
+        case "news": return '<i class="fa fa-bullhorn me-1" aria-hidden="true"></i>'; // announcement
+        case "stage": return '<i class="fa fa-microphone me-1" aria-hidden="true"></i>'; // stage
+        case "forum": return '<i class="fa fa-comments me-1" aria-hidden="true"></i>'; // forum
+        default: return '<i class="fa fa-folder me-1" aria-hidden="true"></i>'; // category or unknown
+      }
+    }
+
+    whenControlReady("{{id}}", wrap => {
+      wrap.dropdownControl.configureAsync({
+        initialFetchOnMount: true,
+        initialQuery: '', // could seed e.g. 'a'
+        minChars: 1,
+        debounceMs: 300,
+        clearOnQuery: true,
+        showLoading: true,
+        showLoadingRow: true,
+        pendingText: 'Loading initial...',
+        fetcher: async (query, signal) => {
+          // Allow empty initial query to load popular/default list
+          const params = new URLSearchParams();
+          if (query) params.set('q', query);
+          const res = await fetch('/api/v1/channels/{{discordGuild}}' + (params.toString() ? ('?' + params.toString()) : ''), { signal });
+          if (!res.ok) throw new Error('Remote fetch failed');
+          const data = await res.json();
+          console.log('Fetched channels:', data);
+          // get the categories and loop over them to map to dropdown items
+          // each category should be a disabled item.
+          // each category has a channels array to map to regular items.
+          // there is also root-level channels with no category (category_id = null)
+          // we can loop over those first as a "No Category" group if any exist.
+          // then loop over each category and its channels.
+          // final result is a flat array of items with category headers and channel items.
+
+
+
+          const results = [];
+          const lcQuery = query ? query.toLowerCase() : '';
+          function includeChannel(ch) {
+            if (!lcQuery) return true;
+            return ch.name.toLowerCase().includes(lcQuery);
+          }
+          
+          const rootChannels = data.channels.map(c => ({
+            value: c.id,
+            html: channelItemTemplate(c, true),
+          }));
+
+          // Categories
+          (data.categories || [])
+            .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+            .forEach(cat => {
+              results.push({
+                value: `__cat__${cat.id}`,
+                disabled: true,
+                html: categoryItemTemplate(cat, true)
+              });
+              (cat.channels || [])
+                .filter(includeChannel)
+                .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+                .forEach(ch => {
+                  results.push({
+                    value: ch.id,
+                    html: channelItemTemplate(ch, false)
+                  });
+                });
+            });
+
+          console.log('Mapped items:', results);
+
+          return results;
+        }
+      });
+    });
+  });
+</script>
+{{/section}}
