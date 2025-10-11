@@ -23,8 +23,9 @@
     "src/**/*.ts.ignore",
     "src/**/*.js.ignore",
     "src/**/*.spec.ts",
-    "package-sync.js",
-    "app-build.js",
+    "scripts/",
+    "scripts/package-sync.mjs",
+    "scripts/app-build.mjs",
     "app"
   ]
 }

@@ -59,9 +59,9 @@
   {{> Dropdown id="region-static" name="region_static" multiple=false placeholder="Choose region" searchable=false items=regionItems}}
 
   <hr class="my-5" />
-  <h2 id="async-example" class="h4">Async Search Example</h2>
-  <p class="small text-muted">Remote fetch after typing 2+ characters. Results streamed from <code>/examples/api/guilds</code>.</p>
-  {{> Dropdown id="async-guilds" name="async_guilds" placeholder="Search guilds (remote)" closeOnSelect=true}}
+  <h2 id="async-example" class="h4">Async Search Example (Template-Driven)</h2>
+  <p class="small text-muted">Remote fetch after typing 2+ characters. No imperative JS needed; configured via template params hitting <code>/examples/api/guilds</code>.</p>
+  {{> Dropdown id="async-guilds" name="async_guilds" placeholder="Search guilds (remote)" closeOnSelect=true asyncUrl="/examples/api/guilds" asyncQueryParam="q" asyncMinChars=2 asyncDebounce=350 asyncShowLoadingRow=true asyncPendingText="Searching guilds..." asyncLimit=15 noResultsText="No guilds match" }}
 
   <h3 id="async-remote-limited" class="h6 mt-4">Async Remote (Limited 10 Results)</h3>
   <p class="small text-muted">Demonstrates server-side filtering & limit parameter.</p>
@@ -110,7 +110,7 @@
           });
         }
 
-        whenControlReady('async-guilds', w => configureRemote(w));
+  // async-guilds uses template-driven async (auto configured via data-* attributes)
         whenControlReady('async-guilds-remote', w => configureRemote(w, { limit: 10 }));
 
         // Skeleton + debounce attribute (asyncDebounce=500)

@@ -37,6 +37,7 @@
     const clearBtn = root.querySelector('[data-role="clear"]');
     const loadingIndicator = root.querySelector('[data-role="loading"]');
     const nonSearchNoInput = !searchable && !input;
+    const actionsContainer = root.querySelector('[data-role="actions"]');
 
     function updateAddonEdgeClasses() {
       root.classList.remove('dropdown-preceded-addon', 'dropdown-followed-addon');
@@ -51,7 +52,6 @@
         root.classList.add('dropdown-followed-addon');
       }
     }
-    const actionsContainer = root.querySelector('[data-role="actions"]');
 
     // If the dropdown-control lives inside a Bootstrap .input-group, move the action buttons (clear + toggle)
     // out so they become direct children of the input-group. This allows native input-group styling/merging.
@@ -770,6 +770,74 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('[data-dropdown]').forEach(initDropdown);
+    document.querySelectorAll('[data-dropdown]').forEach(root => {
+      initDropdown(root);
+      // Auto async configuration based on data-* attributes (template parameters)
+      if (root.__dropdownAsyncAutoApplied) return; // guard
+      const asyncUrl = root.getAttribute('data-async-url');
+      if (!asyncUrl) return;
+      const searchable = root.getAttribute('data-searchable') !== 'false';
+      if (!searchable) return; // async only meaningful when searchable
+      const qParam = root.getAttribute('data-async-query-param') || 'q';
+      const minCharsAttr = root.getAttribute('data-async-min-chars');
+      const minChars = minCharsAttr ? parseInt(minCharsAttr, 10) : undefined;
+      const limit = root.getAttribute('data-async-limit');
+      const pendingText = root.getAttribute('data-async-pending-text') || undefined;
+      const showLoadingRow = root.hasAttribute('data-async-show-loading-row');
+      // If show-pending-row attribute explicitly present but false not possible (presence = true)
+      const showPendingRow = root.hasAttribute('data-async-show-pending-row');
+      const clearOnQuery = root.hasAttribute('data-async-clear-on-query') ? true : undefined;
+      const preserveStatic = root.hasAttribute('data-async-preserve-static') ? true : undefined;
+      const errorFadeMsAttr = root.getAttribute('data-async-error-fade-ms');
+      const errorFadeMs = errorFadeMsAttr ? parseInt(errorFadeMsAttr, 10) : undefined;
+      const attrDebounce = root.getAttribute('data-async-debounce');
+      const debounceMs = attrDebounce ? parseInt(attrDebounce, 10) : undefined;
+
+      // Build fetcher
+      function buildUrl(query) {
+        const u = new URL(asyncUrl, window.location.origin);
+        if (query != null) u.searchParams.set(qParam, query);
+        if (limit) u.searchParams.set('limit', limit);
+        return u.toString();
+      }
+      const fetcher = async (query, signal) => {
+        if (!query) return [];
+        const res = await fetch(buildUrl(query), { signal });
+        if (!res.ok) throw new Error('Async request failed (' + res.status + ')');
+        const data = await res.json();
+        // Accept formats: array of { id/name/icon }, array of strings, already-conforming objects
+        if (!Array.isArray(data)) return [];
+        return data.map(item => {
+          if (item == null) return null;
+            if (typeof item === 'string') return { value: item };
+            if (typeof item === 'object') {
+              const value = item.value || item.id || item.name || '';
+              if (item.html) return { value, html: item.html };
+              // Auto build simple row if icon + name
+              if (item.icon && (item.name || item.label)) {
+                const label = item.name || item.label || value;
+                return { value, html: `<div class="d-flex align-items-center gap-2"><img src="${item.icon}" width=24 height=24 class="rounded" alt=""/>${label}</div>` };
+              }
+              const label = item.text || item.label || item.name || value;
+              return { value, html: label };
+            }
+            return null;
+        }).filter(Boolean);
+      };
+
+      root.dropdownControl.configureAsync({
+        fetcher,
+        ...(typeof debounceMs === 'number' ? { debounceMs } : {}),
+        ...(typeof minChars === 'number' ? { minChars } : {}),
+        ...(pendingText ? { pendingText } : {}),
+        ...(showLoadingRow ? { showLoadingRow: true } : {}),
+        // Only override showPendingRow if attribute present; else keep default true
+        ...(showPendingRow ? { showPendingRow: true } : {}),
+        ...(clearOnQuery ? { clearOnQuery: true } : {}),
+        ...(preserveStatic ? { preserveStatic: true } : {}),
+        ...(typeof errorFadeMs === 'number' ? { errorFadeMs } : {}),
+      });
+      root.__dropdownAsyncAutoApplied = true;
+    });
   });
 })();

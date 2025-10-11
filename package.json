@@ -6,13 +6,14 @@
   "license": "MIT",
   "main": "./app/www.js",
   "scripts": {
-    "sync": "node package-sync.js",
-    "build": "node ./app-build.js --install",
-    "buildx": "node ./app-build.js --install --clean",
+    "sync": "node ./scripts/package-sync.mjs",
+    "build": "node ./scripts/app-build.mjs --install",
+    "buildx": "node ./scripts/app-build.mjs --install --clean",
     "startx": "npm run buildx && node ./app/www.js",
     "start": "npm run build && node ./app/www.js",
     "live": "npm run build && nodemon ./app/www.js",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "docs:partials": "node ./scripts/generate-partials-docs.mjs"
   },
   "dependencies": {
     "axios": "^1.12.2",

@@ -1,6 +1,7 @@
 {
   "delay": 5000,
   "ignore": [
-    "src/**"
+    "src/**",
+    "scripts/**"
   ]
 }

@@ -1,7 +1,9 @@
 {{!--
-  Generic Bootstrap 5 modal partial
+Title: Modal Partial
+Description: Generic Bootstrap 5 modal wrapper supporting inline body param or block content with optional form wrapping.
+Inputs: id=Unique modal id; title=Modal title; body=Static body HTML (ignored if block provided); buttonText=Primary action label; buttonClass=Extra classes for primary button; cancelText=Cancel button label; formAction=Form action URL; formMethod=Form method when formAction given; size=Dialog size sm|lg|xl; centered=Vertically center dialog; scrollable=Scrollable body region
 
-  Usage example:
+Usage example:
   {{> modal 
       id="clear-logs-modal" 
       title="Clear All Logs" 
@@ -11,7 +13,7 @@
       formAction="/logs/clear" 
       formMethod="POST" }}
 
-  Optional block form (overrides body param):
+Block form (overrides body param):
   {{#> modal id="example" title="Example" buttonText="Do It" buttonClass="btn-primary"}}
     <p>Custom <strong>HTML</strong> body via block.</p>
   {{/modal}}

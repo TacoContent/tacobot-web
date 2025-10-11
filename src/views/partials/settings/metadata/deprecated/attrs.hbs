@@ -1,12 +1,8 @@
-{{!-- settings/metadata/deprecated/attrs.hbs --}}
 {{!--
-  Emits data-* attributes if the setting is deprecated so styling can be applied
-  via CSS without sprinkling conditional class partials on every element.
-
-  Inputs:
-    - metadata: full metadata object
-    - key: the key for the setting (optional, if needed by helpers)
-    - level: fallback deprecation level (e.g. "warning") if metadata doesn't specify one
+Title: Deprecated Attrs
+Description: Emits data-* attributes describing deprecation state for a setting (data-deprecated, data-deprecated-level).
+Inputs: metadata=Full metadata object; key=Explicit setting key (optional); level=Fallback deprecation level if metadata missing
+Notes: Replaces legacy class injection partial; targeted via CSS for styling banners or tooltips.
 --}}
 {{#if (settingsGetMetadata metadata=metadata key="deprecated")}}
   data-deprecated="true" 

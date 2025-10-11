@@ -1,5 +1,17 @@
-const fs = require('fs');
-const path = require('path');
+#! /usr/bin/env node
+/**
+ * Synchronize dependencies and version info from root package.json to app/package.json.
+ *
+ * - Copies dependencies from root to app, preserving any additional app-specific deps.
+ * - Sets app version to BUILD_VERSION env var or root version or "1.0.0-snapshot".
+ * - Also sets buildSha, buildDate, buildRef fields from env vars or defaults.
+ * - Sets app name to "<root-name>-app" and copies description, author, license.
+ */
+import fs from 'fs';
+import path from 'path';
+
+const __dirname = path.resolve();
+console.log(`Working directory: ${__dirname}`);
 
 // Paths to package.json files
 const rootPackagePath = path.resolve(__dirname, 'package.json');

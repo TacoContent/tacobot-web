@@ -1,5 +1,7 @@
 {{!--
-  Reusable multi/single select dropdown control with token display and freeform filtering.
+  Reusable multi/single select dropdown control with token display, freeform filtering, optional async loading,
+  and accessibility-friendly semantics. All behavior is configured via template parameters that become
+  data-* attributes consumed by `dropdown.js`. Anything not provided falls back to script defaults.
 
   Usage (multi-select):
   {{#> Dropdown id="guilds" name="guild_ids" multiple=true placeholder="Select guild(s)" values=preselectedGuildIds}}
@@ -15,15 +17,34 @@
     <li class="dropdown-item" data-value="eu">Europe</li>
   {{/Dropdown}}
 
-  Params:
-    id (required)            : Unique id for the control root
-    name                     : Name attribute for the hidden backing <select>
-    multiple (default=true)  : Allow multiple selection
-    placeholder              : Placeholder text shown when no selection
-    values                   : Array of pre-selected values (must match data-value of provided <li>)
-    class                    : Extra classes for root wrapper
-    label                    : Optional label text (for accessibility)
-    searchable (default=true): Whether freeform typing / filtering is enabled. Set to false to disable search and require selection from list only.
+  Basic Params:
+    id (required)              : Unique id for the control root
+    name                       : Name attribute for the hidden backing <select>
+    multiple (default=true)    : Allow multiple selection
+    placeholder                : Placeholder text shown when no selection (stored as data-placeholder when no input)
+    values                     : Array of pre-selected values (must match data-value of provided <li>)
+    class                      : Extra classes for root wrapper
+    label                      : Optional label text (for accessibility)
+    searchable (default=true)  : Enable freeform typing / filtering; false removes the text input
+    closeOnSelect (default: false for multi) : Close menu after each selection
+    maxSelected (default: -1)  : Max selection count (multi only). -1 = unlimited
+    sort="label"               : Alphabetically sort items by visible label (asc by default)
+    sortOrder="asc|desc"       : Sort direction when sort='label'
+    minFilterChars (default 2) : Characters before local filtering + highlight activates
+    noResultsText              : Custom text for the no-results row
+
+  Async Params (auto-configure async if asyncUrl is provided):
+    asyncUrl                   : Endpoint to fetch results from. Presence triggers automatic configureAsync()
+    asyncQueryParam (default 'q'): Query string parameter name for user text
+    asyncMinChars (default 2)  : Minimum characters before remote request
+    asyncDebounce (default 300): Debounce in ms before firing fetch
+    asyncLimit                 : Optional numeric limit param appended (&limit=)
+    asyncShowLoadingRow (bool) : Show inline skeleton row while loading
+    asyncShowPendingRow (bool) : Show pending row during debounce (default true)
+    asyncPendingText           : Custom text for pending row (default 'Searching...')
+    asyncClearOnQuery (default true) : Clear prior dynamic items before new request
+    asyncPreserveStatic (default true): Preserve original static <li> items when replacing results
+    asyncErrorFadeMs           : Milliseconds before auto fading inline error row (0 = persist)
 
   Block Content:
     Provide one or more <li class="dropdown-item" data-value="...">Custom HTML ...</li>
@@ -36,6 +57,7 @@
   data-dropdown-id="{{id}}"
   data-multiple="{{#if (neq multiple false)}}true{{else}}false{{/if}}"
   data-searchable="{{#if (neq searchable false)}}true{{else}}false{{/if}}"
+  {{#if placeholder}}data-placeholder="{{placeholder}}"{{/if}}
   {{#if closeOnSelect}}data-close-on-select="true"{{/if}}
   {{#if (gt maxSelected -1)}}data-max-selected="{{maxSelected}}"{{/if}}
   {{#if sort}}data-sort="{{sort}}"{{/if}}
@@ -43,6 +65,16 @@
   {{#if minFilterChars}}data-min-filter-chars="{{minFilterChars}}"{{/if}}
   {{#if noResultsText}}data-no-results-text="{{noResultsText}}"{{/if}}
   {{#if asyncDebounce}}data-async-debounce="{{asyncDebounce}}"{{/if}}
+  {{#if asyncUrl}}data-async-url="{{asyncUrl}}"{{/if}}
+  {{#if asyncQueryParam}}data-async-query-param="{{asyncQueryParam}}"{{/if}}
+  {{#if asyncMinChars}}data-async-min-chars="{{asyncMinChars}}"{{/if}}
+  {{#if asyncLimit}}data-async-limit="{{asyncLimit}}"{{/if}}
+  {{#if (neq asyncShowLoadingRow false)}}{{#if asyncShowLoadingRow}}data-async-show-loading-row="true"{{/if}}{{/if}}
+  {{#if (neq asyncShowPendingRow false)}}{{#if asyncShowPendingRow}}data-async-show-pending-row="true"{{/if}}{{/if}}
+  {{#if asyncPendingText}}data-async-pending-text="{{asyncPendingText}}"{{/if}}
+  {{#if (neq asyncClearOnQuery false)}}{{#if asyncClearOnQuery}}data-async-clear-on-query="true"{{/if}}{{/if}}
+  {{#if (neq asyncPreserveStatic false)}}{{#if asyncPreserveStatic}}data-async-preserve-static="true"{{/if}}{{/if}}
+  {{#if asyncErrorFadeMs}}data-async-error-fade-ms="{{asyncErrorFadeMs}}"{{/if}}
   role="combobox"
   aria-haspopup="listbox"
   aria-expanded="false"

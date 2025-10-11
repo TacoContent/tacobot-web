@@ -2,6 +2,8 @@
 
 A reusable multi / single select control with tokenized display, freeform filtering, optional async loading, and accessibility-friendly semantics.
 
+All configuration can be driven directly from the Handlebars partial via parameters that render to `data-*` attributes. The runtime script (`dropdown.js`) reads these to enable features (including automatic async fetching) without extra JS wiring.
+
 ## Features
 
 - Debounced async loading with automatic cancellation of stale requests (searchable mode only)
@@ -129,6 +131,43 @@ document.getElementById('guilds-wrapper')
 ```
 
 ## Async Loading (Dynamic Items)
+You can configure async in two ways: (1) Template-driven (zero custom JS) or (2) Imperative via `configureAsync()`.
+
+### 1. Template-Driven Async (Recommended for common cases)
+
+Provide `asyncUrl` (and optionally other async* params) to the partial. When `data-async-url` is present and the control is searchable, the script auto-invokes `configureAsync` with a generated fetcher.
+
+```hbs
+{{> Dropdown id="async-guilds" placeholder="Search guilds" asyncUrl="/examples/api/guilds" asyncQueryParam="q" asyncMinChars=2 asyncDebounce=400 asyncLimit=25 asyncShowLoadingRow=true asyncPendingText="Searching guilds..." noResultsText="No guilds found" }}
+```
+
+Returned JSON is expected to be an array. Each element can be:
+
+- string (used as both value & label)
+- object with any of: `value`, `id`, `name`, `label`, `icon`, `html`
+  - If `html` provided it is inserted directly
+  - If `icon` + (`name` | `label`) provided a composite row with image + text is auto-built
+  - Otherwise `value/name/label` becomes text content
+
+Optional attributes influence behavior:
+
+| Template Param | Data Attribute | Purpose |
+|----------------|----------------|---------|
+| `asyncUrl` | `data-async-url` | Endpoint base URL (required to auto-enable) |
+| `asyncQueryParam` | `data-async-query-param` | Query parameter name (default `q`) |
+| `asyncMinChars` | `data-async-min-chars` | Minimum chars before requesting (default 2) |
+| `asyncDebounce` | `data-async-debounce` | Debounce ms (default 300) |
+| `asyncLimit` | `data-async-limit` | Adds `&limit=...` to request when present |
+| `asyncShowLoadingRow=true` | `data-async-show-loading-row` | Show skeleton row while loading |
+| `asyncShowPendingRow=false` | (omit attr) | NOTE: presence implies true; to hide use imperative API after init |
+| `asyncPendingText` | `data-async-pending-text` | Override pending row text |
+| `asyncClearOnQuery=false` | (attr omitted) | By default clear-on-query is true; pass `asyncClearOnQuery=true` to set attr explicitly (mainly for clarity) |
+| `asyncPreserveStatic=false` | (attr omitted) | When true (default) static `<li>` kept; pass `asyncPreserveStatic=true` to explicitly set |
+| `asyncErrorFadeMs` | `data-async-error-fade-ms` | Auto fade error row after N ms (0 = persist) |
+
+The auto fetcher issues GET requests: `asyncUrl?{asyncQueryParam}=userText[&limit=asyncLimit]` with `AbortController` cancellation.
+
+### 2. Imperative Configuration (Custom fetcher / complex logic)
 
 Configure a fetcher function that returns one of:
 
@@ -204,6 +243,17 @@ root.dropdownControl.getMaxSelected(): number
 | sortOrder (template param) | string | asc | Either `asc` or `desc` when `sort='label'` |
 | minFilterChars (template param) | number | 2 | Minimum characters before local filtering / highlighting engages |
 | noResultsText (template param) | string | "No matches" | Custom text for the no-results row (rendered italic + semibold) |
+| asyncUrl (template param) | string | (none) | If provided, auto async mode enabled with default fetcher |
+| asyncQueryParam (template param) | string | q | Query parameter used by auto fetcher |
+| asyncMinChars (template param) | number | 2 | Minimum characters before auto fetch (template-driven mode) |
+| asyncLimit (template param) | number | (none) | Optional limit appended to query string |
+| asyncDebounce (template param) | number | 300 | Debounce before auto fetch (first configure) |
+| asyncShowLoadingRow (template param) | boolean | false | Show inline skeleton while loading (template-driven) |
+| asyncShowPendingRow (template param) | boolean | true | Pending row during debounce (template-driven; attribute presence sets true) |
+| asyncPendingText (template param) | string | "Searching..." | Pending row text |
+| asyncClearOnQuery (template param) | boolean | true | Clear previous dynamic items before new results (template-driven) |
+| asyncPreserveStatic (template param) | boolean | true | Keep original static items when adding async results |
+| asyncErrorFadeMs (template param) | number | 0 | Fade-out delay for error row |
 
 ## Styling Notes
 
