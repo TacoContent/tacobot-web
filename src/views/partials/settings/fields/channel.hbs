@@ -20,8 +20,10 @@
     <label class="input-group-text" 
           for="field-{{id}}"
           id="field-{{id}}-label">{{label}}</label>
+
+    {{> controls/ChannelSelector id=(concat "field-" id) name=(or name label) searchable=false multiple=false guild=@root.discordGuild values=(asArray value=value) placeholder=label disabled=(eq (settingsGetMetadata metadata=metadata key="disabled") true) label="" menuWide=true menuMaxWidth=400}}
     
-    {{> discord/channel channel=value guild=@root.discordGuild}}
+    {{!-- {{> discord/channel channel=value guild=@root.discordGuild}}
     <input 
       type="hidden" 
       class="form-control" 
@@ -31,7 +33,7 @@
       value="{{value}}" 
       name="{{or name label}}"
       {{#if (eq (settingsGetMetadata metadata=metadata key="disabled") true)}}disabled{{/if}}
-      id="field-{{id}}" />
+      id="field-{{id}}" /> --}}
   </div>
 
   {{#if (not isChild) }}

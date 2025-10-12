@@ -13,8 +13,8 @@
 
 .dropdown-item.disabled {
   opacity: 1; /* override bootstrap */
-  color: var(--bs-text-secondary-x, #292a2bff);
-  background: var(--bs-body-bg-x, #597188ff);
+  color: var(--bs-text-secondary-x, #292a2baa);
+  background: var(--bs-body-bg-x, #202020ff);
   cursor: default;
 }
 
@@ -83,6 +83,7 @@
 .dropdown-control .badge {
   max-width: 100%;
   white-space: nowrap;
+  font-size: 1em;
 }
 
 /* When no tokens, input can expand full width */

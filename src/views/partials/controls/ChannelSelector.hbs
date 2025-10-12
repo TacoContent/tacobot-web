@@ -1,5 +1,5 @@
 
-<div class="input-groupx mb-3">
+{{!-- <div class="input-groupx mb-3"> --}}
   {{!-- <div class="input-groupx-text">{{plural (or maxSelected 1) 'Channel' 'Channels'}}</div> --}}
   {{> Dropdown id=id
     name=(or name label id)
@@ -20,7 +20,7 @@
     asyncPreserveStatic=true
     asyncClearOnQuery=true
     noResultsText="Zero results" }}
-</div>
+{{!-- </div> --}}
 
 {{#section "scripts"}}
 <script>
@@ -34,7 +34,7 @@
 
     function channelTypeIcon(type) {
       switch(type) {
-        case "text": return '<span class="me-1">💬</span>'; // text
+        case "text": return '<span class="me-1">#️⃣</span>'; // text
         case "voice": return '<span class="me-1">🔈</span>'; // voice
         case "news": return '<span class="me-1">📢</span>'; // announcement
         case "stage": return '<span class="me-1">🎙️</span>'; // stage
@@ -55,7 +55,7 @@
 
     function channelTypeFAIcon(type) {
       switch(type) {
-        case "text": return '<i class="fa fa-comment me-1" aria-hidden="true"></i>'; // text
+        case "text": return '<i class="fa fa-hashtag me-1" aria-hidden="true"></i>'; // text
         case "voice": return '<i class="fa fa-volume-up me-1" aria-hidden="true"></i>'; // voice
         case "news": return '<i class="fa fa-bullhorn me-1" aria-hidden="true"></i>'; // announcement
         case "stage": return '<i class="fa fa-microphone me-1" aria-hidden="true"></i>'; // stage
@@ -78,7 +78,7 @@
           // Allow empty initial query to load popular/default list
           const params = new URLSearchParams();
           if (query) params.set('q', query);
-          const res = await fetch('/api/v1/channels/{{discordGuild}}' + (params.toString() ? ('?' + params.toString()) : ''), { signal });
+          const res = await fetch('/api/v1/channels/{{guild}}' + (params.toString() ? ('?' + params.toString()) : ''), { signal });
           if (!res.ok) throw new Error('Remote fetch failed');
           const data = await res.json();
           console.log('Fetched channels:', data);
@@ -119,7 +119,7 @@
                 .forEach(ch => {
                   results.push({
                     value: ch.id,
-                    html: channelItemTemplate(ch, false)
+                    html: channelItemTemplate(ch, true)
                   });
                 });
             });

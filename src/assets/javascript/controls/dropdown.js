@@ -353,18 +353,43 @@ function whenControlReady(id, cb, attempts = 0) {
     }
 
     function positionMenu() {
-      // Ensure menu width matches the visible control shell width without exceeding wrapper
       const wrapperRect = root.getBoundingClientRect();
       const shell = controlShell || root;
       const shellRect = shell.getBoundingClientRect();
-      const width = Math.min(shellRect.width, wrapperRect.width);
-      menu.style.width = width + 'px';
-      // Use absolute positioning relative to wrapper (wrapper made position-relative in template)
+      const allowWider = root.getAttribute('data-menu-wide') === 'true';
+      const maxWide = parseInt(root.getAttribute('data-menu-max-width') || '0', 10); // 0 = auto
+      let targetWidth;
+      if (allowWider) {
+        // Use either explicit max width, or fallback to content's scrollWidth once populated
+        // but never less than shell width.
+        const contentScroll = menu.scrollWidth; // may be 0 on first open; fallback to shell width
+        if (maxWide > 0) {
+          targetWidth = Math.min(Math.max(shellRect.width, maxWide), Math.max(wrapperRect.width, maxWide));
+        } else {
+          targetWidth = Math.max(shellRect.width, contentScroll, wrapperRect.width);
+        }
+      } else {
+        targetWidth = Math.min(shellRect.width, wrapperRect.width);
+      }
+      menu.style.width = targetWidth + 'px';
       menu.style.position = 'absolute';
       menu.style.top = shell.offsetTop + shell.offsetHeight + 'px';
       menu.style.left = shell.offsetLeft + 'px';
-      // Prevent runaway horizontal overflow
-      menu.style.maxWidth = '100%';
+      // Constrain to viewport horizontally if wider
+      const vw = document.documentElement.clientWidth;
+      const menuRect = menu.getBoundingClientRect();
+      if (menuRect.right > vw) {
+        const overflow = menuRect.right - vw + 8; // 8px padding
+        const newLeft = Math.max(0, menu.offsetLeft - overflow);
+        menu.style.left = newLeft + 'px';
+      }
+      if (!allowWider) {
+        menu.style.maxWidth = '100%';
+      } else if (maxWide > 0) {
+        menu.style.maxWidth = maxWide + 'px';
+      } else {
+        menu.style.maxWidth = 'none';
+      }
     }
 
     // Placeholder capture
@@ -607,6 +632,18 @@ function whenControlReady(id, cb, attempts = 0) {
           runAsyncFetch(asyncConfig.initialQuery, true, { suppressShowMenu: true })
             .finally(() => {
               initialAsyncInProgress = false;
+              // Re-attempt selecting any preValues that were not present before dynamic items loaded
+              if (preValues && preValues.length) {
+                const prevInit = initializingPreselect;
+                initializingPreselect = true; // suppress side-effects (like auto menu toggling)
+                preValues.forEach(v => {
+                  const alreadySelected = !!tokensContainer.querySelector('[data-value="' + CSS.escape(v) + '"]');
+                  if (!alreadySelected && itemMap.has(v)) selectValue(v);
+                });
+                initializingPreselect = prevInit;
+                updateHasTokensClass();
+                restorePlaceholderIfEmpty();
+              }
               if (attemptedOpenDuringInitial) {
                 showMenu();
               }

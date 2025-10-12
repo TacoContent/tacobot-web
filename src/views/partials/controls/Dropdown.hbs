@@ -48,6 +48,9 @@
     asyncErrorFadeMs           : Milliseconds before auto fading inline error row (0 = persist)
     asyncInitialLoad (bool)    : If true, perform an initial fetch immediately on mount (before any typing)
     asyncInitialQuery          : Optional initial query string for first fetch (default: empty string)
+  Layout Params:
+    menuWide (bool)            : If true, menu can exceed control width.
+    menuMaxWidth               : Optional max pixel width (e.g. 480) when menuWide=true (0/blank = auto).
 
   Block Content:
     Provide one or more <li class="dropdown-item" data-value="...">Custom HTML ...</li>
@@ -85,6 +88,8 @@
   {{#if asyncEmptyCacheTtlMs}}data-async-empty-cache-ttl-ms="{{asyncEmptyCacheTtlMs}}"{{/if}}
   {{#if asyncEmptyQueryParam}}data-async-empty-query-param="{{asyncEmptyQueryParam}}"{{/if}}
   {{#if asyncEmptyQueryValue}}data-async-empty-query-value="{{asyncEmptyQueryValue}}"{{/if}}
+  {{#if menuWide}}data-menu-wide="true"{{/if}}
+  {{#if menuMaxWidth}}data-menu-max-width="{{menuMaxWidth}}"{{/if}}
   role="combobox"
   aria-haspopup="listbox"
   aria-expanded="false"
