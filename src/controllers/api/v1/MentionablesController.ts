@@ -12,7 +12,7 @@ export default class MentionablesController {
   async getBatchByIds(req: Request, res: Response, next: NextFunction): Promise<void> {
     const METHOD = Reflection.getCallingMethodName();
     try {
-  const guild: string = (req.params.guild as string) || (config.tacobot.primaryGuildId as string);
+      const guild: string = (req.params.guild as string) || (config.tacobot.primaryGuildId as string);
       let ids: string[] = [];
 
       // Support ids in query (?ids=1,2,3), body array, or body { ids: [] }
@@ -37,6 +37,30 @@ export default class MentionablesController {
     } catch (err: any) {
       if (isApiError(err)) {
         await this.logger.error(this.MODULE, `${METHOD} - API Error: ${handleApiError(err, 'Get Mentionables by IDs')}`);
+        res.status(err.status || 500).json({ error: err.message });
+        return;
+      }
+      await this.logger.error(`${this.MODULE}.${METHOD}`, err?.message || String(err), {
+        stack: err.stack,
+        headers: req.headers,
+        body: req.body,
+        query: req.query,
+        params: req.params,
+      });
+      next(err);
+    }
+  }
+
+  async list(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const guild: string = (req.params.guild as string) || (config.tacobot.primaryGuildId as string);
+      const response = await tacoBotApiClient.getGuildMentionables(guild);
+      const data: DiscordMentionable[] = response.data;
+      res.status(200).send(data).end();
+    } catch (err: any) {
+      if (isApiError(err)) {
+        await this.logger.error(this.MODULE, `${METHOD} - API Error: ${handleApiError(err, 'List Mentionables')}`);
         res.status(err.status || 500).json({ error: err.message });
         return;
       }

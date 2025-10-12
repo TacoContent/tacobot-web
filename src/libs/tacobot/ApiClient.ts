@@ -201,6 +201,15 @@ export class TacoBotApiClient {
     return this.makeRequest<DiscordMentionable[]>('POST', `/api/v1/guild/${guildId}/mentionables/batch/ids`, ids);
   }
 
+  /**
+   * List all mentionables (roles + members) for a guild.
+   * GET /api/v1/guild/{guild_id}/mentionables
+   * Returns: DiscordMentionable[] (union of DiscordRole | DiscordUser)
+   */
+  async getGuildMentionables(guildId: string): Promise<ApiResponse<DiscordMentionable[]>> {
+    return this.makeRequest<DiscordMentionable[]>('GET', `/api/v1/guild/${guildId}/mentionables`);
+  }
+
   // Join Whitelist endpoints
   async getJoinWhitelist(guildId: string): Promise<ApiResponse<JoinWhitelistUser[]>> {
     return this.makeRequest<JoinWhitelistUser[]>('GET', `/api/v1/guild/${guildId}/join-whitelist`);

@@ -59,6 +59,8 @@ const customClient = new TacoBotApiClient({
 - `getGuildCategories(guildId)` - Get channel categories
 - `getGuildRoles(guildId)` - Get guild roles
 - `getGuildRolesByIds(guildId, roleIds)` - Get multiple roles by IDs (batch)
+- `getGuildMentionables(guildId)` - List all mentionable roles and members in a guild
+- `getGuildMentionablesByIds(guildId, ids)` - Batch fetch mentionables (roles or users) by IDs
 
 ### Messages
 

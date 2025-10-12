@@ -1,8 +1,6 @@
 import configs from '../../../config';
-import * as fs from 'fs';
 import LogsMongoClient from '../../../libs/mongo/Logs';
 import { Request, Response, NextFunction } from 'express';
-import path from 'path';
 import Reflection from '../../../libs/Reflection';
 import DiscordGuildEntry from '../../../models/DiscordGuildEntry';
 import DiscordGuildsMongoClient from '../../../libs/mongo/Guilds';
@@ -41,6 +39,25 @@ export default class GuildsController {
       const client = new DiscordGuildsMongoClient();
 
       const guilds: DiscordGuildEntry[] = await client.findByIds(guildIds);
+
+      res.status(200).send(guilds).end();
+    } catch (err: any) {
+      await this.logger.error(`${this.MODULE}.${METHOD}`, err.message, {
+        stack: err.stack,
+        headers: req.headers,
+        body: req.body,
+        query: req.query,
+        params: req.params,
+      });
+      next(err);
+    }
+  }
+
+  async list(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const client = new DiscordGuildsMongoClient();
+      const guilds: DiscordGuildEntry[] = await client.getAll();
 
       res.status(200).send(guilds).end();
     } catch (err: any) {
