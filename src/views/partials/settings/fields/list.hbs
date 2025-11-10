@@ -24,6 +24,18 @@
         <option value="{{this}}" {{#if (eq this ../value)}}selected{{/if}}>{{this}}</option>
       {{/each}}
     </select>
+    {{!-- {{#*inline "listItems"}}
+      {{#each (settingsGetMetadata metadata=metadata key="values")}}
+        <li class="dropdown-item" data-value="{{this}}">
+          {{this}}
+        </li>
+      {{/each}}
+    {{/inline}}
+    {{#> Dropdown id=(concat "field-" id) name=(or name label) label="" placeholder=(or name label) values=value searchable=false multiple=false itemsPartial="listItems"}}
+      {{#each (settingsGetMetadata metadata=metadata key="values")}}
+        <li class="dropdown-item d-flex" data-value="{{this}}">{{this}}</li>
+      {{/each}}
+    {{/Dropdown}} --}}
 
       {{!-- <input type="text" class="form-control" placeholder="{{label}}" aria-label="{{label}}" aria-describedby="field-{{id}}-label" value="{{value}}" name="{{or name label}}" id="field-{{id}}"{{#if (settingsHasMetadataKey metadata=metadata key="validate")}} pattern="{{settingsGetMetadata metadata=metadata key="validate"}}{{/if}}" /> --}}
   </div>
