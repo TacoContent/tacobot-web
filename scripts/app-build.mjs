@@ -111,8 +111,12 @@ runCommand(
   `copy ./src/views/* => ${appDir}/views/`
 );
 runCommand(
-  `npx copyfiles -u 2 ./src/views/**/* ${appDir}/views/`,
+  `npx copyfiles -u 2 -a ./src/views/**/* ${appDir}/views/`,
   `copy ./src/views/**/* => ${appDir}/views/`
+);
+runCommand(
+  `npx copyfiles -u 2 -a ./src/views/**/**/* ${appDir}/views/`,
+  `copy ./src/views/**/**/* => ${appDir}/views/`
 );
 runCommand(`ls ${appDir}/views`, `list ${appDir}/views`);
 
