@@ -114,7 +114,6 @@ runCommand(
   `npx copyfiles -u 2 -a "./src/views/**/*" "${appDir}/views/"`,
   `copy ./src/views/**/* => ${appDir}/views/`
 );
-
 runCommand(
   `npx copyfiles -u 2 -a "./src/views/partials/**/*" "${appDir}/views/"`,
   `copy ./src/views/partials/**/* => ${appDir}/views/partials/`
