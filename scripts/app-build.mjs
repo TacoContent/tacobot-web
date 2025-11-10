@@ -95,11 +95,11 @@ runCommand(
 
 // Copy assets
 runCommand(
-  `npx copyfiles -u 2 ./src/assets/* ${appDir}/assets/`,
+  `npx copyfiles -u 2 -a "./src/assets/*" "${appDir}/assets/"`,
   `copy ./src/assets/* => ${appDir}/assets/`
 );
 runCommand(
-  `npx copyfiles -u 2 ./src/assets/**/* ${appDir}/assets/`,
+  `npx copyfiles -u 2 -a "./src/assets/**/*" "${appDir}/assets/"`,
   `copy ./src/assets/**/* => ${appDir}/assets/`
 );
 runCommand(`ls ${appDir}/assets`, `list ${appDir}/assets`);
@@ -107,18 +107,22 @@ runCommand(`ls ${appDir}/assets`, `list ${appDir}/assets`);
 
 // Copy views
 runCommand(
-  `npx copyfiles -u 2 ./src/views/* ${appDir}/views/`,
+  `npx copyfiles -u 2 -a "./src/views/*" "${appDir}/views/"`,
   `copy ./src/views/* => ${appDir}/views/`
 );
 runCommand(
-  `npx copyfiles -u 2 -a ./src/views/**/* ${appDir}/views/`,
+  `npx copyfiles -u 2 -a "./src/views/**/*" "${appDir}/views/"`,
   `copy ./src/views/**/* => ${appDir}/views/`
 );
+
 runCommand(
-  `npx copyfiles -u 2 -a ./src/views/**/**/* ${appDir}/views/`,
-  `copy ./src/views/**/**/* => ${appDir}/views/`
+  `npx copyfiles -u 2 -a "./src/views/partials/**/*" "${appDir}/views/"`,
+  `copy ./src/views/partials/**/* => ${appDir}/views/partials/`
 );
+
 runCommand(`ls ${appDir}/views`, `list ${appDir}/views`);
+runCommand(`ls ${appDir}/views/partials`, `list ${appDir}/views/partials`);
+
 
 // only copy .env if it exists
 // Copy .env file
