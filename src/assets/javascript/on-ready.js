@@ -4,6 +4,10 @@ $(() => {
   InputSetter.initialize();
   FormSubmitter.initialize();
   DurationPickerInitializer.initialize();
+  // Initialize JSON edit/preview toggle for settings
+  if (window.JsonEditor && typeof window.JsonEditor.initialize === 'function') {
+    window.JsonEditor.initialize();
+  }
 });
 
 class DurationPickerInitializer {

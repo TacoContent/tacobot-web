@@ -1,0 +1,21 @@
+/* JSON field toggle behaviour
+   - By default the edit textarea is hidden and preview is visible
+   - When parent has .json-editing class the edit field is shown and preview is hidden
+*/
+
+/* Hide edit by default to avoid flashing when JS is slow */
+[data-setting-type="json"] [data-view="edit"] {
+  display: none;
+}
+
+/* When we are in editing mode, show edit, hide preview */
+[data-setting-type="json"].json-editing [data-view="edit"] {
+  display: flex;
+  height: auto; 
+  max-height: 500px; 
+  min-height: 250px; 
+}
+
+[data-setting-type="json"].json-editing [data-view="preview"] {
+  display: none;
+}
