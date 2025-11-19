@@ -1,6 +1,6 @@
 <div class="card {{#if (not redeemed_at)}}border-warning{{else}}border-primary{{/if}} bg-primary-subtle text-bg-primary" {{#if (not redeemed_at)}}data-expired="true" data-expired-text="pending"{{/if}}>
   <div class="card-header text-muted">
-    <h5 class="card-title">{{this.code}}</h5>
+    <h5 class="card-title">{{> discord/user user=this.user_id guild=this.guild_id }}</h5>
     <h6 class="card-subtitle mb-2 text-body-secondary">
       <span class="float-end">
         <span class="text-uppercase me-1 text-muted">State:</span><span class="text-uppercase me-1 text-muted">{{#if redeemed_at}}Redeemed{{else}}Pending{{/if}}</span>
@@ -10,39 +10,51 @@
       </span>
     </h6>
   </div>
+
   <div class="card-body">
-    <div class="input-group mb-0">
-      {{!-- {{> code value=this.code copy=true spoiler=false }} --}}
+    <div class="row mb-2">
+      <div class="col-6">
+        <div class="input-group mb-1">
+          <span class="input-group-text">Cost</span>
+          <div class="form-control">{{this.cost}}</div>
+          <span class="input-group-text">🌮</span>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="input-group mb-1">
+          <span class="input-group-text">Reward</span>
+          <div class="form-control">{{this.reward}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-6">
+        <div class="input-group mb-1">
+          <span class="input-group-text">Purchase Multiplier</span>
+          <div class="form-control">{{this.purchase_multiplier}}</div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="input-group mb-1">
+          <span class="input-group-text">Effective Multiplier</span>
+          <div class="form-control">{{this.effective_multiplier}}</div>
+        </div>
+      </div>
     </div>
   </div>
+
   <div class="card-body">
     <div class="row">
       <div class="col">
-        <div class="card-header">Games</div>
-        <ul class="mb-0 ps-0 list-group-x list-group-flush">
-          {{!-- {{#each this.games}}
-            <li class="list-group-item">{{this.name}}</li>
-          {{/each}} --}}
-        </ul>
-      </div>
-      <div class="col">
-        <div class="card-header">Ticket</div>
-          {{> pulltab/ticket ticket=this.ticket }}
-      </div>
-      <div class="col">
-        <div class="card-header">Reactions</div>
-        <ul class="mb-0 ps-0 list-group-x list-group-flush">
-          {{!-- {{#each this.reactions}}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <span>{{this.emoji}}</span>
-              <span class="badge bg-primary rounded-pill">{{this.count}}</span>
-            </li>
-          {{/each}} --}}
-        </ul>
+        {{> pulltab/ticket ticket=this.ticket }}
       </div>
     </div>
     
   </div>
-  <div class="card-footer text-muted text-end">
+  <div class="card-footer text-muted text-center">
+    <div class="input-group mb-1">
+      <span class="input-group-text">S/N</span>
+      {{> code value=this.code copy=true spoiler=true class="form-control"}}
+    </div>
   </div>
 </div>

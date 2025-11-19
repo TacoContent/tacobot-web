@@ -12,7 +12,7 @@ export default class PullTabsController {
     const METHOD = Reflection.getCallingMethodName();
     try {
       const page = Math.max(1, parseInt(req.query.page as string) || 1);
-      const pageSize = 10;
+      const pageSize = 12; // 12 because its 3 per row.
       const search: string | undefined = (req.query.search as string) || undefined;
 
       const client = new PullTabsMongoClient();

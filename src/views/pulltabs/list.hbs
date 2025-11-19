@@ -17,9 +17,9 @@
 
   <div class="row">
   {{#each items}}
-      <div class="col-md-6 mb-4">
-        {{> pulltab/item item=this}}
-      </div>
+    <div class="col-md-4 mb-4">
+      {{> pulltab/item item=this}}
+    </div>
   {{/each}}
   </div>
   
@@ -27,3 +27,8 @@
   {{> pager this.pager}}
   </div>
 </div>
+
+{{#section 'head'}}
+
+<link rel="stylesheet" href="/css/pulltab.css">
+{{/section}}
