@@ -115,7 +115,7 @@
   - type: group
     title: Pull Tab Tickets
     id: pulltabs
-    icon: ticket-percent
+    icon: ticket
     children:
       - type: link
         title: View Tickets
