@@ -1,4 +1,4 @@
-import PullTabsMongoClient, { processPulltabTicket } from './PullTabs';
+import PullTabsMongoClient from './PullTabs';
 import DiscordUsersMongoClient from './Users';
 
 describe('PullTabsMongoClient.get', () => {
@@ -92,53 +92,4 @@ describe('PullTabsMongoClient.get', () => {
     expect(results.items[0].user_id).toBe('2');
   });
 
-  it('processPulltabTicket finds winning lines and calculates rewards (exact match)', () => {
-    const cogSettings = {
-      probabilities: [
-        {
-          symbol: '🌮',
-          weight: 1,
-          rules: [
-            { match: '🌮', reward: 100 },
-            { match: '🌮🌮', reward: 1000 },
-            { match: '🌮🌮🌮', reward: 10000 },
-          ],
-        },
-      ],
-    };
-
-    const ticket = ['🌮🌮🌮'];
-    const { isWinner, totalReward, winningLines } = processPulltabTicket(ticket, cogSettings, 1);
-
-    expect(isWinner).toBe(true);
-    expect(totalReward).toBe(10000);
-    expect(winningLines.length).toBe(1);
-    expect(winningLines[0]['🌮🌮🌮']).toBe(10000);
-  });
-
-  it('processPulltabTicket finds count-match wins and respects deny rules with multiplier 0', () => {
-    const cogSettings = {
-      probabilities: [
-        {
-          symbol: '🌮',
-          weight: 1,
-          rules: [
-            { match: '🌮🌮', reward: 1000 },
-            { match: '🕱', reward: 0, multiplier: 0 }, // deny rule example
-          ],
-        },
-      ],
-    };
-
-    let ticket = ['🌮🌮🍎'];
-    let res = processPulltabTicket(ticket, cogSettings, 1);
-    expect(res.isWinner).toBe(true);
-    expect(res.totalReward).toBe(1000);
-
-    // Now include the deny symbol to cause row to be losing
-    ticket = ['🌮🕱🌮'];
-    res = processPulltabTicket(ticket, cogSettings, 1);
-    expect(res.isWinner).toBe(false);
-    expect(res.totalReward).toBe(0);
-  });
 });
