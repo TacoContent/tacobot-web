@@ -1,0 +1,48 @@
+<div class="card {{#if (not redeemed_at)}}border-warning{{else}}border-primary{{/if}} bg-primary-subtle text-bg-primary" {{#if (not redeemed_at)}}data-expired="true" data-expired-text="pending"{{/if}}>
+  <div class="card-header text-muted">
+    <h5 class="card-title">{{this.code}}</h5>
+    <h6 class="card-subtitle mb-2 text-body-secondary">
+      <span class="float-end">
+        <span class="text-uppercase me-1 text-muted">State:</span><span class="text-uppercase me-1 text-muted">{{#if redeemed_at}}Redeemed{{else}}Pending{{/if}}</span>
+      </span>
+      <span class="float-start">
+        <span class="text-uppercase me-1 text-muted">Purchased:</span>{{> date date=this.created_at unknown="UNKNOWN"}}
+      </span>
+    </h6>
+  </div>
+  <div class="card-body">
+    <div class="input-group mb-0">
+      {{!-- {{> code value=this.code copy=true spoiler=false }} --}}
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col">
+        <div class="card-header">Games</div>
+        <ul class="mb-0 ps-0 list-group-x list-group-flush">
+          {{!-- {{#each this.games}}
+            <li class="list-group-item">{{this.name}}</li>
+          {{/each}} --}}
+        </ul>
+      </div>
+      <div class="col">
+        <div class="card-header">Ticket</div>
+          {{> pulltab/ticket ticket=this.ticket }}
+      </div>
+      <div class="col">
+        <div class="card-header">Reactions</div>
+        <ul class="mb-0 ps-0 list-group-x list-group-flush">
+          {{!-- {{#each this.reactions}}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{this.emoji}}</span>
+              <span class="badge bg-primary rounded-pill">{{this.count}}</span>
+            </li>
+          {{/each}} --}}
+        </ul>
+      </div>
+    </div>
+    
+  </div>
+  <div class="card-footer text-muted text-end">
+  </div>
+</div>

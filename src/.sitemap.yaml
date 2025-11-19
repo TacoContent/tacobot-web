@@ -113,6 +113,15 @@
         href: /minecraft/worlds
         icon: globe
   - type: group
+    title: Pull Tab Tickets
+    id: pulltabs
+    icon: ticket-percent
+    children:
+      - type: link
+        title: View Tickets
+        href: /pulltabs
+        icon: list
+  - type: group
     title: Permissions
     id: permissions
     icon: user-lock
