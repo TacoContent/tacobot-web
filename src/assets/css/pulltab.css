@@ -17,5 +17,33 @@
   font-size: 2.25rem;
   letter-spacing: 1.25rem;
   vertical-align: middle;
+  padding-left: 1.6rem;
+  white-space: nowrap;
+  padding-left: 1.2rem;
+  text-align: left;
+}
+
+.pulltab-ticket .pulltab-ticket-line.bg-success {
+  background-color: var(--bs-success-bg, #198754ff) ;
+  color: var(--bs-success-text, #ffffffff);
+  font-weight: bold;
+}
+
+.pulltab-ticket-line[data-pulltab-winner="true"]::after {
+  content: attr(data-pulltab-reward);
+  text-transform: uppercase;
+  font-size: 2.25rem;
+  letter-spacing: .05em;
+  padding: 0rem .7rem;
+  border-radius: 8px;
+  --bs-bg-opacity: 0.5; /* Sets opacity to 50% */
+  background-color: rgba(0,0,0, var(--bs-bg-opacity));
+  color: var(--bs-success-text, #ffffffff);
+  font-weight: 600;
+  opacity: 1;
+  pointer-events: none;
   text-align: center;
+  vertical-align: middle;
+  float: right;
+
 }

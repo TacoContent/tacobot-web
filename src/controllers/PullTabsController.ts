@@ -2,6 +2,7 @@ import configs from '../config';
 import LogsMongoClient from '../libs/mongo/Logs';
 import PullTabsMongoClient from '../libs/mongo/PullTabs';
 import Reflection from '../libs/Reflection';
+import ProcessedPullTabTicket from '../models/ProcessedPullTabTicket';
 import { Request, Response, NextFunction } from 'express';
 
 export default class PullTabsController {
@@ -18,10 +19,18 @@ export default class PullTabsController {
       const client = new PullTabsMongoClient();
       const pagedResults = await client.get((page - 1) * pageSize, pageSize, search);
 
+      // convert items to processed tickets
+      const processedItems = [];
+      for (const item of pagedResults.items) {
+        const processedTicket = new ProcessedPullTabTicket(item);
+        await processedTicket.processLineResults();
+        processedItems.push(processedTicket);
+      }
+
       res.render('pulltabs/list', {
         ...res.locals,
         title: 'Pull Tab Tickets',
-        items: pagedResults.items,
+        items: processedItems,
         pager: pagedResults.getPager(),
       });
     } catch (error: any) {

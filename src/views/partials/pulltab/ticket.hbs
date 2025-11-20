@@ -1,6 +1,6 @@
 
 <div class="pulltab-ticket m-3">
-  {{#each ticket}}
-  <div class="pulltab-ticket-line">{{this}}</div>
+  {{#each results}}
+  <div class="pulltab-ticket-line {{#if (eq this.isWinner true)}}bg-success{{/if}}" data-pulltab-reward="{{this.effectiveReward}}" data-pulltab-winner="{{this.isWinner}}">{{this.line}}</div>
   {{/each}}
 </div>
