@@ -3,6 +3,7 @@ import config from '../../config';
 import PullTabTicketEntry from '../../models/PullTabTicketEntry';
 import PagedResults from '../../models/PagedResults';
 import DiscordUsersMongoClient from './Users';
+import { add } from 'mathjs';
 
 export default class PullTabsMongoClient extends DatabaseMongoClient<PullTabTicketEntry> {
   constructor() {
@@ -11,7 +12,7 @@ export default class PullTabsMongoClient extends DatabaseMongoClient<PullTabTick
     console.log("PullTabsMongoClient initialized");
   }
 
-  async get(skip: number = 0, take: number = 100, search?: string): Promise<PagedResults<PullTabTicketEntry>> {
+  async get(skip: number = 0, take: number = 100, search?: string, additionalFilters?: any): Promise<PagedResults<PullTabTicketEntry>> {
     const collection = await this.getCollection();
     const users = new DiscordUsersMongoClient();
 
@@ -24,6 +25,10 @@ export default class PullTabsMongoClient extends DatabaseMongoClient<PullTabTick
     // If no search is provided, return all tickets with reward > 0
     // If search is provided, match either a Discord username (via DiscordUsers) or a direct user id
     let filter: any = { reward: { "$gt": 0 } };
+
+    if (additionalFilters) {
+      filter = { ...filter, ...additionalFilters };
+    }
 
     if (search) {
       search = search.trim();
@@ -42,12 +47,22 @@ export default class PullTabsMongoClient extends DatabaseMongoClient<PullTabTick
         orClauses.push({ user_id: search });
 
         // Final filter will always include reward > 0 plus an $or of username/user_id options
-        filter = {
-          $and: [
-            { reward: { "$gt": 0 } },
-            { $or: orClauses },
-          ],
-        };
+        if (additionalFilters) {
+          filter = {
+            $and: [
+              additionalFilters,
+              { reward: { "$gt": 0 } },
+              { $or: orClauses },
+            ],
+          };
+        } else {
+          filter = {
+            $and: [
+              { reward: { "$gt": 0 } },
+              { $or: orClauses },
+            ],
+          };
+        }
       }
     }
     const items = await collection.find(filter).skip(skip).limit(take).sort({ created_at: -1 }).toArray();

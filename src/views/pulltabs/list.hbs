@@ -5,6 +5,20 @@
       <div class="col"></div>
       <div class="col">
         {{> search id="search" name="search" placeholder="Search by User Name, ID, Display Name, or Reward" }}
+        {{!-- <div>
+          <div class="form-check form-switch ms-3">
+            <input class="form-check-input" name="includeLosingTickets" type="checkbox" id="filterZeroReward" {{#if filterZeroReward}}checked{{/if}} onchange="document.getElementById('search').submit();">
+            <label class="form-check-label" for="filterZeroReward">Hide Zero Reward</label>
+          </div>
+          <div class="form-check form-switch ms-3">
+            <input class="form-check-input" name="includePendingTickets" type="checkbox" id="filterPending" {{#if filterPending}}checked{{/if}} onchange="document.getElementById('search').submit();">
+            <label class="form-check-label" for="filterPending">Hide Pending</label>
+          </div>
+          <div class="form-check form-switch ms-3">
+            <input class="form-check-input" name="includeRedeemedTickets" type="checkbox" id="filterRedeemed" {{#if filterRedeemed}}checked{{/if}} onchange="document.getElementById('search').submit();">
+            <label class="form-check-label" for="filterRedeemed">Hide Redeemed</label>
+          </div>
+        </div> --}}
       </div>
       <div class="col"></div>
     </div>
