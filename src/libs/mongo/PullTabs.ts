@@ -37,6 +37,12 @@ export default class PullTabsMongoClient extends DatabaseMongoClient<PullTabTick
           orClauses.push({ user_id: { $in: userIds } });
         }
 
+        // find search that matches ticket line
+        // ticket: ["🌮💀🍀", "🍊🍎🍉", "🍇🍇🍇", "🍉🍇🍇", "🌮🍇🍉"]
+        // if search is "🍇🍇🍇", it should match the full line of the ticket
+        // if search is "🍇", it should match any ticket containing that symbol
+        orClauses.push({ ticket: { $elemMatch: { $regex: search, $options: 'i' } } });
+
         // If search looks like a number (eg discord id), allow direct matches
         // Always include a direct user_id match because the user may search by id.
         orClauses.push({ user_id: search });
