@@ -16,8 +16,25 @@ export default class PullTabsController {
       const pageSize = 12; // 12 because its 3 per row.
       const search: string | undefined = (req.query.search as string) || undefined;
 
+      const includeLosingTickets: boolean | undefined = req.query.includeLosingTickets === 'true' ? true : undefined;
+      const includeRedeemedTickets: boolean | undefined = req.query.includeRedeemedTickets === 'true' ? true : undefined;
+      const includePendingTickets: boolean | undefined = req.query.includePendingTickets === 'true' ? true : undefined;
+
+      const additionalFilters: any = {};
+      if (includeLosingTickets !== undefined && includeLosingTickets) {
+        additionalFilters.reward = { $gte: 0 };
+      }
+      if (includeRedeemedTickets !== undefined && includeRedeemedTickets) {
+        additionalFilters.redeemed_at = { $ne: null };
+        if (includePendingTickets !== undefined && includePendingTickets) {
+          additionalFilters.redeemed_at = { $in: [null, { $ne: null }] };
+        }
+      } else if (includePendingTickets !== undefined && includePendingTickets) {
+        additionalFilters.redeemed_at = null;
+      }
+
       const client = new PullTabsMongoClient();
-      const pagedResults = await client.get((page - 1) * pageSize, pageSize, search);
+      const pagedResults = await client.get((page - 1) * pageSize, pageSize, search, additionalFilters);
 
       // convert items to processed tickets
       const processedItems = [];
