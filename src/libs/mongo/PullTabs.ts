@@ -53,22 +53,20 @@ export default class PullTabsMongoClient extends DatabaseMongoClient<PullTabTick
         orClauses.push({ user_id: search });
 
         // Final filter will always include reward > 0 plus an $or of username/user_id options
-        if (additionalFilters) {
-          filter = {
-            $and: [
-              additionalFilters,
-              { reward: { "$gt": 0 } },
-              { $or: orClauses },
-            ],
-          };
-        } else {
-          filter = {
-            $and: [
-              { reward: { "$gt": 0 } },
-              { $or: orClauses },
-            ],
-          };
+        // When we have additionalFilters, respect any reward filter they provide.
+        // Build the $and array dynamically to avoid overwriting a provided reward filter.
+        const andClauses: any[] = [];
+        if (additionalFilters) andClauses.push(additionalFilters);
+
+        // Only add default reward > 0 if additionalFilters did not include a reward predicate
+        const additionalHasReward = additionalFilters && Object.prototype.hasOwnProperty.call(additionalFilters, 'reward');
+        if (!additionalHasReward) {
+          andClauses.push({ reward: { "$gt": 0 } });
         }
+
+        andClauses.push({ $or: orClauses });
+
+        filter = { $and: andClauses };
       }
     }
     const items = await collection.find(filter).skip(skip).limit(take).sort({ created_at: -1 }).toArray();

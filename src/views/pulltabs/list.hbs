@@ -4,21 +4,31 @@
     <div class="row mb-3">
       <div class="col"></div>
       <div class="col">
-        {{> search id="search" name="search" placeholder="Search by User Name, ID, Display Name, or Reward" }}
-        {{!-- <div>
-          <div class="form-check form-switch ms-3">
-            <input class="form-check-input" name="includeLosingTickets" type="checkbox" id="filterZeroReward" {{#if filterZeroReward}}checked{{/if}} onchange="document.getElementById('search').submit();">
-            <label class="form-check-label" for="filterZeroReward">Hide Zero Reward</label>
+        {{#> search id="search" name="search" placeholder="Search by User Name, ID, Display Name, or Reward" }}
+        <div class="row ">
+          <div class="col d-flex justify-content-left">
+            <div class="form-check form-switch ms-3 justify-content-left">
+              <input type="hidden" name="includeLosingTickets" value="false">
+              <input class="form-check-input" value="true" name="includeLosingTickets" type="checkbox" id="includeLosingTickets" {{#if includeLosingTickets}}checked{{/if}} onchange="document.getElementById('search-form').submit();">
+              <label class="form-check-label text-" for="includeLosingTickets">No Reward</label>
+            </div>
           </div>
-          <div class="form-check form-switch ms-3">
-            <input class="form-check-input" name="includePendingTickets" type="checkbox" id="filterPending" {{#if filterPending}}checked{{/if}} onchange="document.getElementById('search').submit();">
-            <label class="form-check-label" for="filterPending">Hide Pending</label>
+          <div class="col d-flex justify-content-center">
+            <div class="form-check form-switch ms-3 justify-content-left">
+              <input type="hidden" name="includePendingTickets" value="false">
+              <input class="form-check-input" value="true" name="includePendingTickets" type="checkbox" id="includePendingTickets" {{#if includePendingTickets}}checked{{/if}} onchange="document.getElementById('search-form').submit();">
+              <label class="form-check-label text-nowrap" for="includePendingTickets">Pending</label>
+            </div>
           </div>
-          <div class="form-check form-switch ms-3">
-            <input class="form-check-input" name="includeRedeemedTickets" type="checkbox" id="filterRedeemed" {{#if filterRedeemed}}checked{{/if}} onchange="document.getElementById('search').submit();">
-            <label class="form-check-label" for="filterRedeemed">Hide Redeemed</label>
+          <div class="col d-flex justify-content-end">
+            <div class="form-check form-switch ms-3 justify-content-left">
+              <input type="hidden" name="includeRedeemedTickets" value="false">
+              <input class="form-check-input" value="true" name="includeRedeemedTickets" type="checkbox" id="includeRedeemedTickets" {{#if includeRedeemedTickets}}checked{{/if}} onchange="document.getElementById('search-form').submit();">
+              <label class="form-check-label text-nowrap" for="includeRedeemedTickets">Redeemed</label>
+            </div>
           </div>
-        </div> --}}
+        </div>
+        {{/search}}
       </div>
       <div class="col"></div>
     </div>

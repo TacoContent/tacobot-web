@@ -16,21 +16,47 @@ export default class PullTabsController {
       const pageSize = 12; // 12 because its 3 per row.
       const search: string | undefined = (req.query.search as string) || undefined;
 
-      const includeLosingTickets: boolean | undefined = req.query.includeLosingTickets === 'true' ? true : undefined;
-      const includeRedeemedTickets: boolean | undefined = req.query.includeRedeemedTickets === 'true' ? true : undefined;
-      const includePendingTickets: boolean | undefined = req.query.includePendingTickets === 'true' ? true : undefined;
+      // Coerce values; if query param appears multiple times (hidden + checkbox), prefer the last value
+      const coerceBoolQuery = (val: any): string | undefined => {
+        if (val === undefined) return undefined;
+        if (Array.isArray(val)) return String(val[val.length - 1]);
+        return String(val);
+      };
+
+      const qIncludeLosingTicketsRaw = coerceBoolQuery(req.query.includeLosingTickets);
+      const qIncludeRedeemedTicketsRaw = coerceBoolQuery(req.query.includeRedeemedTickets);
+      const qIncludePendingTicketsRaw = coerceBoolQuery(req.query.includePendingTickets);
+
+      const qIncludeLosingTickets: boolean | undefined = qIncludeLosingTicketsRaw === 'true' ? true : undefined;
+      const qIncludeRedeemedTickets: boolean | undefined = qIncludeRedeemedTicketsRaw === 'false' ? false : qIncludeRedeemedTicketsRaw === 'true' ? true : undefined;
+      const qIncludePendingTickets: boolean | undefined = qIncludePendingTicketsRaw === 'true' ? true : undefined;
+
+      // defaults:
+      // When checkbox is unchecked it won't be present in query params.
+      // Default behavior: redeemed tickets are included unless the user explicitly unchecks the box.
+      const includeRedeemedTickets: boolean = qIncludeRedeemedTickets === undefined ? true : qIncludeRedeemedTickets;
+      const includeLosingTickets: boolean = qIncludeLosingTickets === undefined ? false : qIncludeLosingTickets;
+      const includePendingTickets: boolean = qIncludePendingTickets === undefined ? false : qIncludePendingTickets;
 
       const additionalFilters: any = {};
-      if (includeLosingTickets !== undefined && includeLosingTickets) {
+      if (includeLosingTickets) {
         additionalFilters.reward = { $gte: 0 };
+      } else {
+        additionalFilters.reward = { $gt: 0 };
       }
-      if (includeRedeemedTickets !== undefined && includeRedeemedTickets) {
+      
+      // Decide redeemed_at filter based on the two flags
+      if (includeRedeemedTickets && includePendingTickets) {
+        // include everything (no redeemed_at filter)
+      } else if (includeRedeemedTickets && !includePendingTickets) {
+        // Only redeemed tickets
         additionalFilters.redeemed_at = { $ne: null };
-        if (includePendingTickets !== undefined && includePendingTickets) {
-          additionalFilters.redeemed_at = { $in: [null, { $ne: null }] };
-        }
-      } else if (includePendingTickets !== undefined && includePendingTickets) {
+      } else if (!includeRedeemedTickets && includePendingTickets) {
+        // Only pending tickets (null or not exists)
         additionalFilters.redeemed_at = null;
+      } else {
+        // Neither selected - default to only redeemed tickets
+        additionalFilters.redeemed_at = { $ne: null };
       }
 
       const client = new PullTabsMongoClient();
@@ -43,6 +69,11 @@ export default class PullTabsController {
         await processedTicket.processLineResults();
         processedItems.push(processedTicket);
       }
+
+      // pass in includeLosingTickets, includeRedeemedTickets, includePendingTickets to the view
+      res.locals.includeLosingTickets = includeLosingTickets;
+      res.locals.includeRedeemedTickets = includeRedeemedTickets;
+      res.locals.includePendingTickets = includePendingTickets;
 
       res.render('pulltabs/list', {
         ...res.locals,
