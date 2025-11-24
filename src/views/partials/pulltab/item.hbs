@@ -1,6 +1,10 @@
 <div class="card {{#if (not redeemed_at)}}border-warning{{else}}border-primary{{/if}} bg-primary-subtle text-bg-primary" {{#if (not redeemed_at)}}data-expired="true" data-expired-text="pending"{{/if}}>
   <div class="card-header text-muted">
-    <h5 class="card-title">{{> discord/user user=this.user_id guild=this.guild_id }}</h5>
+    <h5 class="card-title">
+      <span class="float-end">{{> discord/guild id=this.guild_id }}</span>
+      <span class="float-start">{{> discord/user user=this.user_id guild=this.guild_id }}</span>
+      <div class="clearfix"></div>
+    </h5>
     <h6 class="card-subtitle mb-2 text-body-secondary">
       <span class="float-end">
         <span class="text-uppercase me-1 text-muted">State:</span><span class="text-uppercase me-1 text-muted">{{#if redeemed_at}}Redeemed{{else}}Pending{{/if}}</span>
@@ -8,6 +12,7 @@
       <span class="float-start">
         <span class="text-uppercase me-1 text-muted">Purchased:</span>{{> date date=this.created_at unknown="UNKNOWN"}}
       </span>
+      <div class="clearfix"></div>
     </h6>
   </div>
 
@@ -41,6 +46,12 @@
         </div>
       </div>
     </div>
+    <div class="row mb-1">
+      <div class="input-group mb-1">
+        <span class="input-group-text">S/N</span>
+        {{> code value=this.code copy=true spoiler=true class="form-control"}}
+      </div>
+    </div>
   </div>
 
   <div class="card-body">
@@ -51,10 +62,7 @@
     </div>
     
   </div>
-  <div class="card-footer text-muted text-center">
-    <div class="input-group mb-1">
-      <span class="input-group-text">S/N</span>
-      {{> code value=this.code copy=true spoiler=true class="form-control"}}
-    </div>
+  <div class="card-footer text-muted text-end">
+    <button class="btn btn-primary"><i class="fas fa-ticket"></i> Redeem</button>
   </div>
 </div>
