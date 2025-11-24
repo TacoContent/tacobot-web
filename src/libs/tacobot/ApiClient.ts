@@ -339,6 +339,10 @@ export class TacoBotApiClient {
     return this.makeRequest<any>('POST', '/webhook/shift', payload);
   }
 
+  async redeemPullTabTicket(guildId: string, username: string, ticketCode: string): Promise<ApiResponse<any>> {
+    return this.makeRequest<any>('POST', `/api/v1/pulltabs/${guildId}/redeem/${username}/${ticketCode}`);
+  }
+
   // Utility methods
   setToken(token: string): void {
     this.config.token = token;

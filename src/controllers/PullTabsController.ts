@@ -1,4 +1,5 @@
 import configs from '../config';
+import TacoBotApiClient from '../libs/tacobot/ApiClient';
 import LogsMongoClient from '../libs/mongo/Logs';
 import PullTabsMongoClient from '../libs/mongo/PullTabs';
 import Reflection from '../libs/Reflection';
@@ -85,6 +86,22 @@ export default class PullTabsController {
       // this.logger.error(METHOD, error);
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async redeem(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const { guildId, username, ticketCode } = req.body;
+      const client = new TacoBotApiClient({
+        baseUrl: configs.tacobot.api.url,
+        token: configs.tacobot.api.token,
+      });
+      const response = await client.redeemPullTabTicket(guildId, username, ticketCode);
+      res.json(response.data);
+    } catch (error: any) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Internal Server Error' });
     }
   }
 }

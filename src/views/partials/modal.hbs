@@ -39,35 +39,38 @@ Block form (overrides body param):
 {{#*inline "dialogClasses"}}
   modal-dialog{{#if size}} modal-{{size}}{{/if}}{{#if centered}} modal-dialog-centered{{/if}}{{#if scrollable}} modal-dialog-scrollable{{/if}}
 {{/inline}}
+{{#if formAction}}
+  <form method="{{#if formMethod}}{{formMethod}}{{else}}POST{{/if}}" action="{{formAction}}" class="d-inline m-0 p-0">
+{{/if}}
+    <div class="modal fade" id="{{id}}" tabindex="-1" aria-labelledby="{{id}}-label" aria-hidden="true">
+      <div class="{{> dialogClasses}}">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="{{id}}-label">{{title}}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
 
-<div class="modal fade" id="{{id}}" tabindex="-1" aria-labelledby="{{id}}-label" aria-hidden="true">
-  <div class="{{> dialogClasses}}">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="{{id}}-label">{{title}}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+          {{#if @partial-block}}
+            <div class="modal-body">
+              {{> @partial-block }}
+            </div>
+          {{else if body}}
+            <div class="modal-body">
+              {{body}}
+            </div>
+          {{/if}}
 
-      {{#if @partial-block}}
-        <div class="modal-body">
-          {{> @partial-block }}
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{#if cancelText}}{{cancelText}}{{else}}Cancel{{/if}}</button>
+            {{#if formAction}}
+                <button type="submit" class="btn {{#if buttonClass}}{{buttonClass}}{{else}}btn-primary{{/if}}">{{buttonText}}</button>
+            {{else}}
+              <button type="button" class="btn {{#if buttonClass}}{{buttonClass}}{{else}}btn-primary{{/if}}" data-modal-confirm data-bs-dismiss="modal">{{buttonText}}</button>
+            {{/if}}
+          </div>
         </div>
-      {{else if body}}
-        <div class="modal-body">
-          {{body}}
-        </div>
-      {{/if}}
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{#if cancelText}}{{cancelText}}{{else}}Cancel{{/if}}</button>
-        {{#if formAction}}
-          <form method="{{#if formMethod}}{{formMethod}}{{else}}POST{{/if}}" action="{{formAction}}" class="d-inline m-0 p-0">
-            <button type="submit" class="btn {{#if buttonClass}}{{buttonClass}}{{else}}btn-primary{{/if}}">{{buttonText}}</button>
-          </form>
-        {{else}}
-          <button type="button" class="btn {{#if buttonClass}}{{buttonClass}}{{else}}btn-primary{{/if}}" data-modal-confirm data-bs-dismiss="modal">{{buttonText}}</button>
-        {{/if}}
       </div>
     </div>
-  </div>
-</div>
+{{#if formAction}}
+  </form>
+{{/if}}

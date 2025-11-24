@@ -50,6 +50,12 @@
   <div class="d-flex justify-content-center">
   {{> pager this.pager}}
   </div>
+
+  {{> modal id="redeem-modal" title="Redeem Ticket" body="Are you sure you want to redeem this ticket?" buttonText="Redeem" buttonClass="btn-primary" }}
+
+{{#section 'scripts'}}
+<script src="/javascript/pulltabs.js"></script>
+{{/section}}
 </div>
 
 {{#section 'head'}}
