@@ -4,6 +4,7 @@ $(() => {
   InputSetter.initialize();
   FormSubmitter.initialize();
   DurationPickerInitializer.initialize();
+  NavbarScroller.initialize();
   // Initialize JSON edit/preview toggle for settings
   if (window.JsonEditor && typeof window.JsonEditor.initialize === 'function') {
     window.JsonEditor.initialize();
@@ -117,5 +118,20 @@ class InputSetter {
         }
       });
     });
+  }
+}
+
+class NavbarScroller {
+  static initialize() {
+    const navbar = document.querySelector('.navbar');
+    if (navbar) {
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 0 || document.documentElement.scrollTop > 0) {
+          navbar.classList.add('navbar-scrolled');
+        } else {
+          navbar.classList.remove('navbar-scrolled');
+        }
+      });
+    }
   }
 }

@@ -14,8 +14,9 @@ export function getSitemap(): any {
   }
 }
 
-function _processItem(item: any, currentPath: string, children: any[]): string {
+function _processItem(item: any, currentPath: string, children: any[]): { html: string, active: boolean } {
   let html = '';
+  let isActive = false;
   const sidebarLink = Handlebars.partials['sidebar/link'] || '';
   const sidebarGroup = Handlebars.partials['sidebar/group'] || '';
   const sidebarSeparator = Handlebars.partials['sidebar/separator'] || '';
@@ -23,20 +24,22 @@ function _processItem(item: any, currentPath: string, children: any[]): string {
   const sidebarGuildLink = Handlebars.partials['sidebar/guild_link'] || '';
   if (typeof sidebarLink !== 'string' || typeof sidebarGroup !== 'string') {
     console.error('Sidebar link or group partials are not defined correctly.');
-    return html;
+    return { html, active: false };
   }
 
   if (item.type === 'link') {
+    isActive = item.href === currentPath;
     const template = Handlebars.compile(sidebarLink);
     html += template({
       ...item,
-      active: item.href === currentPath
+      active: isActive
     });
   } else if (item.type === 'guild_link') {
+    isActive = item.href === currentPath;
     const template = Handlebars.compile(sidebarGuildLink);
     html += template({
       ...item,
-      active: item.href === currentPath
+      active: isActive
     });
   } else if (item.type === 'external') {
     const template = Handlebars.compile(sidebarLink);
@@ -50,29 +53,36 @@ function _processItem(item: any, currentPath: string, children: any[]): string {
 
     let childrenHtml = '';
     for (const child of children) {
-      childrenHtml += _processItem(child, currentPath, child.children || []);
+      const result = _processItem(child, currentPath, child.children || []);
+      childrenHtml += result.html;
+      if (result.active) isActive = true;
     }
     html += template({
       ...item,
-      children: childrenHtml
+      children: childrenHtml,
+      active: isActive
     });
   } else if (item.type === 'separator') {
     const template = Handlebars.compile(sidebarSeparator);
     html += template(item);
   } else if (item.type === 'group') {
     let childrenHtml = '';
-    for (const child of item.children) {
-
-      childrenHtml += _processItem(child, currentPath, child.children || []); // Pass empty array if no children
+    // Use children argument instead of item.children to support dynamic children and consistency
+    const itemsToProcess = (children && children.length > 0) ? children : (item.children || []);
+    for (const child of itemsToProcess) {
+      const result = _processItem(child, currentPath, child.children || []);
+      childrenHtml += result.html;
+      if (result.active) isActive = true;
     }
     const groupTemplate = Handlebars.compile(sidebarGroup);
     html += groupTemplate({
       ...item,
-      children: childrenHtml
+      children: childrenHtml,
+      active: isActive
     });
   }
 
-  return html;
+  return { html, active: isActive };
 }
 
 function _titleCase(this: any, str: string): string {
@@ -109,9 +119,9 @@ export function renderSidebar(this: any, sitemap: any[], currentPath: string, se
           children: guildChildren
         });
       }
-      html += _processItem(item, currentPath, children);
+      html += _processItem(item, currentPath, children).html;
     } else {
-      html += _processItem(item, currentPath, item.children || []);
+      html += _processItem(item, currentPath, item.children || []).html;
     }
   }
   return html;

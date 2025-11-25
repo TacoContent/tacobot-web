@@ -20,6 +20,20 @@ body {
 body {
   text-align: center;
   font-family: Raleway, sans-serif;
+  padding-top: 58px;
+}
+
+.navbar-scrolled {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Navbar */
+.navbar.fixed-top {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1030;
 }
 
 .discord-channel.input-group {
@@ -314,6 +328,27 @@ a, .btn-link {
 @media (max-width: 576px) { .btn-fab { bottom: 1rem; right: 1rem; } }
 
 /* End deprecated scaffolding */
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100; /* Behind the navbar */
+  padding: 60px 0 0 0; /* Height of navbar */
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.sidebar .position-sticky {
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+.sidebar .nav-link.active {
+  font-weight: bold;
+  background-color: var(--bs-secondary-bg, #0d6efd);
+}
 
 @keyframes fadein {
   0% { opacity: 0; }
