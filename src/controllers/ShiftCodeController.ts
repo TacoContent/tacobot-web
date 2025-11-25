@@ -103,9 +103,22 @@ export default class ShiftCodeController {
       token: config.tacobot.api.token,
     });
 
+    const additionalFilters: any = {};
+
+    const qIncludeExpired = req.query.includeExpired === undefined ? undefined : req.query.includeExpired === 'true';
+    const includeExpired: boolean = qIncludeExpired === undefined ? true : qIncludeExpired;
+    if (!includeExpired) {
+      // this should either be an expiry greater than UTC now OR null (no end date)
+      // the value should be in unix timestamp (seconds) as stored in DB
+      const now = moment.utc().unix();
+      // use $or so that entries with no expiry (or explicit null) are INCLUDED (not treated as expired)
+      additionalFilters.$or = [{ expiry: { $gt: now } }, { expiry: null }];
+    }
+
+
     const search: string | undefined = (req.query.search as string) || undefined;
     // Get paginated shift codes
-    const results = await client.get((page - 1) * pageSize, pageSize, search);
+    const results = await client.get((page - 1) * pageSize, pageSize, search, additionalFilters);
 
     // add placeholder reactions data to each entry
     results.items.forEach((item) => {
@@ -200,6 +213,8 @@ export default class ShiftCodeController {
     //   }
     //   entry.reactions = target; // final shape
     // });
+
+    res.locals.includeExpired = includeExpired;
 
     res.render('shiftcodes/list', {
       ...res.locals,

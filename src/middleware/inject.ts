@@ -26,10 +26,16 @@ const guilds = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const pagePath = async(req: Request, res: Response, next: NextFunction) => {
+const pagePath = async (req: Request, res: Response, next: NextFunction) => {
   res.locals.currentPath = req.path;
   next();
 };
+
+const queryString = async (req: Request, res: Response, next: NextFunction) => {
+  const queryParams = { ...req.query };
+  res.locals.queryString = queryParams;
+  next();
+}
 
 // const settingsGroups = async (req: Request, res: Response, next: NextFunction) => {
 //   try {
@@ -61,5 +67,5 @@ const searchQuery = async (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-export default { config: configs, pagePath, settingsGroups, searchQuery, discordGuild, guilds };
-export { configs as config, pagePath, settingsGroups, searchQuery, discordGuild, guilds };
+export default { config: configs, pagePath, settingsGroups, searchQuery, queryString, discordGuild, guilds };
+export { configs as config, pagePath, settingsGroups, searchQuery, queryString, discordGuild, guilds };

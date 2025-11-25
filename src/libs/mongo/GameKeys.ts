@@ -58,7 +58,7 @@ class GameKeysMongoClient extends DatabaseMongoClient<GameKeyEntry> {
 
   }
 
-  async get(skip: number = 0, take: number = 100, search?: string): Promise<PagedResults<GameKeyEntry>> {
+  async get(skip: number = 0, take: number = 100, search?: string, additionalFilters?: any): Promise<PagedResults<GameKeyEntry>> {
     const collection = await this.getCollection();
     const users = new DiscordUsersMongoClient();
     if (skip < 0) skip = 0;
@@ -66,30 +66,35 @@ class GameKeysMongoClient extends DatabaseMongoClient<GameKeyEntry> {
     // need to join with users collection to get the usernames
     const filteredUsers = await users.get(search);
     const filteredUserMap = new Map(filteredUsers.map(user => [user.user_id, user.displayname]));
-
-
+    // Start with additionalFilters if provided
     let filter: any = {};
-
-    if (!search) {
-      filter = {};
-    } else {
-      search = search.trim();
-      if (search.length === 0) {
-        filter = {};
-      } else {
-        filter = {
-          $or: [
-            { title: { "$regex": search, $options: 'i' } },
-            { key: { "$regex": search, $options: 'i' } },
-            { type: { "$regex": search, $options: 'i' } },
-            { user_owner: { $in: Array.from(filteredUserMap.keys()) } },
-            { redeemed_by: { $in: Array.from(filteredUserMap.keys()) } },
-          ],
-        };
-      }
+    if (additionalFilters && Object.keys(additionalFilters).length > 0) {
+      // shallow copy so we don't mutate the caller's object
+      filter = { ...additionalFilters };
     }
 
+    if (search) {
+      search = search.trim();
+      if (search.length > 0) {
+        const orClauses: any[] = [
+          { title: { $regex: search, $options: 'i' } },
+          { key: { $regex: search, $options: 'i' } },
+          { type: { $regex: search, $options: 'i' } },
+          { user_owner: { $in: Array.from(filteredUserMap.keys()) } },
+          { redeemed_by: { $in: Array.from(filteredUserMap.keys()) } },
+        ];
 
+        const andClauses: any[] = [];
+        
+        // If caller provided additionalFilters, include them as an AND clause
+        if (additionalFilters && Object.keys(additionalFilters).length > 0) {
+          andClauses.push(additionalFilters);
+        }
+        andClauses.push({ $or: orClauses });
+
+        filter = { $and: andClauses };
+      }
+    }
     const items = await collection.find(filter).skip(skip).limit(take).sort({ redeemed_timestamp: 1, title: 1 }).toArray();
 
     const totalItems = await collection.countDocuments(filter);

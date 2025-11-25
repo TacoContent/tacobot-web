@@ -82,6 +82,7 @@ app.use(middleware.inject.config);
 app.use(middleware.inject.discordGuild);
 app.use(middleware.inject.guilds);
 app.use(middleware.inject.pagePath);
+app.use(middleware.inject.queryString);
 app.use(middleware.inject.searchQuery);
 app.use(middleware.inject.settingsGroups);
 

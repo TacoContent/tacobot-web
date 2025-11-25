@@ -4,7 +4,41 @@
     <div class="row mb-3">
       <div class="col"></div>
       <div class="col">
-        {{> search id="search" name="search" placeholder="Search by Title, Description, Platform, or Type" }}
+        {{#> search id="search" name="search" placeholder="Search by Title, Description, Platform, or Type" }}
+        <div class="row ">
+          <div class="col d-flex justify-content-start">
+            <div class="form-check form-switch justify-content-start">
+              <input class="form-check-input" value="true" name="includeExpired" type="checkbox" id="includeExpired" {{#if includeExpired}}checked{{/if}} onchange="this.form.requestSubmit();">
+              <label class="form-check-label text-" for="includeExpired">Expired</label>
+            </div>
+          </div>
+        </div>
+        {{/search}}
+        {{#section 'scripts'}}
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('search-form');
+            if (!form) return;
+
+            form.addEventListener('submit', () => {
+              const includeExpired = document.getElementById('includeExpired');
+              if (!includeExpired) return;
+
+              if (includeExpired.checked) {
+                // default is true; don't send default -> disable the checkbox so it won't be included
+                includeExpired.disabled = true;
+              } else {
+                // non-default (false) should be sent; add a hidden input with value 'false'
+                const hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'includeExpired';
+                hidden.value = 'false';
+                form.appendChild(hidden);
+              }
+            });
+          });
+        </script>
+        {{/section}}
       </div>
       <div class="col"></div>
     </div>

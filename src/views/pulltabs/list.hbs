@@ -6,24 +6,21 @@
       <div class="col">
         {{#> search id="search" name="search" placeholder="Search by User Name, ID, Display Name, or Reward" }}
         <div class="row ">
-          <div class="col d-flex justify-content-left">
-            <div class="form-check form-switch ms-3 justify-content-left">
-              <input type="hidden" name="includeLosingTickets" value="false">
-              <input class="form-check-input" value="true" name="includeLosingTickets" type="checkbox" id="includeLosingTickets" {{#if includeLosingTickets}}checked{{/if}} onchange="document.getElementById('search-form').submit();">
+          <div class="col d-flex justify-content-start">
+            <div class="form-check form-switch justify-content-start">
+              <input class="form-check-input" value="true" name="includeLosingTickets" type="checkbox" id="includeLosingTickets" {{#if includeLosingTickets}}checked{{/if}} onchange="this.form.requestSubmit();">
               <label class="form-check-label text-" for="includeLosingTickets">No Reward</label>
             </div>
           </div>
           <div class="col d-flex justify-content-center">
-            <div class="form-check form-switch ms-3 justify-content-left">
-              <input type="hidden" name="includePendingTickets" value="false">
-              <input class="form-check-input" value="true" name="includePendingTickets" type="checkbox" id="includePendingTickets" {{#if includePendingTickets}}checked{{/if}} onchange="document.getElementById('search-form').submit();">
+            <div class="form-check form-switch ms-3 justify-content-center">
+              <input class="form-check-input" value="true" name="includePendingTickets" type="checkbox" id="includePendingTickets" {{#if includePendingTickets}}checked{{/if}} onchange="this.form.requestSubmit();">
               <label class="form-check-label text-nowrap" for="includePendingTickets">Pending</label>
             </div>
           </div>
           <div class="col d-flex justify-content-end">
-            <div class="form-check form-switch ms-3 justify-content-left">
-              <input type="hidden" name="includeRedeemedTickets" value="false">
-              <input class="form-check-input" value="true" name="includeRedeemedTickets" type="checkbox" id="includeRedeemedTickets" {{#if includeRedeemedTickets}}checked{{/if}} onchange="document.getElementById('search-form').submit();">
+            <div class="form-check form-switch ms-3 justify-content-end">
+              <input class="form-check-input" value="true" name="includeRedeemedTickets" type="checkbox" id="includeRedeemedTickets" {{#if includeRedeemedTickets}}checked{{/if}} onchange="this.form.requestSubmit();">
               <label class="form-check-label text-nowrap" for="includeRedeemedTickets">Redeemed</label>
             </div>
           </div>
@@ -55,6 +52,30 @@
 
 {{#section 'scripts'}}
 <script src="/javascript/pulltabs.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('search-form');
+    if (form) {
+      form.addEventListener('submit', () => {
+        const includeRedeemed = document.getElementById('includeRedeemedTickets');
+        if (includeRedeemed) {
+          if (includeRedeemed.checked) {
+            // Default is true, so don't send parameter
+            includeRedeemed.disabled = true;
+          } else {
+            // Non-default (false), send false
+            // Checkbox is unchecked, so it won't send. Add hidden input.
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'includeRedeemedTickets';
+            hidden.value = 'false';
+            form.appendChild(hidden);
+          }
+        }
+      });
+    }
+  });
+</script>
 {{/section}}
 </div>
 

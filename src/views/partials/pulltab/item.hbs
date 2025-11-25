@@ -21,28 +21,28 @@
       <div class="col-6">
         <div class="input-group mb-1">
           <span class="input-group-text">Cost</span>
-          <div class="form-control">{{this.cost}}</div>
+          <div class="form-control text-nowrap">{{this.cost}}</div>
           <span class="input-group-text">🌮</span>
         </div>
       </div>
       <div class="col-6">
         <div class="input-group mb-1">
           <span class="input-group-text">Reward</span>
-          <div class="form-control">{{this.reward}}</div>
+          <div class="form-control text-nowrap">{{this.reward}}</div>
         </div>
       </div>
     </div>
     <div class="row mb-2">
       <div class="col-6">
         <div class="input-group mb-1">
-          <span class="input-group-text">Purchase Multiplier</span>
-          <div class="form-control">{{this.purchase_multiplier}}</div>
+          <span class="input-group-text text-nowrap">Purchase Multiplier</span>
+          <div class="form-control text-nowrap">{{this.purchase_multiplier}}</div>
         </div>
       </div>
       <div class="col-6">
         <div class="input-group mb-1">
-          <span class="input-group-text">Effective Multiplier</span>
-          <div class="form-control">{{this.effective_multiplier}}</div>
+          <span class="input-group-text text-nowrap">Effective Multiplier</span>
+          <div class="form-control text-nowrap">{{this.effective_multiplier}}</div>
         </div>
       </div>
     </div>
@@ -63,6 +63,11 @@
     
   </div>
   <div class="card-footer text-muted text-end">
-    <button class="btn btn-primary btn-redeem" data-guild-id="{{this.guild_id}}" data-username="{{this.user_id}}" data-ticket-code="{{this.code}}"><i class="fas fa-ticket"></i> Redeem</button>
+    <button 
+      {{#if redeemed_at}}disabled{{/if}}
+      class="btn btn-primary btn-redeem"
+      data-guild-id="{{this.guild_id}}"
+      data-username="{{this.user_id}}"
+      data-ticket-code="{{this.code}}"><i class="fas fa-ticket"></i> Redeem</button>
   </div>
 </div>

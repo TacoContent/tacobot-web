@@ -6,4 +6,5 @@ export default {
     
     return Array.isArray(value) ? value : [value];
   }
+  
 }
