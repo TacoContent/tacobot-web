@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import LogsMongoClient from '../libs/mongo/Logs';
 import GameKeysMongoClient from '../libs/mongo/GameKeys';
 import moment from 'moment';
+import GameKeyEntry from '../models/GameKeyEntry';
 
 
 export default class GameKeysController {
@@ -48,12 +49,55 @@ export default class GameKeysController {
     res.locals.includeAvailable = includeAvailable;
     res.locals.includeRedeemed = includeRedeemed;
 
+    const successMessage = req.query.successMessage ? [req.query.successMessage as string] : undefined;
+
     res.render('gamekeys/list', {
       ...res.locals,
       title: 'Game Keys',
       items: results.items,
       offers: offers,
       pager: results.getPager(),
+      successMessage: successMessage,
     });
   };
+
+  public submitView = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    res.render('gamekeys/submit', {
+      ...res.locals,
+      title: 'Submit Game Key',
+    });
+  }
+
+
+
+  public submit = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const entry = new GameKeyEntry({
+        title: req.body.title,
+        key: req.body.key,
+        type: req.body.type,
+        cost: parseInt(req.body.cost) || 0,
+        help_link: req.body.help_link,
+        download_link: req.body.download_link,
+        info_link: req.body.info_link,
+        user_owner: req.body.user_owner,
+        guild_id: req.body.guild_id,
+        source: 'tacobot-web'
+      });
+
+      const client = new GameKeysMongoClient();
+      await client.add(entry);
+
+      res.redirect('/gamekeys?successMessage=Game key added successfully');
+    } catch (error) {
+      console.error(error);
+      res.render('gamekeys/submit', {
+        ...res.locals,
+        title: 'Submit Game Key',
+        message: ['Error adding game key'],
+        // preserve input
+        ...req.body
+      });
+    }
+  }
 };

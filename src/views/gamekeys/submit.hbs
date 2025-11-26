@@ -1,0 +1,91 @@
+<!-- SubmitGameKey View - Bootstrap Form for GameKeyEntry -->
+<div class="container mt-4">
+  <h2>Submit Game Key</h2>
+  <form method="POST" action="/gamekeys/submit">
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="Title"><i class="fa fa-tag" aria-hidden="true"></i></span>
+        <div class="form-floating">
+          <input type="text" class="form-control" id="title" name="title" required placeholder="Title" />
+          <label for="title">Title</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="Key"><i class="fa fa-key" aria-hidden="true"></i></span>
+        <div class="form-floating">
+          <input type="text" class="form-control" id="key" name="key" required placeholder="Key" />
+          <label for="key">Key</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="Type"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+        <div class="form-floating">
+          <input type="text" class="form-control" id="type" name="type" placeholder="Type" />
+          <label for="type">Type</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="Cost"><i class="fa fa-coins" aria-hidden="true"></i></span>
+        <div class="form-floating">
+          <input type="number" class="form-control" id="cost" name="cost" placeholder="Cost" />
+          <label for="cost">Cost</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="Help Link"><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+        <div class="form-floating">
+          <input type="url" class="form-control" id="help_link" name="help_link" placeholder="Help Link" />
+          <label for="help_link">Help Link</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="Download Link"><i class="fa fa-download" aria-hidden="true"></i></span>
+        <div class="form-floating">
+          <input type="url" class="form-control" id="download_link" name="download_link" placeholder="Download Link" />
+          <label for="download_link">Download Link</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="Info Link"><i class="fa fa-info" aria-hidden="true"></i></span>
+        <div class="form-floating">
+          <input type="url" class="form-control" id="info_link" name="info_link" placeholder="Info Link" />
+          <label for="info_link">Info Link</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="User Owner"><i class="fa fa-user" aria-hidden="true"></i></span>
+        <div class="form-floating">
+          <input type="text" class="form-control" id="user_owner" name="user_owner" placeholder="User Owner (Discord ID)" />
+          <label for="user_owner">User Owner (Discord ID)</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+        {{> controls/GuildSelector id="guild_id" name="guild_id" required=true multiple=false }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>

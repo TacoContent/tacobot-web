@@ -106,6 +106,17 @@ class GameKeysMongoClient extends DatabaseMongoClient<GameKeyEntry> {
       pageSize: take,
     });
   }
+
+  async add(entry: GameKeyEntry): Promise<GameKeyEntry | null> {
+    const collection = await this.getCollection();
+    // entry.created_timestamp = moment().tz(config.timezone).toDate();
+    const result = await collection.insertOne(entry);
+    if (result.insertedId) {
+      return entry;
+    } else {
+      return null;
+    }
+  }
 }
 
 export default GameKeysMongoClient;

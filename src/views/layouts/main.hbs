@@ -105,6 +105,11 @@
         toastr["error"]("{{this}}");
         {{/each}}
       {{/if}}
+      {{#if successMessage}}
+        {{#each successMessage}}
+        toastr["success"]("{{this}}");
+        {{/each}}
+      {{/if}}
       });
     </script>
 

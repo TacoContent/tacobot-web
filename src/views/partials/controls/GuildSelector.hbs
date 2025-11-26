@@ -1,0 +1,72 @@
+{{> Dropdown id=id
+    name=(or name label id)
+    placeholder=(concat "Select " (plural (or maxSelected 1) 'Guild' 'Guilds'))
+    multiple=multiple
+    searchable=(eq searchable true)
+    closeOnSelect=true
+    asyncQueryParam="q"
+    asyncAllowEmptyQuery=true
+    asyncEmptyQueryParam="popular"
+    asyncEmptyQueryValue="true"
+    asyncEmptyCacheTtlMs=60000
+    asyncMinChars=0
+    asyncDebounce=300
+    asyncShowLoadingRow=true
+    asyncPendingText="Searching..."
+    asyncErrorFadeMs=2000
+    asyncPreserveStatic=true
+    asyncClearOnQuery=true
+    noResultsText="Zero results" }}
+
+{{#section "scripts"}}
+<script>
+  $(() => {
+    function escapeHtml(str) {
+      return str;
+    }
+
+    function guildItemTemplate(item) {
+      let iconHtml = '';
+      if (item.icon) {
+          const iconUrl = item.iconUrl || `https://cdn.discordapp.com/icons/${item.id}/${item.icon}.png`;
+          iconHtml = `<img src="${iconUrl}" width="24" height="24" class="rounded me-2" alt="" />`;
+      } else {
+          iconHtml = `<span class="me-2" style="width:24px; display:inline-block; text-align:center;"><i class="fa fa-server"></i></span>`;
+      }
+      return `<div class="d-flex align-items-center">
+        ${iconHtml} ${escapeHtml(item.name)}
+      </div>`;
+    }
+
+    whenControlReady("{{id}}", wrap => {
+      wrap.dropdownControl.configureAsync({
+        initialFetchOnMount: true,
+        initialQuery: '',
+        minChars: 0,
+        debounceMs: 300,
+        clearOnQuery: true,
+        showLoading: true,
+        showLoadingRow: true,
+        pendingText: 'Loading guilds...',
+        fetcher: async (query, signal) => {
+          const params = new URLSearchParams();
+          if (query) params.set('q', query);
+          const res = await fetch('/api/v1/guilds' + (params.toString() ? ('?' + params.toString()) : ''), { signal });
+          if (!res.ok) throw new Error('Remote fetch failed');
+          const data = await res.json();
+          
+          const lcQuery = query ? query.toLowerCase() : '';
+          const results = data
+            .filter(g => !lcQuery || g.name.toLowerCase().includes(lcQuery))
+            .map(g => ({
+                value: g.id,
+                html: guildItemTemplate(g)
+            }));
+
+          return results;
+        }
+      });
+    });
+  });
+</script>
+{{/section}}
