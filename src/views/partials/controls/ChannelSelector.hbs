@@ -3,6 +3,7 @@
   {{!-- <div class="input-groupx-text">{{plural (or maxSelected 1) 'Channel' 'Channels'}}</div> --}}
   {{> Dropdown id=id
     name=(or name label id)
+    items=false
     placeholder=(concat "Select " (plural (or maxSelected 1) 'Channel' 'Channels'))
     multiple=multiple
     searchable=(eq searchable true)
@@ -26,10 +27,8 @@
 <script>
   $(() => {
     function escapeHtml(str) {
-      return str;
-      //return String(str).replace(/[&<>"']/g, s =>
-      //  ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',\"'\":'&#39;' }[s])
-      //);
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s]));
     }
 
     function channelTypeIcon(type) {

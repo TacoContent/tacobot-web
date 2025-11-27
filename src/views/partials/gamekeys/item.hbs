@@ -34,6 +34,35 @@
   </div>
 
   <div class="card-footer text-muted text-end">
+    {{#if (not this.redeemed_by)}}
+      {{#with this}}
+        <button
+          type="button"
+          class="btn btn-danger float-start"
+          aria-label="Delete Game Key"
+          title="Delete Game Key"
+          data-bs-toggle="modal"
+          data-bs-target="#delete-gamekey-modal-{{this._id}}">
+          <i class="fas fa-trash" aria-hidden="true"></i>
+          <span class="visually-hidden">Delete Game Key</span>
+        </button>
+
+        {{#> modal 
+          id=(concat 'delete-gamekey-modal-' this._id) 
+          title='Delete Game Key Entry' 
+          buttonText='Delete Entry' 
+          buttonClass='btn-danger' 
+          cancelText='Keep' 
+          formAction=(concat '/gamekeys/' this._id) 
+          formMethod='POST'}}
+          <div class="text-justify-start text-start">
+            <div class="mb-2">Are you sure you want to delete <strong>{{../title}}</strong>?</div>
+            <p class="text-warning small mb-0">This action cannot be undone.</p>
+            <input type="hidden" name="_method" value="DELETE" />
+          </div>
+        {{/modal}}
+      {{/with}}
+    {{/if}}
     {{#if this.info_link}}
     <a href="{{this.info_link}}" class="btn btn-success" target="_blank"><i class="fas fa-circle-info me-1"></i> Information</a>
     {{/if}}

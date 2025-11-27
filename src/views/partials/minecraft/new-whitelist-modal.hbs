@@ -6,11 +6,13 @@
     <div class="col">
       <div class="mb-3">
         <label for="add-wl-guild" class="form-label">Guild</label>
-        <input type="text" class="form-control" id="add-wl-guild" name="guildId" placeholder="Guild ID" />
+        {{> controls/GuildSelector id="add-wl-guild" name="guildId" required=true multiple=false formControl=true}}
+        {{!-- <input type="text" class="form-control" id="add-wl-guild" name="guildId" placeholder="Guild ID" /> --}}
       </div>
       <div class="mb-3">
         <label for="add-wl-discord" class="form-label">Discord User</label>
-        <input type="text" class="form-control" id="add-wl-discord" name="discordUser" placeholder="@username or ID" />
+        {{> controls/UserSelector id="add-wl-discord" name="user_id" required=true multiple=false formControl=true searchable=true}}
+        {{!-- <input type="text" class="form-control" id="add-wl-discord" name="discordUser" placeholder="@username or ID" /> --}}
       </div>
       <div class="mb-3">
         <label for="add-wl-username" class="form-label">Minecraft Username</label>

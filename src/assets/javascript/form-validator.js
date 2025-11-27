@@ -25,7 +25,8 @@
       if (valid) {
         // TODO: setup form to indicate submission in progress
         const url = $form.data('url') || $form.attr('action');
-        const method = $form.data('method') || $form.attr('method') || 'POST';
+        // find form input named _method or method attribute
+        const method = $form.find('input[name="_method"]').val() || $form.data('method') || $form.attr('method') || 'POST';
         const data = $form.serialize();
         $.ajax({
           url: url,

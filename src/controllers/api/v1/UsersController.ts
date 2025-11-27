@@ -5,6 +5,7 @@ import { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import Reflection from '../../../libs/Reflection';
 import DiscordUserEntry from '../../../models/DiscordUserEntry';
+import DiscordUsersMongoClient from '../../../libs/mongo/Users';
 
 export default class UsersController {
 
@@ -86,6 +87,29 @@ export default class UsersController {
 
       res.status(200).send(user).end();
     } catch (err: any) {
+      await this.logger.error(`${this.MODULE}.${METHOD}`, err.message, {
+        stack: err.stack,
+        headers: req.headers,
+        body: req.body,
+        query: req.query,
+        params: req.params,
+      });
+      next(err);
+    }
+  }
+
+  async list(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const guildId: string = req.query.guildId as string || configs.tacobot.primaryGuildId as string;
+
+      const client = new DiscordUsersMongoClient();
+
+      const users: DiscordUserEntry[] = await client.getAll(guildId);
+
+      res.status(200).send(users).end();
+    }
+    catch (err: any) {
       await this.logger.error(`${this.MODULE}.${METHOD}`, err.message, {
         stack: err.stack,
         headers: req.headers,

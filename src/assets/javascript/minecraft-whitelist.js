@@ -6,6 +6,7 @@
   const previewImg = document.getElementById('add-wl-preview');
 
   function setBlankPreview() {
+    console.log('Setting blank preview image');
     if (previewImg) {
       previewImg.src = transparentPng;
     }
@@ -27,15 +28,20 @@
         setBlankPreview();
         return;
       }
+      bodyApi = "https://crafthead.net/armor/body/"
       const data = await resp.json();
       const uuid = data && (data.id || data.uuid);
       if (uuidInput) uuidInput.value = uuid || '';
       if (previewImg && uuid) {
-        previewImg.src = 'https://crafatar.com/renders/body/' + uuid + '?overlay';
+        console.log('Setting preview for UUID:', uuid);
+        // previewImg.src = 'https://crafatar.com/renders/body/' + uuid + '?overlay';
+        $(previewImg).attr('src', `${bodyApi}${uuid}?overlay`);
       } else {
+        console.log('No UUID available, setting blank preview');
         setBlankPreview();
       }
     } catch (e) {
+      console.error('Error looking up Minecraft user:', e);
       if (uuidInput) uuidInput.value = '';
       setBlankPreview();
     }

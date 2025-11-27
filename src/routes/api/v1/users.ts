@@ -4,7 +4,7 @@ import UsersController from '../../../controllers/api/v1/UsersController';
 
 const router = Router();
 const usersController = new UsersController();
-
+router.route('/api/v1/users').get(usersController.list.bind(usersController.list));
 router.route('/api/v1/users/:id').get(
   (req: Request, res: Response, next: NextFunction) => usersController.get(req, res, next).catch(next)
 );

@@ -26,7 +26,7 @@
       <div class="input-group">
         <span class="input-group-text" title="Type"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
         <div class="form-floating">
-          <input type="text" class="form-control" id="type" name="type" placeholder="Type" />
+          <input type="text" class="form-control" id="type" name="type" placeholder="Type" required />
           <label for="type">Type</label>
         </div>
       </div>
@@ -36,9 +36,10 @@
       <div class="input-group">
         <span class="input-group-text" title="Cost"><i class="fa fa-coins" aria-hidden="true"></i></span>
         <div class="form-floating">
-          <input type="number" class="form-control" id="cost" name="cost" placeholder="Cost" />
+          <input type="number" class="form-control" id="cost" name="cost" placeholder="Cost" required value="500" />
           <label for="cost">Cost</label>
         </div>
+        <span class="input-group-text" title="Tacos">🌮</span>
       </div>
     </div>
 
@@ -75,15 +76,16 @@
     <div class="mb-3">
       <div class="input-group">
         <span class="input-group-text" title="User Owner"><i class="fa fa-user" aria-hidden="true"></i></span>
-        <div class="form-floating">
-          <input type="text" class="form-control" id="user_owner" name="user_owner" placeholder="User Owner (Discord ID)" />
-          <label for="user_owner">User Owner (Discord ID)</label>
-        </div>
+          {{!-- <input type="text" class="form-control" id="user_owner" name="user_owner" placeholder="User Owner (Discord ID)" /> --}}
+          {{> controls/UserSelector id="user_owner" name="user_owner" required=true multiple=false formControl=true searchable=true}}
       </div>
     </div>
 
     <div class="mb-3">
-        {{> controls/GuildSelector id="guild_id" name="guild_id" required=true multiple=false }}
+      <div class="input-group">
+        <span class="input-group-text" title="Guild"><i class="fa fa-server" aria-hidden="true"></i></span>
+        {{> controls/GuildSelector id="guild_id" name="guild_id" required=true multiple=false formControl=true}}
+      </div>
     </div>
 
     <button type="submit" class="btn btn-primary">Submit</button>

@@ -1,7 +1,7 @@
 {{> Dropdown id=id
     name=(or name label id)
     items=false
-    placeholder=(concat "Select " (plural (or maxSelected 1) 'Guild' 'Guilds'))
+    placeholder=(concat "Select " (plural (or maxSelected 1) 'User' 'Users'))
     multiple=multiple
     searchable=(eq searchable true)
     closeOnSelect=true
@@ -27,15 +27,15 @@
       return String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s]));
     }
 
-    function guildItemTemplate(item) {
+    function userItemTemplate(item) {
       let iconHtml = '';
-      if (item.icon) {
-          const iconUrl = item.iconUrl || `${item.icon}`;
-          iconHtml = `<img src="${iconUrl}" width="24" height="24" class="rounded me-2" alt="" />`;
+      if (item.avatar || item.default_avatar) {
+          const iconUrl = item.avatar || item.default_avatar;
+          iconHtml = `<img src="${iconUrl}" width="24" height="24" class="rounded me-2" alt="" data-img-error="" />`;
       } else {
-          iconHtml = `<span class="me-2" style="width:24px; display:inline-block; text-align:center;"><i class="fa fa-server"></i></span>`;
+          iconHtml = `<span class="me-2" style="width:24px; display:inline-block; text-align:center;"><i class="fa fa-user"></i></span>`;
       }
-      const name = item.name || item.guild_id || 'Unknown Guild';
+      const name = item.global_name || item.display_name || item.displayname || item.username || item.name || item.user_id || 'Unknown User';
       return `<div class="d-flex align-items-center">
         ${iconHtml} ${escapeHtml(name)}
       </div>`;
@@ -50,20 +50,31 @@
         clearOnQuery: true,
         showLoading: true,
         showLoadingRow: true,
-        pendingText: 'Loading guilds...',
+        pendingText: 'Loading users...',
         fetcher: async (query, signal) => {
           const params = new URLSearchParams();
           if (query) params.set('q', query);
-          const res = await fetch('/api/v1/guilds' + (params.toString() ? ('?' + params.toString()) : ''), { signal });
+          const res = await fetch('/api/v1/users' + (params.toString() ? ('?' + params.toString()) : ''), { signal });
           if (!res.ok) throw new Error('Remote fetch failed');
           const data = await res.json();
           
           const lcQuery = query ? query.toLowerCase() : '';
           const results = data
-            .filter(g => !lcQuery || g.name.toLowerCase().includes(lcQuery))
+            .filter(g => {
+              if (!lcQuery) return true;
+              if (!g.displayname && !g.username && !g.display_name && !g.global_name && !g.name) return false;
+              if (g.displayname && g.displayname.toLowerCase().includes(lcQuery)) return true;
+              if (g.display_name && g.display_name.toLowerCase().includes(lcQuery)) return true;
+              if (g.name && g.name.toLowerCase().includes(lcQuery)) return true;
+              if (g.username && g.username.toLowerCase().includes(lcQuery)) return true;
+              if (g.global_name && g.global_name.toLowerCase().includes(lcQuery)) return true;
+              if (g.user_id && g.user_id.toLowerCase().includes(lcQuery)) return true;
+              
+              return false;
+            })
             .map(g => ({
-                value: g.guild_id,
-                html: guildItemTemplate(g)
+                value: g.user_id,
+                html: userItemTemplate(g)
             }));
 
           return results;

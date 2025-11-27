@@ -61,6 +61,11 @@ class DiscordUsersMongoClient extends DatabaseMongoClient<DiscordUserEntry> {
     
   }
 
+  async getAll(guildId: string): Promise<DiscordUserEntry[]> {
+    const collection = await this.getCollection();
+    return await collection.find({ guild_id: guildId }).toArray();
+  }
+
 }
 
 export default DiscordUsersMongoClient;

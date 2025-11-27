@@ -47,7 +47,8 @@ export default class ScriptsController {
         'template-loader.js',
         'code-field.js',
         'on-ready.js',
-        'minecraft-ops.js'
+        'minecraft-ops.js',
+        'controls/dropdown.js'
       ];
 
       res.setHeader('Content-Type', 'application/javascript');

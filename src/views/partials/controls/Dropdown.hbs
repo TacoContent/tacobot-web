@@ -59,7 +59,7 @@
 
 {{!-- (Optional) could compute classes dynamically if extended later --}}
 
-<div class="dropdown-control position-relative {{#if class}}{{class}}{{/if}}" id="{{id}}-wrapper" data-dropdown
+<div class="{{#if formControl}}form-control {{/if}}dropdown-control position-relative {{#if class}}{{class}}{{/if}}" id="{{id}}-wrapper" data-dropdown
   data-dropdown-id="{{id}}"
   data-multiple="{{#if (neq multiple false)}}true{{else}}false{{/if}}"
   data-searchable="{{#if (neq searchable false)}}true{{else}}false{{/if}}"
@@ -97,7 +97,7 @@
   {{#if label}}
     <label class="form-label mb-1" for="{{id}}-input">{{label}}</label>
   {{/if}}
-  <div class="form-control d-flex align-items-start gap-2 p-1 position-relative" id="{{id}}" tabindex="0" aria-controls="{{id}}-listbox" data-role="control-shell">
+  <div class="{{#if (not formControl)}}form-control p-1 {{/if}}d-flex align-items-start gap-2 position-relative" id="{{id}}" tabindex="0" aria-controls="{{id}}-listbox" data-role="control-shell">
     <div class="dropdown-content flex-grow-1 d-flex flex-wrap align-items-center gap-1" data-role="content">
       <div class="dropdown-selected-tokens d-flex flex-wrap align-items-center gap-1" data-role="tokens">
         {{#if (and (eq searchable false) placeholder)}}
