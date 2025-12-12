@@ -1,7 +1,7 @@
-import PagedResults from '../../src/models/PagedResults';
+import PagedResults from '../models/PagedResults';
 
 // Mock out model and mongo clients before importing controller so Jest doesn't try to load mongodb ESM modules
-jest.mock('../../src/models/ProcessedPullTabTicket', () => {
+jest.mock('../models/ProcessedPullTabTicket', () => {
   return jest.fn().mockImplementation((item: any) => {
     return {
       processLineResults: jest.fn().mockResolvedValue(undefined),
@@ -12,19 +12,19 @@ jest.mock('../../src/models/ProcessedPullTabTicket', () => {
 // Mock PullTabsMongoClient so we can capture calls to get()
 const mockGet = jest.fn();
 // Mock Logs Mongo client to avoid importing real mongodb during unit tests
-jest.mock('../../src/libs/mongo/Logs', () => {
+jest.mock('../libs/mongo/Logs', () => {
   return jest.fn().mockImplementation(() => ({
     error: jest.fn(),
   }));
 });
 
-jest.mock('../../src/libs/mongo/PullTabs', () => {
+jest.mock('../libs/mongo/PullTabs', () => {
   return jest.fn().mockImplementation(() => ({
     get: mockGet,
   }));
 });
 
-import PullTabsController from '../../src/controllers/PullTabsController';
+import PullTabsController from './PullTabsController';
 
 describe('PullTabsController list', () => {
   beforeEach(() => {

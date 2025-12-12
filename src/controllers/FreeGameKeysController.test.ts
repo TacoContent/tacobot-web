@@ -1,16 +1,16 @@
-import PagedResults from '../../src/models/PagedResults';
+import PagedResults from '../models/PagedResults';
 
 // Mock Logs to avoid ESM mongo import
-jest.mock('../../src/libs/mongo/Logs', () => {
+jest.mock('../libs/mongo/Logs', () => {
   return jest.fn().mockImplementation(() => ({ error: jest.fn() }));
 });
 
 const mockGet = jest.fn();
-jest.mock('../../src/libs/mongo/FreeGameKeys', () => {
+jest.mock('../libs/mongo/FreeGameKeys', () => {
   return jest.fn().mockImplementation(() => ({ get: mockGet }));
 });
 
-import FreeGameKeysController from '../../src/controllers/FreeGameKeysController';
+import FreeGameKeysController from './FreeGameKeysController';
 import moment from 'moment';
 
 describe('FreeGameKeysController list', () => {

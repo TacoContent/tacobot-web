@@ -11,7 +11,7 @@ jest.mock('../../../config', () => ({
   },
 }));
 
-import FreeGameKeysMongoClient from '../../../libs/mongo/FreeGameKeys';
+import FreeGameKeysMongoClient from './FreeGameKeys';
 
 describe('FreeGameKeysMongoClient.get', () => {
   afterEach(() => {
