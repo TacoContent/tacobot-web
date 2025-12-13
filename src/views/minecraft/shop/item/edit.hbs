@@ -1,0 +1,90 @@
+<!-- Minecraft Shop Item Edit/Add View - Bootstrap Form -->
+<div class="container mt-4">
+  <h2>Add Minecraft Shop Item</h2>
+
+  <form method="POST" action="/minecraft/shop/items/add" id="minecraft-shop-item-form">
+
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="Item ID"><i class="fa fa-cube" aria-hidden="true"></i></span>
+        <div class="form-floating">
+          <input type="text" class="form-control" id="item_id" name="item_id" required placeholder="minecraft:item_name" />
+          <label for="item_id">Item ID</label>
+        </div>
+      </div>
+      <div class="form-text">Minecraft item identifier (e.g. <code>minecraft:diamond</code>).</div>
+    </div>
+
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="Shop ID"><i class="fa fa-store" aria-hidden="true"></i></span>
+        <div class="form-floating">
+          <input type="text" class="form-control" id="shop_id" name="shop_id" required placeholder="shop-id" value="{{shopId}}" />
+          <label for="shop_id">Shop ID</label>
+        </div>
+      </div>
+      <div class="form-text">The shop this item will belong to.</div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <div class="input-group">
+          <span class="input-group-text" title="Quantity"><i class="fa fa-layer-group" aria-hidden="true"></i></span>
+          <div class="form-floating">
+            <input type="number" class="form-control" id="quantity" name="quantity" value="-1" step="1" placeholder="Quantity" />
+            <label for="quantity">Quantity</label>
+          </div>
+        </div>
+        <div class="form-text">Number available. Use <code>-1</code> for unlimited (default).</div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="input-group">
+          <span class="input-group-text" title="Buy Price"><i class="fa fa-shopping-cart" aria-hidden="true"></i></span>
+          <div class="form-floating">
+            <input type="number" class="form-control" id="buy" name="buy" value="0" step="1" placeholder="Buy Price" />
+            <label for="buy">Buy Price</label>
+          </div>
+        </div>
+        <div class="form-text">Price to purchase from the shop. <code>0</code> = free, <code>-1</code> = unsellable.</div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="input-group">
+          <span class="input-group-text" title="Sell Price"><i class="fa fa-coins" aria-hidden="true"></i></span>
+          <div class="form-floating">
+            <input type="number" class="form-control" id="sell" name="sell" value="0" step="1" placeholder="Sell Price" />
+            <label for="sell">Sell Price</label>
+          </div>
+        </div>
+        <div class="form-text">Price the shop will pay. <code>0</code> = unsellable.</div>
+      </div>
+    </div>
+
+    <div class="mb-3 form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="enabled" name="enabled" checked />
+      <label class="form-check-label" for="enabled">Enabled</label>
+      <div class="form-text">If checked, the item is available for purchase/sale.</div>
+    </div>
+
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="NBT"><i class="fa fa-code" aria-hidden="true"></i></span>
+        <div class="form-floating flex-grow-1">
+          <textarea class="form-control" id="nbt" name="nbt" placeholder="NBT JSON" style="height: 160px; min-height: 120px;"></textarea>
+          <label for="nbt">NBT (JSON)</label>
+        </div>
+      </div>
+      <div class="form-text">Enter NBT data as JSON (multiline). This will be parsed on submit.</div>
+    </div>
+
+    <div class="mb-3 d-flex gap-2">
+      <button type="button" id="validate-nbt" class="btn btn-outline-secondary">Validate NBT</button>
+      <button type="button" id="prettify-nbt" class="btn btn-outline-secondary">Prettify NBT</button>
+      <button type="submit" class="btn btn-primary">Add Item</button>
+    </div>
+
+  </form>
+
+  <script src="/javascript/minecraft-shop-edit.js"></script>
+</div>

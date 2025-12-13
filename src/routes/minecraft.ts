@@ -24,4 +24,12 @@ router.get('/minecraft/shop/:id', ui.allow, async (req, res) => {
   });
 });
 
+router.get('/minecraft/shop/:id/items/new', ui.allow, async (req, res) => {
+  res.render('minecraft/shop/item/edit', {
+    ...res.locals,
+    title: 'Add Shop Item',
+    shopId: req.params.id,
+  });
+});
+
 export default router;
