@@ -56,12 +56,17 @@
     <div class="mb-3">
       <div class="input-group">
         <span class="input-group-text" title="Roles"><i class="fa fa-users" aria-hidden="true"></i></span>
+        {{> controls/RoleSelector id="role_ids" name="role_ids" required=false multiple=true formControl=true searchable=true values=shop.role_ids }}
+      </div>
+      {{!-- <div class="input-group">
+        <span class="input-group-text" title="Roles"><i class="fa fa-users" aria-hidden="true"></i></span>
         <div class="form-floating">
+
           <input type="text" class="form-control" id="role_ids" name="role_ids" placeholder="Comma-separated role IDs" value="{{#if shop}}{{join shop.role_ids ","}}{{/if}}" />
           <label for="role_ids">Role IDs</label>
         </div>
       </div>
-      <div class="form-text"></div>
+      <div class="form-text"></div> --}}
     </div>
 
     <div class="mb-3">

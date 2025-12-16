@@ -1,0 +1,96 @@
+{{> Dropdown id=id
+    name=(or name label id)
+    items=false
+    placeholder=(concat "Select " (plural (or maxSelected 1) 'Role' 'Roles'))
+    multiple=multiple
+    searchable=(eq searchable true)
+    closeOnSelect=true
+    asyncQueryParam="q"
+    asyncAllowEmptyQuery=true
+    asyncEmptyQueryParam="popular"
+    asyncEmptyQueryValue="true"
+    asyncEmptyCacheTtlMs=60000
+    asyncMinChars=0
+    asyncDebounce=300
+    asyncShowLoadingRow=true
+    asyncPendingText="Searching..."
+    asyncErrorFadeMs=2000
+    asyncPreserveStatic=true
+    asyncClearOnQuery=true
+    noResultsText="Zero results" }}
+
+{{#section "scripts"}}
+<script>
+  $(() => {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s]));
+    }
+
+    function roleItemTemplate(item) {
+      let iconHtml = '';
+      if (item.icon || item.display_icon) {
+          const iconUrl = item.icon || item.display_icon;
+          iconHtml = `<img src="${iconUrl}" width="24" height="24" class="rounded me-2" alt="" data-img-error="" />`;
+      } else if (item.unicode_emoji) {
+          iconHtml = `<span class="me-2" style="width:24px; display:inline-block; text-align:center;">${escapeHtml(item.unicode_emoji)}</span>`;
+      } else {
+          iconHtml = `<span class="me-2" style="width:24px; display:inline-block; text-align:center;"><i class="fa fa-users"></i></span>`;
+      }
+      const name = item.name || item.user_id || 'Unknown Role';
+      item_color = null;
+      if (item.color) {
+        item_color = ` style="color:#${item.color.toString(16).padStart(6, '0')};"`;
+      }
+      return `<div class="d-flex align-items-center">
+        ${iconHtml} <span${item_color}>${escapeHtml(name)}</span>
+      </div>`;
+    }
+
+    whenControlReady("{{id}}", wrap => {
+      
+      wrap.dropdownControl.configureAsync({
+        initialFetchOnMount: true,
+        initialQuery: '',
+        minChars: 0,
+        debounceMs: 300,
+        clearOnQuery: true,
+        showLoading: true,
+        showLoadingRow: true,
+        pendingText: 'Loading roles...',
+        fetcher: async (query, signal) => {
+          // get guild_id from input field if available
+          const guildInput = document.querySelector('input[name="guild_id"]');
+          const guildId = guildInput ? guildInput.value : null;
+          if (!guildId) {
+            return [];
+          }
+          const params = new URLSearchParams();
+          if (query) params.set('q', query);
+          const pString = params.toString() ? ('?' + params.toString()) : '';
+          const res = await fetch(`/api/v1/roles/${guildId}${pString}`, { signal });
+          if (!res.ok) throw new Error('Remote fetch failed');
+          const data = await res.json();
+          
+          const lcQuery = query ? query.toLowerCase() : '';
+          const results = data
+            .filter(g => {
+              if (!lcQuery) return true;
+              if (!g.name) return false;
+              if (g.name && g.name.toLowerCase().includes(lcQuery)) return true;
+              if (g.id && g.id.toLowerCase().includes(lcQuery)) return true;
+              
+              return false;
+            })
+            .map(g => ({
+                value: g.id,
+                html: roleItemTemplate(g)
+            }));
+
+          return results;
+        }
+      });
+    });
+  });
+</script>
+{{/section}}
