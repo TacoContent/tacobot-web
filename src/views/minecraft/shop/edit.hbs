@@ -1,0 +1,107 @@
+<!-- Minecraft Shop Create/Edit View -->
+<div class="container mt-4">
+  <form method="POST" action="/minecraft/shop/save" id="minecraft-shop-form">
+
+    {{#if shop}}
+      <input type="hidden" name="shop_id" value="{{shop.shop_id}}" />
+    {{/if}}
+
+    <div class="mb-3">
+      <div class="input-group">
+        <label for="name" class="input-group-text">Name</label>
+        <input type="text" class="form-control" id="name" name="name" placeholder="Shop Name" value="{{shop.name}}" />
+        <span class="input-group-text" title="Name"><i class="fa fa-tag" aria-hidden="true"></i></span>
+      </div>
+      {{!-- <div class="form-text">Optional human-friendly name for the shop.</div> --}}
+    </div>
+
+    <div class="mb-3 row">
+      <div class="col-md-6">
+        <div class="input-group">
+          <div class="input-group-text">
+            <input class="form-check-input" type="checkbox" id="enabled" name="enabled" {{#if shop}}{{#if shop.enabled}}checked{{/if}}{{else}}checked{{/if}} />
+          </div>
+          <label class="form-control text-start" for="enabled">Enabled</label>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="input-group">
+          <label class="input-group-text" for="expires_at" id="expires_at-label" >Expires</label>
+          <input type="datetime-local" class="form-control" placeholder="Expires At" aria-label="Expires At" aria-describedby="expires_at-label" {{#if shop}}value="{{unixToDate shop.expires_at 'YYYY-MM-DDTHH:mm'}}"{{/if}} name="expires_at" id="expires_at" />
+          <label class="input-group-text" for="field-expires_at" id="field-expires_at-emoji">
+            <i class="fas fa-calendar" aria-hidden="true"></i>
+          </label>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div class="mb-3 row">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text" title="Guild"><i class="fa fa-hashtag" aria-hidden="true"></i></span>
+          {{> controls/GuildSelector id="guild_id" name="guild_id" required=true multiple=false formControl=true values=(asArray shop.guild_id) }}
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text" title="User"><i class="fa fa-user" aria-hidden="true"></i></span>
+          {{> controls/UserSelector id="user_id" name="user_id" required=false multiple=false formControl=true searchable=true values=(asArray shop.user_id) }}
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" title="Roles"><i class="fa fa-users" aria-hidden="true"></i></span>
+        <div class="form-floating">
+          <input type="text" class="form-control" id="role_ids" name="role_ids" placeholder="Comma-separated role IDs" value="{{#if shop}}{{join shop.role_ids ","}}{{/if}}" />
+          <label for="role_ids">Role IDs</label>
+        </div>
+      </div>
+      <div class="form-text"></div>
+    </div>
+
+    <div class="mb-3">
+      <button type="submit" class="btn btn-primary">{{#if shop}}Update Shop{{else}}Create Shop{{/if}}</button>
+      {{#if shop}}
+        <a href="/minecraft/shop/{{shop.shop_id}}/items" class="btn btn-secondary">Manage Items</a>
+      {{/if}}
+    </div>
+
+    <div class="alert alert-info">
+      <strong>Note:</strong> This form edits shop metadata only. It will not modify the shop's <code>shop</code> items map.
+    </div>
+
+  </form>
+
+  {{#section "scripts"}}
+    <script>
+      // Ensure role_ids is sent as repeated values if provided as comma list server-side expects CSV or array
+      document.getElementById('minecraft-shop-form').addEventListener('submit', function (e) {
+        const el = document.getElementById('role_ids');
+        if (!el) return;
+        const val = el.value || '';
+        // remove existing hidden helpers
+        const existing = document.querySelectorAll('input[name="role_ids"]');
+        existing.forEach(i => { if (i !== el) i.remove(); });
+        // if CSV provided, create hidden inputs for each
+        if (val.includes(',')) {
+          e.preventDefault();
+          const parts = val.split(',').map(s => s.trim()).filter(Boolean);
+          for (const p of parts) {
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'role_ids';
+            hidden.value = p;
+            this.appendChild(hidden);
+          }
+          this.submit();
+        }
+      });
+    </script>
+  {{/section}}
+
+</div>

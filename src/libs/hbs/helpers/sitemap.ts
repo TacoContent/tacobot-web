@@ -22,6 +22,8 @@ function _processItem(item: any, currentPath: string, children: any[]): { html: 
   const sidebarSeparator = Handlebars.partials['sidebar/separator'] || '';
   const sidebarSettings = Handlebars.partials['sidebar/settings'] || '';
   const sidebarGuildLink = Handlebars.partials['sidebar/guild_link'] || '';
+  const sidebarDisabledLink = Handlebars.partials['sidebar/disabled_link'] || '';
+
   if (typeof sidebarLink !== 'string' || typeof sidebarGroup !== 'string') {
     console.error('Sidebar link or group partials are not defined correctly.');
     return { html, active: false };
@@ -34,7 +36,14 @@ function _processItem(item: any, currentPath: string, children: any[]): { html: 
       ...item,
       active: isActive
     });
-  } else if (item.type === 'guild_link') {
+  } else if (item.type === 'disabled-link') {
+    isActive = item.href === currentPath;
+    const template = Handlebars.compile(sidebarDisabledLink);
+    html += template({
+      ...item,
+      active: isActive
+    });
+  } else if (item.type === 'guild-link') {
     isActive = item.href === currentPath;
     const template = Handlebars.compile(sidebarGuildLink);
     html += template({
@@ -105,7 +114,7 @@ export function renderSidebar(this: any, sitemap: any[], currentPath: string, se
         for (const guild_id of (group.guilds || [])) {
           guildChildren.push({
             id: `settings_${group.name}_${guild_id.guild_id}`,
-            type: 'guild_link',
+            type: 'guild-link',
             title: guild_id.guild_id,
             href: `/settings/edit/${guild_id.guild_id}/${group.name}`,
           });

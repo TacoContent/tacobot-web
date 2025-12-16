@@ -1,0 +1,37 @@
+<!-- Minecraft Shops List Page -->
+<div class="container-x mt-4">
+  <div class="justify-content-center">
+    <div class="row mb-3">
+      <div class="col"></div>
+      <div class="col">
+        {{#> search id="search" name="search" placeholder="Search by Shop ID, Discord ID, User, Role" }}
+        {{/search}}
+      </div>
+      <div class="col"></div>
+    </div>
+    <div class="row mb-3">
+      <div class="col d-flex justify-content-center">
+        {{> pager this.pager search=this.search }}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+  {{#each items}}
+      <div class="col-md-6 mb-4">
+        {{> minecraft/shop/item}}
+      </div>
+  {{/each}}
+  </div>
+  <div class="d-flex justify-content-center">
+  {{> pager this.pager}}
+  </div>
+</div>
+{{!-- Floating Action Button to add a new shop --}}
+<a
+  href="/minecraft/shop/new"
+  class="btn btn-primary rounded-circle shadow position-fixed btn-fab"
+  aria-label="Add Shop"
+  title="Add Shop">
+  <i class="fas fa-plus" aria-hidden="true"></i>
+</a>

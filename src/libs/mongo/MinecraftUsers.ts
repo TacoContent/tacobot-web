@@ -5,13 +5,55 @@ import { Collection, InsertManyResult, InsertOneResult } from 'mongodb';
 import PagedResults from '../../models/PagedResults';
 import MinecraftUserEntry from '../../models/MinecraftUserEntry';
 import DiscordUsersMongoClient from './Users';
-import uuid from '../hbs/helpers/uuid';
 
 export default class MinecraftUsersMongoClient extends DatabaseMongoClient<MinecraftUserEntry> {
   constructor() {
     super();
     this.collectionName = 'minecraft_users';
     console.log("MinecraftUsersMongoClient initialized");
+  }
+
+  async get(search?: string): Promise<MinecraftUserEntry[]> {
+    const collection = await this.getCollection();
+
+    let filter: any = {};
+
+    if (!search) {
+      filter = {};
+    } else {
+      search = search.trim();
+      if (search.length === 0) {
+        filter = {};
+      } else {
+        filter = {
+          $or: [
+            { username: { "$regex": search, $options: 'i' } },
+            { uuid: { "$regex": search, $options: 'i' } },
+            { user_id: { "$regex": search, $options: 'i' } },
+          ]
+        };
+      }
+    }
+    return await collection.find(filter).sort({ created_at: -1 }).toArray();
+  }
+
+  async getUser(uuid?: string, username?: string, user_id?: string): Promise<MinecraftUserEntry | null> {
+    const collection = await this.getCollection();
+    let filter: any = {};
+    if (uuid) {
+      filter.uuid = uuid;
+    }
+    if (username) {
+      filter.username = username;
+    }
+    if (user_id) {
+      filter.user_id = user_id;
+    }
+    if (!uuid && !username && !user_id) {
+      return null;
+    }
+    const user = await collection.findOne(filter);
+    return user;
   }
 
   async getOps(skip: number = 0, take: number = 100, search?: string): Promise<PagedResults<MinecraftUserEntry>> {

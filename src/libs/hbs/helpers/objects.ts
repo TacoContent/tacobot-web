@@ -21,5 +21,12 @@ export default {
     // flatten an object or array of objects into a single-level array
     const [input] = Reflection.getArguments(args, ['input']);
     return _flattenObject(input);
+  },
+  propertyCount: function (this: any, ...args: any[]): number {
+    // count the number of properties in an object
+    const [input] = Reflection.getArguments(args, ['input']);
+    if (input === undefined || input === null) return 0;
+    if (typeof input !== 'object') return 0;
+    return Object.keys(input).length;
   }
 }

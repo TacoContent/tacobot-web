@@ -5,6 +5,10 @@ export default class Identity {
     return Math.random().toString(36).substring(2, 9);
   }
 
+  static generateId(length: number = 16): string {
+    return crypto.randomBytes(length).toString('hex').substring(0, length);
+  }
+
   private static md5Hash(input: string): string {
     return crypto.createHash('md5').update(input).digest('hex');
   }

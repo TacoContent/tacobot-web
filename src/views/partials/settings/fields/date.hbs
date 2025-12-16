@@ -24,7 +24,7 @@
       <input type="hidden" name="{{or name label}}" value="{{value}}" />
       <div title="{{unixToDate value 'YYYY-MM-DD hh:mm a z'}}" class="text-start form-control" aria-label="{{label}}" aria-describedby="field-{{id}}-label">{{unixFromNow value}} - {{unixToDate value 'YYYY-MM-DD hh:mm a z'}}</div>
     {{else}}
-      <input type="datetime" class="form-control" placeholder="{{label}}" aria-label="{{label}}" aria-describedby="field-{{id}}-label" value="{{value}}" name="{{or name label}}" id="field-{{id}}"{{#if (settingsHasMetadataKey metadata=metadata key="validate")}} pattern="{{settingsGetMetadata metadata=metadata key="validate"}}{{/if}}" />
+      <input type="datetime-local" class="form-control" placeholder="{{label}}" aria-label="{{label}}" aria-describedby="field-{{id}}-label" value="{{value}}" name="{{or name label}}" id="field-{{id}}"{{#if (settingsHasMetadataKey metadata=metadata key="validate")}} pattern="{{settingsGetMetadata metadata=metadata key="validate"}}{{/if}}" />
     {{/if}}
   </div>
 

@@ -1,0 +1,66 @@
+{{!-- <div class="card {{#unless this.enabled}}border-warning{{else}}border-primary{{/unless}} bg-primary-subtle text-bg-primary"{{#unless this.enabled}} data-disabled="true" data-disabled-text="disabled"{{/unless}}> --}}
+
+{{!-- create inline partial for the card attributes --}}
+{{#*inline "cardClassAttributes"}}
+  class="card {{#unless this.enabled}}border-secondary bg-secondary-subtle{{else}}{{#if (and (unixIsAfter expires_at) (isValidDate expires_at))}}border-danger bg-danger-subtle{{else}}border-primary bg-primary-subtle text-bg-primary{{/if}}{{/unless}}"
+{{/inline}}
+{{#*inline "cardDataAttributes"}}
+  {{#unless this.enabled}} data-expired="true" data-expired-text="disabled"{{else}}{{#if (and (unixIsAfter expires_at) (isValidDate expires_at))}} data-expired="true" data-expired-text="expired"{{/if}}{{/unless}}
+{{/inline}}
+
+<div {{> cardClassAttributes this}} {{> cardDataAttributes this}}>
+  <div class="card-header text-muted">
+    <h5 class="card-title">{{#if this.name}}{{this.name}}{{else}}<em class="text-muted">Unnamed Shop</em>{{/if}}
+    </h5>
+  </div>
+  <div class="card-body">
+    <div class="input-group mb-0">
+      {{> code value=this.shop_id copy=true spoiler=false}}
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="card-header text-uppercase">Configuration</div>
+    <div class="row">
+      <div class="col">
+        <div class="card-header text-uppercase"><span class="mb-1">Guild</span></div>
+        <div class="mt-1">{{> discord/guild id=this.guild_id}}</div>
+      </div>
+      <div class="col">
+        <div class="card-header text-uppercase"><span class="mb-1">User</span></div>
+      {{#if this.user_id}}
+        <div class="mt-1">{{> discord/user user=this.user_id guild=this.guild_id }}</div>
+      {{else}}
+        <div class="mt-1 text-muted">N/A</div>
+      {{/if}}
+      </div>
+      <div class="col">
+        <div class="card-header text-uppercase"><span class="mb-1">Roles</span></div>
+      {{#if this.role_ids}}
+        <div class="mt-1">
+          <ul class="mb-0 ps-0 list-group-x list-group-flush">
+          {{#each this.role_ids}}
+            <li class="list-group-item">{{> discord/role role=this guild=this.guild_id }}</li>
+          {{/each}}
+          </ul>
+        </div>
+      {{else}}
+        <div class="mt-1 text-muted">N/A</div>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-header text-uppercase">Additional Information</div>
+    <div class="row">
+      <div class="col">
+        <div class="card-header">Items</div>
+        <div class="mt-1">{{propertyCount this.shop}}</div>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer text-muted text-end">
+    <a href="/minecraft/shop/{{this.shop_id}}/edit" class="btn btn-primary"><i class="fas fa-edit"></i> Edit</a>
+    <a href="/minecraft/shop/{{this.shop_id}}/items" class="btn btn-secondary"><i class="fas fa-list"></i> Manage Items</a>
+  </div>
+</div>
