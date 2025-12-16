@@ -10,8 +10,18 @@
 
 <div {{> cardClassAttributes this}} {{> cardDataAttributes this}}>
   <div class="card-header text-muted">
-    <h5 class="card-title">{{#if this.name}}{{this.name}}{{else}}<em class="text-muted">Unnamed Shop</em>{{/if}}
-    </h5>
+    <h5 class="card-title">{{#if this.name}}{{this.name}}{{else}}<em class="text-muted">Unnamed Shop</em>{{/if}}</h5>
+    <h6 class="card-subtitle text-muted">
+      <div class="float-end">
+        {{#if this.enabled}}<span class="badge bg-success text-uppercase">Enabled</span>{{else}}<span class="badge bg-secondary text-uppercase">Disabled</span>{{/if}}
+      </div>
+      {{#if this.expires_at}}
+        <div class="float-start">
+          <span class="card-subtitle text-muted text-uppercase">Expire{{#if (unixIsAfter this.expires_at)}}d{{else}}s{{/if}}:</span> <span title="{{unixToDate this.expires_at 'YYYY-MM-DD hh:mm a z'}}">{{unixFromNow this.expires_at}}</span> {{#if (unixIsAfter this.expires_at)}}<span class="badge bg-secondary text-uppercase ms-2">Expired</span>{{/if}}
+        </div>
+      {{/if}}
+    </h6>
+    <div class="clearfix"></div>
   </div>
   <div class="card-body">
     <div class="input-group mb-0">

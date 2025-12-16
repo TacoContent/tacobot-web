@@ -5,6 +5,7 @@ import { Request, Response, NextFunction } from 'express';
 import MinecraftUsersMongoClient from '../libs/mongo/MinecraftUsers';
 import MinecraftWorldsMongoClient from '../libs/mongo/MinecraftWorlds';
 import MinecraftShopsMongoClient from '../libs/mongo/MinecraftShops';
+import moment from 'moment';
 export default class MinecraftController {
   private logger = new LogsMongoClient();
   private MODULE = this.constructor.name;
@@ -86,8 +87,36 @@ export default class MinecraftController {
       const pageSize = 10;
       const search: string | undefined = (req.query.search as string) || undefined;
 
+      const additionalFilters: any = {};
+
+      const qIncludeDisabled = req.query.includeDisabled === undefined ? undefined : req.query.includeDisabled === 'true';
+      const qIncludeExpired = req.query.includeExpired === undefined ? undefined : req.query.includeExpired === 'true';
+      const includeDisabled: boolean = qIncludeDisabled === undefined ? true : qIncludeDisabled;
+      const includeExpired: boolean = qIncludeExpired === undefined ? true : qIncludeExpired;
+      const andClauses: any[] = [];
+      // If includeDisabled or includeExpired are false, we need to *restrict* results
+      // so all of the non-inclusion conditions must hold (AND semantics).
+      if (!includeDisabled) {
+        andClauses.push({ enabled: true });
+      }
+      if (!includeExpired) {
+        const unixNow = moment().unix();
+        // Only include items that haven't expired yet: expires_at >= now OR expires_at is null
+        andClauses.push({ $or: [{ expires_at: { $gte: unixNow } }, { expires_at: null }] });
+      }
+      if (andClauses.length > 0) {
+        if (additionalFilters.$and) {
+          additionalFilters.$and.push(...andClauses);
+        } else {
+          additionalFilters.$and = andClauses;
+        }
+      } 
+
+      res.locals.includeDisabled = includeDisabled;
+      res.locals.includeExpired = includeExpired;
+
       const client = new MinecraftShopsMongoClient();
-      const pagedResults = await client.getShops((page - 1) * pageSize, pageSize, search);
+      const pagedResults = await client.getShops((page - 1) * pageSize, pageSize, search, additionalFilters);
       res.render('minecraft/shop/list', {
         ...res.locals,
         title: 'Minecraft Shops',
@@ -137,6 +166,36 @@ export default class MinecraftController {
         ...res.locals,
         title: `Edit Minecraft Shop - ${shop.name || shop.shop_id}`,
         shop: shop,
+      });
+
+    } catch (error: any) {
+      // this.logger.error(METHOD, error);
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async viewShopItems(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const shopId = req.params.id;
+      const client = new MinecraftShopsMongoClient();
+      const shop = await client.get(shopId);
+
+      if (!shop) {
+        res.status(404).render('errors/404', {
+          ...res.locals,
+          title: 'Shop Not Found',
+          message: `Minecraft Shop with ID ${shopId} not found.`,
+        });
+        return;
+      }
+
+      res.render('minecraft/shop/item/list', {
+        ...res.locals,
+        title: `Minecraft Shop - ${shop.name || shop.shop_id}`,
+        shop: shop,
+        shopId: shopId,
       });
 
     } catch (error: any) {

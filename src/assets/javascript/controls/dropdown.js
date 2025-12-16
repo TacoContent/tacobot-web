@@ -173,6 +173,15 @@ function whenControlReady(id, cb, attempts = 0) {
       });
       updateClearButton();
       updateHasTokensClass();
+
+      // Reflect current selection on the root element as a JSON array string in data-selected
+      // This makes it easy to query selected values from the DOM for tests or CSS hooks.
+      try {
+        root.dataset.selected = JSON.stringify(selectedValues || []);
+      } catch (err) {
+        root.setAttribute('data-selected', (selectedValues || []).join(','));
+      }
+
       root.dispatchEvent(new CustomEvent('dropdown:selectionchange', { detail: { values: selectedValues } }));
     }
 

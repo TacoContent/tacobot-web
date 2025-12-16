@@ -16,8 +16,8 @@ export default class GameKeysController {
     const search: string | undefined = (req.query.search as string) || undefined;
     const client = new GameKeysMongoClient();
 
-        const additionalFilters: any = {};
-    
+    const additionalFilters: any = {};
+
     const qIncludeAvailable = req.query.includeAvailable === undefined ? undefined : req.query.includeAvailable === 'true';
     const qIncludeRedeemed = req.query.includeRedeemed === undefined ? undefined : req.query.includeRedeemed === 'true';
     const includeAvailable: boolean = qIncludeAvailable === undefined ? true : qIncludeAvailable;

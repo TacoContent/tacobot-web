@@ -28,7 +28,7 @@
     {{#if metadata}}
     <li class="list-group-item">
       <strong class="text-uppercase">Metadata</strong>
-      {{> highlight (json metadata)}}
+      {{~> highlight value=(json metadata)~}}
     </li>
     {{/if}}
     {{#if key}}
@@ -49,7 +49,7 @@
     {{#if data}}
     <li class="list-group-item">
       <strong class="text-uppercase">Data</strong>
-      {{> highlight (json data)}}
+      {{~> highlight value=(json data)~}}
     </li>
     {{/if}}
     {{#if value}}

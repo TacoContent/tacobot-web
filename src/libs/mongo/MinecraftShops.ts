@@ -21,7 +21,7 @@ export default class MinecraftShopsMongoClient extends DatabaseMongoClient<Minec
     return shopEntry || null;
   }
 
-  async getShops(skip: number = 0, take: number = 100, search?: string): Promise<PagedResults<MinecraftShopEntry>> {
+  async getShops(skip: number = 0, take: number = 100, search?: string, additionalFilters?: any): Promise<PagedResults<MinecraftShopEntry>> {
     const collection = await this.getCollection();
     const discordUsers = new DiscordUsersMongoClient();
     const minecraftUsers = new MinecraftUsersMongoClient();
@@ -31,7 +31,6 @@ export default class MinecraftShopsMongoClient extends DatabaseMongoClient<Minec
 
     const filteredMinecraftUsers = await minecraftUsers.get(search);
     const minecraftUserMap = new Map(filteredMinecraftUsers.map(mcUser => [mcUser.uuid, mcUser.username]));
-
     /*
 
       {
@@ -47,13 +46,17 @@ export default class MinecraftShopsMongoClient extends DatabaseMongoClient<Minec
     */
 
     let filter: any = {};
-    if (!search) {
-      filter = {};
-    } else {
+
+    if (additionalFilters && Object.keys(additionalFilters).length > 0) {
+      // shallow copy so we don't mutate the caller's object
+      filter = { ...additionalFilters };
+    }
+
+    console.log("filter", filter);
+
+    if (search) {
       search = search.trim();
-      if (search.length === 0) {
-        filter = {};
-      } else {
+      if (search.length > 0) {
         const matchingUserIds = new Set<string>();
 
         for (const [userId, displayName] of discordUserMap) {
@@ -70,11 +73,21 @@ export default class MinecraftShopsMongoClient extends DatabaseMongoClient<Minec
             }
           }
         }
+        
+        const orClauses: any[] = [
+          { user_id: { $in: Array.from(matchingUserIds) } },
+          { name: { $regex: search, $options: 'i' } },
+        ];
 
-        filter = {
-          user_id: { $in: Array.from(matchingUserIds) },
-          name: { "$regex": search, $options: 'i' }
-        };
+        const andClauses: any[] = [];
+
+        // If caller provided additionalFilters, include them as an AND clause
+        if (additionalFilters && Object.keys(additionalFilters).length > 0) {
+          andClauses.push(additionalFilters);
+        }
+        andClauses.push({ $or: orClauses });
+
+        filter = { $and: andClauses };
       }
     }
 

@@ -15,13 +15,7 @@ router.get('/minecraft/shop/new', ui.allow, minecraftController.createShopForm.b
 
 router.get('/minecraft/shop/:id/edit', ui.allow, minecraftController.editShopForm.bind(minecraftController));
 
-router.get('/minecraft/shop/:id/items', ui.allow, async (req, res) => {
-  res.render('minecraft/shop/view', {
-    ...res.locals,
-    title: 'Minecraft Shop Details',
-    shopId: req.params.id,
-  });
-});
+router.get('/minecraft/shop/:id/items', ui.allow, minecraftController.viewShopItems.bind(minecraftController));
 
 router.get('/minecraft/shop/:id/items/new', ui.allow, async (req, res) => {
   res.render('minecraft/shop/item/edit', {

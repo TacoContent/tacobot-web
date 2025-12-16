@@ -44,6 +44,32 @@ export default {
     console.log("jsonPretty value:", value);
     return JSON.stringify(value, null, 2).trim();
   },
+  stripIndent: function (this: any, ...args: any[]): string {
+    const [value] = Reflection.getArguments(args, ['value']);
+    if (value === undefined) return '';
+    // ensure we have a string
+    let text = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+    // split into lines
+    const lines = text.replace(/\r\n/g, '\n').split('\n');
+    // remove leading/trailing blank lines
+    while (lines.length && lines[0].trim() === '') lines.shift();
+    while (lines.length && lines[lines.length - 1].trim() === '') lines.pop();
+    // find minimum indentation (spaces or tabs) among non-empty lines
+    let minIndent: number | null = null;
+    for (const line of lines) {
+      if (line.trim() === '') continue;
+      const match = line.match(/^[ \t]*/);
+      const indentLen = match ? match[0].length : 0;
+      if (minIndent === null || indentLen < minIndent) minIndent = indentLen;
+    }
+
+    if (minIndent && minIndent > 0) {
+      for (let i = 0; i < lines.length; i++) {
+        lines[i] = lines[i].slice(minIndent);
+      }
+    }
+    return lines.join('\n');
+  },
   pythonObject: function (this: any, ...args: any[]): any {
     const [value] = Reflection.getArguments(args, ['value'], ['']);
     if (typeof value !== 'string') return JSON.stringify(value, null, 2).trim();

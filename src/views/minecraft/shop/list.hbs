@@ -5,7 +5,52 @@
       <div class="col"></div>
       <div class="col">
         {{#> search id="search" name="search" placeholder="Search by Shop ID, Discord ID, User, Role" }}
+        <div class="row ">
+          <div class="col d-flex justify-content-start">
+            <div class="form-check form-switch justify-content-start">
+              <input class="form-check-input" value="true" name="includeExpired" type="checkbox" id="includeExpired" {{#if includeExpired}}checked{{/if}} onchange="this.form.requestSubmit();">
+              <label class="form-check-label text-nowrap" for="includeExpired">Expired</label>
+            </div>
+          </div>
+          <div class="col d-flex justify-content-end">
+            <div class="form-check form-switch ms-3 justify-content-end">
+              <input class="form-check-input" value="true" name="includeDisabled" type="checkbox" id="includeDisabled" {{#if includeDisabled}}checked{{/if}} onchange="this.form.requestSubmit();">
+              <label class="form-check-label text-nowrap" for="includeDisabled">Disabled</label>
+            </div>
+          </div>
+        </div>
         {{/search}}
+        {{#section 'scripts'}}
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('search-form');
+            if (!form) return;
+
+            form.addEventListener('submit', () => {
+              elements = [
+                'includeExpired',
+                'includeDisabled'
+              ];
+              for (const id of elements) {
+                const element = document.getElementById(id);
+                if (!element) continue;
+
+                if (element.checked) {
+                  // default is true; don't send default -> disable the checkbox so it won't be included
+                  element.disabled = true;
+                } else {
+                  // non-default (false) should be sent; add a hidden input with value 'false'
+                  const hidden = document.createElement('input');
+                  hidden.type = 'hidden';
+                  hidden.name = element.name;
+                  hidden.value = 'false';
+                  form.appendChild(hidden);
+                }
+              }
+            });
+          });
+        </script>
+        {{/section}}
       </div>
       <div class="col"></div>
     </div>

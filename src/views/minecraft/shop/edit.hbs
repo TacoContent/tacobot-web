@@ -27,7 +27,7 @@
       <div class="col-md-6">
         <div class="input-group">
           <label class="input-group-text" for="expires_at" id="expires_at-label" >Expires</label>
-          <input type="datetime-local" class="form-control" placeholder="Expires At" aria-label="Expires At" aria-describedby="expires_at-label" {{#if shop}}value="{{unixToDate shop.expires_at 'YYYY-MM-DDTHH:mm'}}"{{/if}} name="expires_at" id="expires_at" />
+          <input type="datetime-local" class="form-control" placeholder="Expires At" aria-label="Expires At" aria-describedby="expires_at-label" {{#if shop}}value="{{#if (and shop.expires_at (isValidDate shop.expires_at))}}{{unixToDate shop.expires_at 'YYYY-MM-DDTHH:mm'}}{{/if}}"{{/if}} name="expires_at" id="expires_at" />
           <label class="input-group-text" for="field-expires_at" id="field-expires_at-emoji">
             <i class="fas fa-calendar" aria-hidden="true"></i>
           </label>
@@ -40,6 +40,8 @@
     <div class="mb-3 row">
       <div class="col-md-6">
         <div class="input-group">
+          <input type="hidden" id="fallback_guild_id" value="{{or shop.guild_id @root.discordGuild config.tacobot.primaryGuildId}}">
+
           <span class="input-group-text" title="Guild"><i class="fa fa-hashtag" aria-hidden="true"></i></span>
           {{> controls/GuildSelector id="guild_id" name="guild_id" required=true multiple=false formControl=true values=(asArray shop.guild_id) }}
         </div>

@@ -59,12 +59,49 @@
         showLoadingRow: true,
         pendingText: 'Loading roles...',
         fetcher: async (query, signal) => {
-          // get guild_id from input field if available
-          const guildInput = document.querySelector('input[name="guild_id"]');
-          const guildId = guildInput ? guildInput.value : null;
+          // get guild_id from input/select or from another dropdown's data-selected
+          // Strategy (in order):
+          // 1) Look within the same form for select/input with name or id 'guild_id'
+          // 2) Search the document for select/input with name or id 'guild_id'
+          // 3) Fallback: find any element with '[data-selected]' whose id or name contains 'guild' and parse the first selection
+
+          function findGuildId() {
+            // Prefer elements within the same form as the control, if present
+            const form = wrap.closest ? wrap.closest('form') : null;
+            const withinDoc = form || document;
+            let el = withinDoc.querySelector('select[name="guild_id"], input[name="guild_id"], select#guild_id, input#guild_id, #fallback_guild_id');
+            if (!el) {
+              el = document.querySelector('select[name="guild_id"], input[name="guild_id"], select#guild_id, input#guild_id, #fallback_guild_id');
+            }
+            if (el && el.value) return el.value;
+
+            // Try to locate a dropdown root that likely represents the guild selector
+            const selEl = document.querySelector('[data-selected][id*="guild"], [data-selected][name*="guild"], [data-selected][data-dropdown*="guild"]');
+            if (selEl) {
+              const ds = selEl.getAttribute('data-selected') || selEl.dataset.selected;
+              if (ds) {
+                try {
+                  const parsed = JSON.parse(ds);
+                  if (Array.isArray(parsed) && parsed.length) return parsed[0];
+                } catch (e) {
+                  // Not JSON – treat as comma-separated list
+                  const parts = String(ds).split(',').map(s => s.trim()).filter(Boolean);
+                  if (parts.length) return parts[0];
+                }
+              }
+            }
+
+            return null;
+          }
+
+          const guildId = findGuildId();
           if (!guildId) {
+            console.error('No guild_id found, cannot fetch roles');
             return [];
           }
+
+          if (guildId === '0') return [];
+
           const params = new URLSearchParams();
           if (query) params.set('q', query);
           const pString = params.toString() ? ('?' + params.toString()) : '';
