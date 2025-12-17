@@ -7,7 +7,6 @@ import MinecraftWorldsMongoClient from '../libs/mongo/MinecraftWorlds';
 import MinecraftShopsMongoClient from '../libs/mongo/MinecraftShops';
 import moment from 'moment';
 import MinecraftItemsMongoClient from '../libs/mongo/MinecraftItems';
-import { calculateVariantId } from '../libs/Minecraft/Item';
 import MinecraftShopItem from '../models/MinecraftShopItem';
 export default class MinecraftController {
   private logger = new LogsMongoClient();
@@ -227,9 +226,13 @@ export default class MinecraftController {
     }
   }
 
-  async viewShopItems(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async listShopItems(req: Request, res: Response, next: NextFunction): Promise<void> {
     const METHOD = Reflection.getCallingMethodName();
     try {
+      const page = Math.max(1, parseInt(req.query.page as string) || 1);
+      const pageSize = 10;
+      const search: string | undefined = (req.query.search as string) || undefined;
+
       const shopId = req.params.id;
       const client = new MinecraftShopsMongoClient();
       const shop = await client.get(shopId);
@@ -243,9 +246,12 @@ export default class MinecraftController {
         return;
       }
 
+      const pagedResults = await client.getShopItems(shopId, (page - 1) * pageSize, pageSize, search);
       res.render('minecraft/shop/item/list', {
         ...res.locals,
         title: `Minecraft Shop - ${shop.name || shop.shop_id}`,
+        items: pagedResults.items,
+        pager: pagedResults.getPager(),
         shop: shop,
         shopId: shopId,
       });
@@ -353,9 +359,9 @@ export default class MinecraftController {
       // get the shop data from the form post
       const formData = req.body as Partial<{
         shop_id: string;
-        variant_id: string;
-        item_id: string;
-        name: string;
+        variant_id?: string;
+        item_id?: string;
+        name?: string;
         enabled: boolean;
         expires_at: string | null; // date string or null
         quantity: number;
@@ -366,6 +372,7 @@ export default class MinecraftController {
 
       const expiry = formData.expires_at ? moment(formData.expires_at).utc().unix() : null;
       const shopId = formData.shop_id;
+
       let variantId = formData.variant_id;
       const itemId = formData.item_id;
 
@@ -392,12 +399,8 @@ export default class MinecraftController {
         return;
       }
 
-      if (variantId === undefined || variantId === null || variantId.trim().length === 0) {
-        // new item. need to create a new variant ID
-        updateData.variant_id = calculateVariantId(itemId, updateData.nbt);
-        variantId = updateData.variant_id;
-      }
-
+      // Normalize variantId: treat empty string as undefined for new items
+      if (variantId && typeof variantId === 'string' && variantId.trim().length === 0) variantId = undefined;
 
       const client = new MinecraftShopsMongoClient();
       const updatedItem = await client.updateShopItem(shopId, variantId, updateData);
@@ -407,6 +410,56 @@ export default class MinecraftController {
         return;
       }
 
+
+      res.redirect(`/minecraft/shop/${shopId}/items`);
+
+    } catch (error: any) {
+      // this.logger.error(METHOD, error);
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async setShopItemEnabled(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const shopId = req.body.shop_id;
+      const variantId = req.body.variant_id;
+      const enabled = this.truthyString(req.body.enabled);
+
+      if (!shopId || !variantId) {
+        res.status(400).json({ error: 'shop_id and variant_id are required' });
+        return;
+      }
+
+      const client = new MinecraftShopsMongoClient();
+      console.log(`Setting enabled=${enabled} for shop item ${variantId} in shop ${shopId}`);
+      const shop = await client.get(shopId);
+      if (!shop || !shop.shop || !shop.shop[variantId]) {
+        res.status(404).json({ error: 'Shop Item Not Found' });
+        return;
+      }
+
+      // Update the enabled status
+      await client.updateShopItem(shopId, variantId, { enabled: enabled });
+
+      res.redirect(`/minecraft/shop/${shopId}/items`);
+
+    } catch (error: any) {
+      // this.logger.error(METHOD, error);
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async deleteShopItem(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const shopId = req.params.id;
+      const variantId = req.params.variantId;
+
+      const client = new MinecraftShopsMongoClient();
+      await client.deleteShopItem(shopId, variantId);
 
       res.redirect(`/minecraft/shop/${shopId}/items`);
 

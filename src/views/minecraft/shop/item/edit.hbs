@@ -11,41 +11,39 @@
       <div class="input-group">
         <label class="input-group-text" for="shop_id">Shop ID</label>
         <label class="input-group-text" title="Shop ID" for="shop_id"><i class="fa fa-store" aria-hidden="true"></i></label>
-        <input type="text" class="form-control" id="shop_id" name="shop_id" required placeholder="shop-id" value="{{shopId}}" readonly />
+        <input type="text" class="form-control text-muted" id="shop_id" name="shop_id" required placeholder="shop-id" value="{{shopId}}" readonly />
       </div>
-      <div class="form-text">The shop this item will belong to.</div>
     </div>
 
+    {{#unless item}}
+    <div class="mb-3 row">
+      <div class="col">
+        <div class="input-group">
+          <span class="input-group-text" title="Item">Item</span>
+          {{> controls/MinecraftItemSelector id="item_id" required=true name="item_id" values=(asArray (or item.item_id '')) placeholder="Search by ID or Name" formControl=true multiple=false}}
+        </div>
+      </div>
+    </div>
+    {{else}}
     <div class="mb-3 row">
       <div class="col-md-6">
         <div class="input-group">
           <label for="item_id" class="input-group-text">Item ID</label>
-          {{#if item}}
           <label class="input-group-text p-1 m-0" title="Item ID" for="item_id">{{> minecraft/shop/item/icon item_id=item.item_id size=32}}</label>
-          <input type="hidden" name="item_id" value="{{item.item_id}}" />
-          <input type="text" class="form-control" id="item_id" name="" required placeholder="minecraft:item_id" value="{{item.item_id}}" disabled readonly />
-          {{else}}
-          <label class="input-group-text" title="Item ID" for="item_id"><i class="fa fa-cube" aria-hidden="true"></i></label>
-          <input type="text" class="form-control" id="item_id" name="item_id" required placeholder="minecraft:item_id" value="{{item.item_id}}" />
-          {{/if}}
+          <input type="text" class="form-control text-muted" id="item_id" name="" required placeholder="minecraft:item_id" value="{{item.item_id}}" readonly />
         </div>
-        <div class="form-text small">Minecraft item identifier (e.g. <code>minecraft:diamond</code>).</div>
       </div>
 
       <div class="col-md-6">
         <div class="input-group">
           <label for="item_name" class="input-group-text">Friendly Item Name</label>
-          {{#if (and item item.name)}}
           <label class="input-group-text p-1 m-0" title="Friendly Item Name" for="item_name">{{> minecraft/shop/item/icon item_id=item.item_id size=32}}</label>
-          <input type="text" class="form-control" id="item_name" name="name" required placeholder="Friendly Item Name" value="{{item.name}}" />
-          {{else}}
-          <label class="input-group-text" title="Friendly Item Name" for="item_name"><i class="fa fa-cube" aria-hidden="true"></i></label>
-          <input type="text" class="form-control" id="item_name" name="name" required placeholder="Friendly Item Name" value="{{item.name}}" />
-          {{/if}}
+          <input type="text" class="form-control text-muted" id="item_name" name="name" required readonly placeholder="Friendly Item Name" value="{{item.name}}" />
         </div>
-        <div class="form-text small">Minecraft item name (e.g. <code>Diamond</code>).</div>
       </div>
     </div>
+    {{/unless}}
+
 
     
     <div class="mb-3 row">
@@ -87,7 +85,7 @@
           <input type="number" class="form-control" id="buy" name="buy" value="{{#if item}}{{item.buy}}{{else}}0{{/if}}" step="1" placeholder="Buy Price" />
           <label class="input-group-text" for="buy" title="Tacos">🌮</label>
         </div>
-        <div class="form-text">Price to purchase from the shop. <code>0</code> = free, <code>-1</code> = unsellable.</div>
+        <div class="form-text">Price to purchase from the shop. <code>0</code> = free, <code>-1</code> = unavailable.</div>
       </div>
 
       <div class="col-md-4">
@@ -97,20 +95,20 @@
           <input type="number" class="form-control" id="sell" name="sell" value="{{#if item}}{{item.sell}}{{else}}0{{/if}}" step="1" placeholder="Sell Price" />
           <label class="input-group-text" for="sell" title="Tacos">🌮</label>
         </div>
-        <div class="form-text">Price the shop will pay. <code>0</code> = unsellable.</div>
+        <div class="form-text">Price the shop will pay. <code>0</code> = just destroy, <code>-1</code> = unsellable.</div>
       </div>
     </div>
 
 
     <div class="mb-3">
       <div class="input-group">
-        <label class="input-group-text">NBT (JSON)</label>
+        <label class="input-group-text">NBT</label>
         <label class="input-group-text" title="NBT" for="nbt"><i class="fa fa-code" aria-hidden="true"></i></label>
         <div class="flex-grow-1">
           <textarea class="form-control" id="nbt" name="nbt" placeholder="NBT" style="height: 160px; min-height: 120px;">{{#if item}}{{jsonPretty item.nbt}}{{/if}}</textarea>
         </div>
       </div>
-      <div class="form-text">Enter NBT data as JSON (multiline). This will be parsed on submit.</div>
+      <div class="form-text">Enter NBT data as JSON. This will be parsed on submit.</div>
     </div>
 
     <div class="mb-3 gap-2">

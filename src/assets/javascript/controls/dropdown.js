@@ -257,7 +257,9 @@ function whenControlReady(id, cb, attempts = 0) {
           return;
         }
         const label = (li.textContent || '').toLowerCase();
-        const match = label.includes(q);
+        const valueText = (li.getAttribute('data-value') || '').toLowerCase();
+        // Match either the visible label or the stored data-value (useful for ids like "minecraft:...")
+        const match = label.includes(q) || valueText.includes(q);
         if (match) {
           li.classList.remove('d-none');
           anyVisible = true;

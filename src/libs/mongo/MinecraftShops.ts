@@ -6,6 +6,9 @@ import DiscordUsersMongoClient from './Users';
 import Identity from "../Identity";
 import MinecraftShopItem from "../../models/MinecraftShopItem";
 import moment from "moment";
+import { calculateVariantId } from "../Minecraft/Item";
+import MinecraftItemsMongoClient from './MinecraftItems';
+import { filter } from "mathjs";
 
 
 export default class MinecraftShopsMongoClient extends DatabaseMongoClient<MinecraftShopEntry> {
@@ -106,6 +109,40 @@ export default class MinecraftShopsMongoClient extends DatabaseMongoClient<Minec
     });
   }
 
+  async getShopItems(shopId: string, skip: number = 0, take: number = 100, search?: string): Promise<PagedResults<MinecraftShopItem>> {
+    const collection = await this.getCollection();
+
+    const shopEntry = await this.get(shopId);
+    if (!shopEntry) {
+      throw new Error(`MinecraftShopEntry with id ${shopId} not found`);
+    }
+
+    const allItems = shopEntry.shop ? Object.values(shopEntry.shop) : [];
+    const totalItems = allItems.length;
+
+    if (skip < 0) skip = 0;
+    if (take <= 0 || take > 100) take = 100;
+    // filter by search term if provided
+    let filteredItems = allItems;
+
+    if (search && search.trim().length > 0) {
+      const searchLower = search.trim().toLowerCase();
+      filteredItems = allItems.filter(item =>
+        (item.name && item.name.toLowerCase().includes(searchLower)) ||
+        (item.item_id && item.item_id.toLowerCase().includes(searchLower))
+      );
+    }
+
+    const pagedItems = filteredItems.slice(skip, skip + take);
+
+    return new PagedResults<MinecraftShopItem>({
+      items: pagedItems,
+      totalItems: totalItems,
+      currentPage: Math.floor(skip / take) + 1,
+      pageSize: take,
+    });
+  }
+
   async update(entry: Partial<MinecraftShopEntry>): Promise<MinecraftShopEntry> {
     try {
       const collection = await this.getCollection();
@@ -140,10 +177,8 @@ export default class MinecraftShopsMongoClient extends DatabaseMongoClient<Minec
     }
   }
 
-  async updateShopItem(shopId: string, itemVariantId: string, itemData: Partial<MinecraftShopItem>): Promise<MinecraftShopItem> {
+  async updateShopItem(shopId: string, itemVariantId: string | undefined, itemData: Partial<MinecraftShopItem>): Promise<MinecraftShopItem> {
     const collection = await this.getCollection();
-
-    const updateField = `shop.${itemVariantId}`;
 
     // find the shop to ensure it exists
     const shopEntry = await this.get(shopId);
@@ -151,26 +186,70 @@ export default class MinecraftShopsMongoClient extends DatabaseMongoClient<Minec
       throw new Error(`MinecraftShopEntry with id ${shopId} not found`);
     }
 
-    if (itemData.variant_id && itemData.variant_id !== itemVariantId) {
-      // variant ID has changed, we need to remove the old item first
-      await collection.updateOne(
-        { shop_id: shopId },
-        { $unset: { [`shop.${itemVariantId}`]: "" } }
-      );
+    // Determine whether this is an existing item (based on provided variant id)
+    const existingItem = (itemVariantId && shopEntry.shop) ? shopEntry.shop[itemVariantId] : null;
+
+    // For existing items, item_id comes from the stored item. For new items, item_id must be provided.
+    if (existingItem) {
+      // Ensure we use the stored item_id for existing items (immutable)
+      itemData.item_id = existingItem.item_id;
+    } else {
+      if (!itemData.item_id) {
+        throw new Error('item_id is required for new items');
+      }
     }
 
-    // if the item already exists, preserve its created_at and created_by fields
-    const existingItem = shopEntry.shop ? shopEntry.shop[itemVariantId] : null;
+    // Prefer provided NBT when calculating the canonical variant id; fall back to existing item's NBT or empty object
+    const nbtForVariant = (itemData.nbt !== undefined) ? itemData.nbt : (existingItem ? existingItem.nbt : {});
+    const canonicalVariantId = calculateVariantId(itemData.item_id!, nbtForVariant || {});
+
+    // For existing items: DO NOT allow item_id or name to change — enforce previous values
+    let finalVariantId = canonicalVariantId;
     if (existingItem) {
+      // enforce immutable fields
+      itemData.item_id = existingItem.item_id;
+      itemData.name = existingItem.name;
+
+      // if NBT/variant changed such that canonicalVariantId differs from provided variant key, we need to move the item
+      if (canonicalVariantId !== itemVariantId) {
+        // remove old key
+        await collection.updateOne(
+          { shop_id: shopId },
+          { $unset: { [`shop.${itemVariantId}`]: "" } }
+        );
+        finalVariantId = canonicalVariantId;
+      } else {
+        finalVariantId = itemVariantId!;
+      }
+
+      // preserve creation metadata
       itemData.created_at = existingItem.created_at;
       itemData.created_by = existingItem.created_by;
       itemData.updated_at = moment().utc().unix();
       itemData.updated_by = itemData.updated_by || existingItem.updated_by;
-    } else {
-      itemData.created_at = moment().utc().unix();
-    }
-    itemData.updated_at = moment().utc().unix();
 
+    } else {
+      // New item: ensure variant id matches canonical id and fetch name if missing
+      itemData.variant_id = canonicalVariantId;
+      finalVariantId = canonicalVariantId;
+
+      // If name is missing or empty, try to fetch from MinecraftItems collection
+      if (!itemData.name || (typeof itemData.name === 'string' && itemData.name.trim().length === 0)) {
+        try {
+          const itemsClient = new MinecraftItemsMongoClient();
+          const item = await itemsClient.get(itemData.item_id);
+          if (item && item.name) itemData.name = item.name;
+        } catch (err) {
+          console.warn('Failed to fetch item name for', itemData.item_id, err);
+        }
+      }
+
+      // set timestamps
+      itemData.created_at = moment().utc().unix();
+      itemData.updated_at = moment().utc().unix();
+    }
+
+    const updateField = `shop.${finalVariantId}`;
 
     await collection.updateOne(
       { shop_id: shopId },
@@ -178,9 +257,28 @@ export default class MinecraftShopsMongoClient extends DatabaseMongoClient<Minec
     );
 
     const updatedShop = await this.get(shopId);
-    if (!updatedShop || !updatedShop.shop || !updatedShop.shop[itemVariantId]) {
+    if (!updatedShop || !updatedShop.shop || !updatedShop.shop[finalVariantId]) {
       throw new Error("Failed to retrieve updated MinecraftShopItem");
     }
-    return updatedShop.shop[itemVariantId];
+    return updatedShop.shop[finalVariantId];
+  }
+
+  async deleteShopItem(shopId: string, itemVariantId: string): Promise<void> {
+    const collection = await this.getCollection();
+
+    // find the shop to ensure it exists
+    const shopEntry = await this.get(shopId);
+    if (!shopEntry) {
+      throw new Error(`MinecraftShopEntry with id ${shopId} not found`);
+    }
+
+    if (!shopEntry.shop || !shopEntry.shop[itemVariantId]) {
+      throw new Error(`MinecraftShopItem with variant id ${itemVariantId} not found in shop ${shopId}`);
+    }
+
+    await collection.updateOne(
+      { shop_id: shopId },
+      { $unset: { [`shop.${itemVariantId}`]: "" } }
+    );
   }
 }

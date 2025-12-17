@@ -1,6 +1,9 @@
 import { Router, Request, Response } from 'express';
 import axios from 'axios';
 
+import MinecraftController from '../../../controllers/api/v1/MinecraftController';
+
+const minecraftController = new MinecraftController();
 const router = Router();
 
 // Proxy to avoid browser CORS when looking up Mojang profiles by username
@@ -30,5 +33,8 @@ router.get('/api/v1/minecraft/users/:username', async (req: Request, res: Respon
     return res.status(502).json({ error: 'Upstream fetch failed' });
   }
 });
+
+router.get('/api/v1/minecraft/items', minecraftController.getItems.bind(minecraftController));
+router.get('/api/v1/minecraft/item/:itemId', minecraftController.getItemById.bind(minecraftController));
 
 export default router;

@@ -1,0 +1,89 @@
+{{> Dropdown id=id
+    name=(or name label id)
+    items=false
+    placeholder=(or placeholder (concat "Select " (plural (or maxSelected 1) 'Item' 'Items')))
+    multiple=multiple
+    searchable=true
+    formControl=formControl
+    closeOnSelect=true
+    asyncQueryParam="q"
+    asyncLimit=25
+    asyncInitialQuery=(join values ',')
+    asyncAllowEmptyQuery=false
+    asyncInitialLoad=true
+    asyncEmptyQueryParam="popular"
+    asyncEmptyQueryValue="minecraft:"
+    asyncEmptyCacheTtlMs=60000
+    asyncMinChars=0
+    asyncDebounce=300
+    asyncShowLoadingRow=true
+    asyncPendingText="Searching..."
+    asyncErrorFadeMs=2000
+    asyncPreserveStatic=true
+    asyncClearOnQuery=true
+    noResultsText="Zero results" }}
+
+{{#section "scripts"}}
+<script>
+  $(() => {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s]));
+    }
+
+    function minecraftItemTemplate(item) {
+      console.log(item);
+      let iconHtml = '';
+      if (item.id) {
+          const iconUrl = `/minecraft/item/${item.id}/image`;
+          iconHtml = `<img src="${iconUrl}" width="24" height="24" class="rounded me-2" alt="" data-img-error="" />`;
+      } else {
+          iconHtml = `<span class="me-2" style="width:24px; display:inline-block; text-align:center;"><i class="fa fa-cube"></i></span>`;
+      }
+      const name = item.name || item.id || 'Unknown Item';
+      
+      return `<div class="d-flex align-items-center">
+        ${iconHtml} <span>${escapeHtml(name)}</span>
+      </div>`;
+    }
+
+    whenControlReady("{{id}}", wrap => {
+      
+      wrap.dropdownControl.configureAsync({
+        initialFetchOnMount: true,
+        initialQuery: "{{join values ','}}",
+        minChars: 0,
+        debounceMs: 300,
+        clearOnQuery: true,
+        showLoading: true,
+        showLoadingRow: true,
+        pendingText: 'Loading items...',
+        fetcher: async (query, signal) => {
+          const params = new URLSearchParams();
+          if (query) params.set('q', query);
+          const pString = params.toString() ? ('?' + params.toString()) : '';
+          const res = await fetch(`/api/v1/minecraft/items/${pString}`, { signal });
+          if (!res.ok) throw new Error('Remote fetch failed');
+          const data = await res.json();
+          
+          const lcQuery = query ? query.toLowerCase() : '';
+          const results = data
+            .filter(g => {
+              // If no query, keep everything. Otherwise match on name OR id.
+              if (!lcQuery) return true;
+              const name = g.name ? g.name.toLowerCase() : '';
+              const id = g.id ? g.id.toLowerCase() : '';
+              return name.includes(lcQuery) || id.includes(lcQuery);
+            })
+            .map(g => ({
+                value: g.id,
+                html: minecraftItemTemplate(g)
+            }));
+
+          return results;
+        }
+      });
+    });
+  });
+</script>
+{{/section}}
