@@ -1,0 +1,19 @@
+{{#*inline "item_identifier"}}
+{{getAt (split this.id ":") 0 }}
+{{/inline}}
+
+<div class="card border-secondary bg-light-subtle text-start">
+  <div class="card-header justify-content-between align-items-center">
+    <div class="float-end">
+      <span class="badge bg-success text-uppercase">{{> item_identifier id=this.id}}</span>
+    </div>
+    <div class="shop-item-icon float-start me-2">
+      {{!-- {{> minecraft/shop/item/icon item_id=this.id size=48}} --}}
+      <img src="data:image/png;base64,{{this.asset_b64}}" alt="{{this.id}}" width="48" height="48" title="{{this.name}} - {{this.id}}" />
+    </div>
+    <div class="text-truncate me-2">
+      <h5 class="card-title mb-0 text-truncate" title="{{this.name}}">{{this.name}}</h5>
+      <small class="text-muted" title="{{this.id}}">{{this.id}}</small>
+    </div>
+  </div>
+</div>

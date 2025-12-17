@@ -1,0 +1,45 @@
+{{!--
+  slots: number - The number of storage slots available
+  items: PagedResult<MinecraftUserStorageItem> - The list of storage items
+--}}
+
+<div class="container-x mt-4 text-start">
+  <div class="justify-content-center">
+    <div class="row mb-3">
+      <div class="col"></div>
+      <div class="col">
+        {{#> search id="search" name="search" placeholder="Search by Item ID, Name" }}
+        {{/search}}
+      </div>
+      <div class="col"></div>
+    </div>
+    <div class="row mb-3">
+      <div class="col d-flex justify-content-center">
+        {{> pager this.pager search=this.search }}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+  {{#each items}}
+      <div class="col-md-6 mb-4">
+        {{> minecraft/storage/item}}
+      </div>
+  {{/each}}
+  </div>
+  <div class="d-flex justify-content-center">
+  {{> pager this.pager}}
+  </div>
+</div>
+
+{{#section "scripts"}}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/json.min.js"></script>
+  <script>$(() => { console.log("highlighting"); hljs.highlightAll(); });</script>
+{{/section}}
+
+{{#section "head"}}
+  {{!-- https://highlightjs.org/demo --}}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/panda-syntax-dark.min.css" />
+  {{!-- <link rel="stylesheet" href="/css/controls/json-editor.css" /> --}}
+{{/section}}

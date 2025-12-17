@@ -112,23 +112,27 @@
         title: Worlds
         href: /minecraft/worlds
         icon: globe
-      - type: disabled-link
-        title: Backups
-        href: /minecraft/backups
-        icon: database
-      - type: disabled-link
-        title: Server Status
-        href: /minecraft/status
-        icon: server
-      - type: disabled-link
-        title: Console
-        href: /minecraft/console
-        icon: terminal
-      - type: disabled-link
-        title: Mods
-        href: /minecraft/mods
-        icon: puzzle-piece
+      # - type: disabled-link
+      #   title: Backups
+      #   href: /minecraft/backups
+      #   icon: database
+      # - type: disabled-link
+      #   title: Server Status
+      #   href: /minecraft/status
+      #   icon: server
+      # - type: disabled-link
+      #   title: Console
+      #   href: /minecraft/console
+      #   icon: terminal
+      # - type: disabled-link
+      #   title: Mods
+      #   href: /minecraft/mods
+      #   icon: puzzle-piece
       - type: separator
+      - type: link
+        title: Minecraft Extracted Items
+        href: /minecraft/items
+        icon: box-open
       - type: link
         title: Taco Shops
         href: /minecraft/shops

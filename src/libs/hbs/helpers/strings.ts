@@ -112,5 +112,12 @@ export default {
     if (typeof count !== 'number') return '';
     if (typeof singular !== 'string' || typeof plural !== 'string') return '';
     return count === 1 ? singular : plural;
-  }
+  },
+  split: function (this: any, ...args: any[]): string[] {
+    const [value, separator] = Reflection.getArguments(args, ['value', 'separator'], ['', ',']);
+    if (typeof value !== 'string') return [];
+    if (typeof separator !== 'string') return [value];
+    return value.split(separator);
+  },
+
 }

@@ -15,8 +15,15 @@ export default {
       return '';
     }
     return arr.join(separator);
+  },
+  getAt: function (this: any, ...args: any[]): any {
+    const [arr, index] = Reflection.getArguments(args, ['arr', 'index']);
+    
+    if (!Array.isArray(arr)) {
+      return undefined;
+    }
+    return arr[index];
   }
-
 
   
 }

@@ -1,4 +1,4 @@
-<div class="container mt-4">
+<div class="container mt-4 text-start">
   <div class="justify-content-center">
     <div class="row mb-3">
       <div class="col"></div>
@@ -31,7 +31,7 @@
         <td class="text-nowrap p-1 text-start">{{> minecraft/user uuid=this.uuid username=this.username}}</td>
         <td class="text-nowrap">{{> yes-no value=this.whitelist}}</td>
         <td class="text-nowrap">
-          <a href="/minecraft/user/storage/{{this.guild_id}}/{{this.user_id}}" class="btn btn-sm btn-action text-primary" title="View User Storage"><i class="fas fa-box-open"></i></a>
+          <a href="/minecraft/storage/guild/{{this.guild_id}}/user/{{this.user_id}}/uuid/{{this.uuid}}" class="btn btn-sm btn-action text-primary" title="View User Storage"><i class="fas fa-box-open"></i></a>
           {{#if this.whitelist}}
           <a href="/minecraft/whitelist/delete/{{this.guild_id}}/{{this.user_id}}" class="btn btn-sm btn-action text-danger" title="Remove Whitelisted User"><i class="fas fa-trash"></i></a>
           {{else}}

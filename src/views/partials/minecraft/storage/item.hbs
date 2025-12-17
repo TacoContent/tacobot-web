@@ -1,0 +1,84 @@
+<div class="card border-secondary bg-light-subtle text-start">
+  <div class="card-header justify-content-between align-items-center" data-bs-toggle="collapse" href="#user-item-{{this.variant_id}}" aria-expanded="false">
+    <div class="float-end">
+      <span class="badge bg-success text-uppercase">{{this.quantity}}</span>
+      <span class="collapse-icon ms-2">
+        <i class="fas fa-caret-down down"></i>
+        <i class="fas fa-caret-up up"></i>
+      </span>
+
+    </div>
+    <div class="shop-item-icon float-start me-2">
+      {{> minecraft/shop/item/icon item_id=this.item_id size=48}}
+    </div>
+    <div class="text-truncate me-2">
+      {{#if this.name}}
+      <h5 class="card-title mb-0 text-truncate">{{this.name}}</h5>
+      <small class="text-muted">{{this.item_id}}</small>
+      {{else}}
+      <h5 class="card-title mb-0 text-truncate">{{this.item_id}}</h5>
+      {{/if}}
+    </div>
+  </div>
+
+  <div class="card-body collapse" id="user-item-{{this.variant_id}}">
+    <div class="row mb-3">
+      <div class="col">
+        <div class="input-group">
+          <div class="input-group-text">Item ID</div>
+          {{> code value=this.item_id copy=true spoiler=false}}
+        </div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col">
+        <div class="input-group">
+          <div class="input-group-text">Variant</div>
+          {{> code value=(or this.variant_id @key) display=(or (substr this.variant_id -8) (substr @key -8)) copy=true spoiler=false}}
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col">
+        <div class="input-group">
+          <div class="input-group-text">Quantity</div>
+          <div class="form-control">{{this.quantity}}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        {{~#if this.nbt~}}
+          <div class="card text-start">
+            <div class="card-header" data-bs-toggle="collapse" href="#nbtdata-{{this.variant_id}}" role="button" aria-expanded="false">
+              <span class="card-title text-uppercase">
+                <span>NBT</span>
+                <span class="collapse-icon">
+                  <i class="fas fa-caret-down down"></i>
+                  <i class="fas fa-caret-up up"></i>
+                </span>
+              </span>
+            </div>
+            <div class="card-body mono small p-0 pb-1 collapse" id="nbtdata-{{this.variant_id}}">
+              {{~> highlight value=(jsonPretty this.nbt)~}}
+            </div>
+          </div>
+        {{~/if~}}
+      </div>
+    </div>
+  </div>
+
+  <div class="card-footer">
+    <div class="float-end">
+      {{!-- <a href="/minecraft/shop/{{shopId}}/item/{{#if this.variant_id}}{{this.variant_id}}{{else}}{{@key}}{{/if}}/edit" class="btn btn-sm btn-primary">Edit<i class="fas fa-edit ms-1"></i></a> --}}
+      <form method="POST" action="/minecraft/storage/user/item/delete" class="d-inline-block ms-1">
+        <input type="hidden" name="shop_id" value="{{shopId}}" />
+        <input type="hidden" name="variant_id" value="{{#if this.variant_id}}{{this.variant_id}}{{else}}{{@key}}{{/if}}" />
+        <button type="submit" class="btn btn-sm btn-danger">Delete<i class="fas fa-trash ms-1"></i></button>
+      </form> 
+    </div>
+    <div class="clearfix"></div>
+  </div>
+</div>

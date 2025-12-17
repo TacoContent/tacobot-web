@@ -9,6 +9,8 @@ router.get('/minecraft/ops', ui.allow, minecraftController.listOps.bind(minecraf
 router.get('/minecraft/whitelist', ui.allow, minecraftController.listWhitelist.bind(minecraftController));
 router.get('/minecraft/worlds', ui.allow, minecraftController.listWorlds.bind(minecraftController));
 
+router.get('/minecraft/storage/guild/:guildId/user/:userId/uuid/:uuid', ui.allow, minecraftController.listUserStorage.bind(minecraftController));
+
 router.get('/minecraft/shops', ui.allow, minecraftController.listShops.bind(minecraftController));
 
 router.get('/minecraft/shop/new', ui.allow, minecraftController.createShopForm.bind(minecraftController));
@@ -22,5 +24,6 @@ router.post('/minecraft/shop/:id/item/:variantId/delete', ui.allow, minecraftCon
 router.post('/minecraft/shop/item/enabled', ui.allow, minecraftController.setShopItemEnabled.bind(minecraftController));
 
 router.get('/minecraft/item/:id/image', ui.allow, minecraftController.getItemImageById.bind(minecraftController));
+router.get('/minecraft/items', ui.allow, minecraftController.listMinecraftItems.bind(minecraftController));
 
 export default router;

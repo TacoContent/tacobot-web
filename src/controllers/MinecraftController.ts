@@ -8,6 +8,7 @@ import MinecraftShopsMongoClient from '../libs/mongo/MinecraftShops';
 import moment from 'moment';
 import MinecraftItemsMongoClient from '../libs/mongo/MinecraftItems';
 import MinecraftShopItem from '../models/MinecraftShopItem';
+import MinecraftUserStorageMongoClient from '../libs/mongo/MinecraftUserStorage';
 export default class MinecraftController {
   private logger = new LogsMongoClient();
   private MODULE = this.constructor.name;
@@ -182,6 +183,38 @@ export default class MinecraftController {
     }
   }
 
+  async listUserStorage(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const guildId = req.params.guildId;
+      const userId = req.params.userId;
+      const uuid = req.params.uuid;
+
+      const page = Math.max(1, parseInt(req.query.page as string) || 1);
+      const pageSize = 10;
+      const search: string | undefined = (req.query.search as string) || undefined;
+
+
+      const client = new MinecraftUserStorageMongoClient();
+      const userStorage = await client.getUserStorage(guildId, userId, uuid, (page - 1) * pageSize, pageSize);
+
+      res.render('minecraft/storage/user', {
+        ...res.locals,
+        title: 'Minecraft User Storage',
+        slots: userStorage ? userStorage.slots : 0,
+        pager: userStorage ? userStorage.items?.getPager() : null,
+        items: userStorage ? userStorage.items?.items : [],
+        guildId: guildId,
+        userId: userId,
+        uuid: uuid,
+      });
+    } catch (error: any) {
+      // this.logger.error(METHOD, error);
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
   async createShopForm(req: Request, res: Response, next: NextFunction): Promise<void> {
     const METHOD = Reflection.getCallingMethodName();
     try {
@@ -254,6 +287,30 @@ export default class MinecraftController {
         pager: pagedResults.getPager(),
         shop: shop,
         shopId: shopId,
+      });
+
+    } catch (error: any) {
+      // this.logger.error(METHOD, error);
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async listMinecraftItems(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const page = Math.max(1, parseInt(req.query.page as string) || 1);
+      const pageSize = 24;
+      const search: string | undefined = (req.query.search as string) || undefined;
+
+      const client = new MinecraftItemsMongoClient();
+      const pagedResults = await client.getPaged((page - 1) * pageSize, pageSize, search);
+
+      res.render('minecraft/items/list', {
+        ...res.locals,
+        title: 'Minecraft Items',
+        items: pagedResults.items,
+        pager: pagedResults.getPager(),
       });
 
     } catch (error: any) {
@@ -492,4 +549,7 @@ export default class MinecraftController {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }
+
+
+  
 }
