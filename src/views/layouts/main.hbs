@@ -52,13 +52,13 @@
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
           <div class="site-wrapper-inner">
             <div class="main-container">
-              {{{body}}}
+{{{body}}}
             </div>
           </div>
           <footer class="bg-dark-subtle text-center text-lg-start mt-3">
             <!-- Copyright -->
             <div class="float-start ms-3 p-3">
-              <i class="fas fa-copyright me-1" title="©"></i>{{thisYear}} Copyright<a class="text-body" href="https://darthminos.com/">{{> discord/user guild=(or @root.discordGuild config.tacobot.primaryGuildId) user=config.tacobot.ownerUserId}}</a>All rights reserved.
+              <i class="fas fa-copyright me-2" title="©"></i>{{thisYear}} Copyright<a class="text-body" href="https://darthminos.com/">{{> discord/user guild=(or @root.discordGuild config.tacobot.primaryGuildId) user=config.tacobot.ownerUserId}}</a><span class="ms-2">All rights reserved.</span>
             </div>
             <div class="float-end me-3 p-3">Version: {{ config.app.version }} - <a href="https://github.com/camalot/glucose-monitor/commit/{{ config.app.buildSha }}">{{ config.app.buildSha }}</a></div>
             <!-- Copyright -->

@@ -12,7 +12,11 @@ $(() => {
     const $source = $(target, inputGroup);
     console.log('Copying from', $source);
 
-    const value = $source.text().trim();
+    let value = $source.text().trim();
+    if ($source.data('copy')) {
+      console.log('Using data-copy value');
+      value = $source.data('copy');
+    }
     const $temp = $('<input>');
     $temp
       .css('position', 'absolute')

@@ -1,6 +1,7 @@
 
 export default class MinecraftShopItem {
   item_id: string = '';
+  name: string = '';
   nbt: Record<string, any> | undefined = undefined;
   variant_id: string = '';
   quantity: number = -1;  // -1 means unlimited

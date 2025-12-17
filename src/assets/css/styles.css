@@ -23,6 +23,19 @@ body {
   padding-top: 58px;
 }
 
+.collapse-icon .down,
+.collapse-icon .up {
+  display: none;
+}
+
+[aria-expanded="true"] .collapse-icon .up {
+  display: inline-block;
+}
+
+[aria-expanded="false"] .collapse-icon .down {
+  display: inline-block;
+}
+
 .navbar-scrolled {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
@@ -34,6 +47,12 @@ body {
   right: 0;
   left: 0;
   z-index: 1030;
+}
+
+.discord-user.btn {
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
 }
 
 .discord-channel.input-group {
@@ -190,6 +209,15 @@ pre code {
 a, .btn-link {
   text-decoration: none !important;
   color: #ccc;
+}
+
+pre {
+  padding: 0;
+  margin: 0;
+}
+pre code.hljs {
+  background: var(--bs-dark, #212529);
+  padding: 0;
 }
 
 .card[data-expired="true"]{

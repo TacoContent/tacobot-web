@@ -17,12 +17,13 @@ router.get('/minecraft/shop/:id/edit', ui.allow, minecraftController.editShopFor
 
 router.get('/minecraft/shop/:id/items', ui.allow, minecraftController.viewShopItems.bind(minecraftController));
 
-router.get('/minecraft/shop/:id/items/new', ui.allow, async (req, res) => {
-  res.render('minecraft/shop/item/edit', {
-    ...res.locals,
-    title: 'Add Shop Item',
-    shopId: req.params.id,
-  });
-});
+
+router.post('/minecraft/shop/item/save', ui.allow, minecraftController.updateShopItem.bind(minecraftController));
+
+router.get('/minecraft/shop/:id/item/:variantId/edit', ui.allow, minecraftController.editShopItemForm.bind(minecraftController));
+router.get('/minecraft/shop/:id/item/new', ui.allow, minecraftController.createShopItemForm.bind(minecraftController));
+
+
+router.get('/minecraft/item/:id/image', ui.allow, minecraftController.getItemImageById.bind(minecraftController));
 
 export default router;

@@ -1,12 +1,12 @@
 <!-- Minecraft Shop Items View -->
-<div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <div>
+<div class="container mt-4 ">
+  <div class="d-flex justify-content-between align-items-center mb-3 ">
+    <div class="text-start">
       <h2 class="mb-0">{{#if shop.name}}{{shop.name}}{{else}}Shop{{/if}} <small class="text-muted small">{{shop.shop_id}}</small></h2>
       {{#if shop.guild_id}}<div class="text-muted small">{{> discord/guild id=shop.guild_id}}</div>{{/if}}
     </div>
     <div class="d-flex gap-2">
-      <a href="/minecraft/shop/{{shop.shop_id}}/items/new" class="btn btn-primary">Add Item</a>
+      <a href="/minecraft/shop/{{shop.shop_id}}/item/new" class="btn btn-primary">Add Item</a>
       <a href="/minecraft/shop/{{shop.shop_id}}/edit" class="btn btn-secondary">Edit Shop</a>
     </div>
   </div>
@@ -26,7 +26,7 @@
     {{/if}}
   </div>
 
-  <a href="/minecraft/shop/{{shop.shop_id}}/items/new" class="btn btn-primary rounded-circle shadow position-fixed btn-fab" aria-label="Add Item" title="Add Item">
+  <a href="/minecraft/shop/{{shop.shop_id}}/item/new" class="btn btn-primary rounded-circle shadow position-fixed btn-fab" aria-label="Add Item" title="Add Item">
     <i class="fas fa-plus" aria-hidden="true"></i>
   </a>
 </div>
@@ -34,7 +34,7 @@
 {{#section "scripts"}}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/json.min.js"></script>
-  {{!-- <script>$(() => { console.log("highlighting"); hljs.highlightAll(); });</script> --}}
+  <script>$(() => { console.log("highlighting"); hljs.highlightAll(); });</script>
 {{/section}}
 
 {{#section "head"}}

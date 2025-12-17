@@ -3,8 +3,9 @@ import DatabaseMongoClient from "./Database";
 import PagedResults from '../../models/PagedResults';
 import MinecraftUsersMongoClient from './MinecraftUsers';
 import DiscordUsersMongoClient from './Users';
-import MinecraftUserEntry from "../../models/MinecraftUserEntry";
 import Identity from "../Identity";
+import MinecraftShopItem from "../../models/MinecraftShopItem";
+import moment from "moment";
 
 
 export default class MinecraftShopsMongoClient extends DatabaseMongoClient<MinecraftShopEntry> {
@@ -137,5 +138,49 @@ export default class MinecraftShopsMongoClient extends DatabaseMongoClient<Minec
       console.error("Error updating MinecraftShopEntry:", error);
       throw error;
     }
+  }
+
+  async updateShopItem(shopId: string, itemVariantId: string, itemData: Partial<MinecraftShopItem>): Promise<MinecraftShopItem> {
+    const collection = await this.getCollection();
+
+    const updateField = `shop.${itemVariantId}`;
+
+    // find the shop to ensure it exists
+    const shopEntry = await this.get(shopId);
+    if (!shopEntry) {
+      throw new Error(`MinecraftShopEntry with id ${shopId} not found`);
+    }
+
+    if (itemData.variant_id && itemData.variant_id !== itemVariantId) {
+      // variant ID has changed, we need to remove the old item first
+      await collection.updateOne(
+        { shop_id: shopId },
+        { $unset: { [`shop.${itemVariantId}`]: "" } }
+      );
+    }
+
+    // if the item already exists, preserve its created_at and created_by fields
+    const existingItem = shopEntry.shop ? shopEntry.shop[itemVariantId] : null;
+    if (existingItem) {
+      itemData.created_at = existingItem.created_at;
+      itemData.created_by = existingItem.created_by;
+      itemData.updated_at = moment().utc().unix();
+      itemData.updated_by = itemData.updated_by || existingItem.updated_by;
+    } else {
+      itemData.created_at = moment().utc().unix();
+    }
+    itemData.updated_at = moment().utc().unix();
+
+
+    await collection.updateOne(
+      { shop_id: shopId },
+      { $set: { [updateField]: itemData } }
+    );
+
+    const updatedShop = await this.get(shopId);
+    if (!updatedShop || !updatedShop.shop || !updatedShop.shop[itemVariantId]) {
+      throw new Error("Failed to retrieve updated MinecraftShopItem");
+    }
+    return updatedShop.shop[itemVariantId];
   }
 }

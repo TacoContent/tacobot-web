@@ -3,56 +3,56 @@
 {{> discord/emoji name="tacobot" guild="935294040386183228" small=true}} 
 {{> discord/emoji name="tacobot" guild="935294040386183228" large=true}}  --}}
 
-        <div class="inner cover">
+<div class="inner cover">
 
-          <div class="xcontainer">
-            <div class="row">
-              <div class="col">
-                <div class="xcontainer">
-                  <div class="row">
-                    <div class="col">
-                      {{!-- Define inline partial for guild items and pass by name to Dropdown via itemsPartial (workaround for block issue) --}}
-                      {{#*inline "guildItems"}}
-                        {{#each guilds}}
-                          <li class="dropdown-item d-flex align-items-center gap-2" data-value="{{this.guild_id}}">
-                            <img src="{{this.icon}}" width="24" height="24" class="rounded" /> {{this.name}}
-                          </li>
-                        {{/each}}
-                      {{/inline}}
-                      {{> Dropdown id="guilds" name="guild_ids" placeholder="Select guilds" searchable=false multiple=false itemsPartial="guildItems"}}
-                    </div>
-                    <div class="col">
-                      {{#> Dropdown id="guilds" name="guild_ids" placeholder="Select guilds" searchable=false multiple=false itemsPartial="guildItems"}}
-                        {{#each guilds}}
-                          <li class="dropdown-item d-flex align-items-center gap-2" data-value="{{this.guild_id}}">
-                            <img src="{{this.icon}}" width="24" height="24" class="rounded" /> {{this.name}}
-                          </li>
-                        {{/each}}
-                      {{/Dropdown}}
+  <div class="xcontainer">
+    <div class="row">
+      <div class="col">
+        <div class="xcontainer">
+          <div class="row">
+            <div class="col">
+              {{!-- Define inline partial for guild items and pass by name to Dropdown via itemsPartial (workaround for block issue) --}}
+              {{#*inline "guildItems"}}
+                {{#each guilds}}
+                  <li class="dropdown-item d-flex align-items-center gap-2" data-value="{{this.guild_id}}">
+                    <img src="{{this.icon}}" width="24" height="24" class="rounded" /> {{this.name}}
+                  </li>
+                {{/each}}
+              {{/inline}}
+              {{> Dropdown id="guilds" name="guild_ids" placeholder="Select guilds" searchable=false multiple=false itemsPartial="guildItems"}}
+            </div>
+            <div class="col">
+              {{#> Dropdown id="guilds" name="guild_ids" placeholder="Select guilds" searchable=false multiple=false itemsPartial="guildItems"}}
+                {{#each guilds}}
+                  <li class="dropdown-item d-flex align-items-center gap-2" data-value="{{this.guild_id}}">
+                    <img src="{{this.icon}}" width="24" height="24" class="rounded" /> {{this.name}}
+                  </li>
+                {{/each}}
+              {{/Dropdown}}
 
-                    </div>
-                    <div class="col">
-                      <form>
-                      {{> controls/ChannelSelector id="channels" name="channel_ids" searchable=false multiple=false guild=discordGuild}}
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            </div>
+            <div class="col">
+              <form>
+              {{> controls/ChannelSelector id="channels" name="channel_ids" searchable=false multiple=false guild=discordGuild}}
+              </form>
             </div>
           </div>
-
         </div>
+      </div>
+    </div>
+  </div>
 
-        {{!-- {{#section "head"}}
-        {{/section}} --}}
+</div>
 
-        {{#section "scripts"}}
-        {{!-- <script src="/javascript/controls/dropdown.js"></script> --}}
-        <script src="/javascript/controls/channels-selector.js"></script>
+{{!-- {{#section "head"}}
+{{/section}} --}}
 
-        <script>
-          // Debug: list partial names known on server side isn't directly accessible client-side.
-          // We'll inject a data attribute via server log only; real verification handled in server logs.
-        </script>
-        {{/section}}
+{{#section "scripts"}}
+{{!-- <script src="/javascript/controls/dropdown.js"></script> --}}
+<script src="/javascript/controls/channels-selector.js"></script>
+
+<script>
+  // Debug: list partial names known on server side isn't directly accessible client-side.
+  // We'll inject a data attribute via server log only; real verification handled in server logs.
+</script>
+{{/section}}

@@ -6,9 +6,61 @@ import MinecraftUsersMongoClient from '../libs/mongo/MinecraftUsers';
 import MinecraftWorldsMongoClient from '../libs/mongo/MinecraftWorlds';
 import MinecraftShopsMongoClient from '../libs/mongo/MinecraftShops';
 import moment from 'moment';
+import MinecraftItemsMongoClient from '../libs/mongo/MinecraftItems';
+import { calculateVariantId } from '../libs/Minecraft/Item';
+import MinecraftShopItem from '../models/MinecraftShopItem';
 export default class MinecraftController {
   private logger = new LogsMongoClient();
   private MODULE = this.constructor.name;
+
+  async searchItems(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const term = req.query.term as string;
+      if (!term || term.trim().length === 0) {
+        res.status(400).json({ error: 'Search term is required' });
+        return;
+      }
+
+      const client = new MinecraftItemsMongoClient();
+      const items = await client.search(term, 25);
+
+      res.json({ items: items });
+
+    } catch (error: any) {
+      // this.logger.error(METHOD, error);
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async getItemImageById(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const itemId = req.params.id;
+      const client = new MinecraftItemsMongoClient();
+      const item = await client.get(itemId);
+
+      if (!item) {
+        res.status(404).json({ error: 'Item Not Found' });
+        return;
+      }
+
+      const assetBuffer = Buffer.from(item.asset_b64, 'base64');
+      res.writeHead(200, {
+        // add the file name to the content-disposition so browsers can download with the correct name
+        'Content-Disposition': `inline; filename="${item.name}.png"`,
+        'Content-Type': 'image/png',
+        'Content-Length': assetBuffer.length
+      });
+      res.end(assetBuffer);
+
+    } catch (error: any) {
+      // this.logger.error(METHOD, error);
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
 
   async listOps(req: Request, res: Response, next: NextFunction): Promise<void> {
     const METHOD = Reflection.getCallingMethodName();
@@ -197,6 +249,166 @@ export default class MinecraftController {
         shop: shop,
         shopId: shopId,
       });
+
+    } catch (error: any) {
+      // this.logger.error(METHOD, error);
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async editShopItemForm(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const shopId = req.params.id;
+      const variantId = req.params.variantId;
+
+      const client = new MinecraftShopsMongoClient();
+      const shop = await client.get(shopId);
+
+      if (!shop || !shop.shop) {
+        res.status(404).render('errors/404', {
+          ...res.locals,
+          title: 'Shop Not Found',
+          message: `Minecraft Shop with ID ${shopId} not found.`,
+        });
+        return;
+      }
+
+      let title = "Edit Shop Item";
+      let item = null;
+      if (!variantId) {
+        // this means we are creating a new item
+        title = "Add Shop Item";
+      } else {
+        // we need to find the property of shop.shop with the key name variant_id === variantId
+        // shop.shop is a Record<string, MinecraftShopItem>
+        item = shop.shop[variantId];
+        
+        if (!item) {
+          res.status(404).render('errors/404', {
+            ...res.locals,
+            title: 'Shop Item Not Found',
+            message: `Shop Item with Variant ID ${variantId} not found in Shop ${shopId}.`,
+          });
+          return;
+        }
+        title = `Edit Shop Item - ${item.item_id}`;
+      }
+      res.render('minecraft/shop/item/edit', {
+        ...res.locals,
+        title: title,
+        shopId: shopId,
+        item: item,
+      });
+    } catch (error: any) {
+      // this.logger.error(METHOD, error);
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async createShopItemForm(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const shopId = req.params.id;
+
+      const client = new MinecraftShopsMongoClient();
+      const shop = await client.get(shopId);
+
+      if (!shop) {
+        res.status(404).render('errors/404', {
+          ...res.locals,
+          title: 'Shop Not Found',
+          message: `Minecraft Shop with ID ${shopId} not found.`,
+        });
+        return;
+      }
+
+      res.render('minecraft/shop/item/edit', {
+        ...res.locals,
+        title: 'Add Shop Item',
+        shopId: shopId,
+      });
+
+    } catch (error: any) {
+      // this.logger.error(METHOD, error);
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  private truthyString(value: any): boolean {
+    if (!value) return false;
+    if (typeof value === 'string') {
+      const lowered = value.toLowerCase();
+      return lowered === 'true' || lowered === '1' || lowered === 'yes' || lowered === 'on';
+    }
+    return Boolean(value);
+  }
+
+  async updateShopItem(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      // get the shop data from the form post
+      const formData = req.body as Partial<{
+        shop_id: string;
+        variant_id: string;
+        item_id: string;
+        name: string;
+        enabled: boolean;
+        expires_at: string | null; // date string or null
+        quantity: number;
+        buy: number | null;
+        sell: number | null;
+        nbt: any;
+      }>;
+
+      const expiry = formData.expires_at ? moment(formData.expires_at).utc().unix() : null;
+      const shopId = formData.shop_id;
+      let variantId = formData.variant_id;
+      const itemId = formData.item_id;
+
+      const isEnabled =  this.truthyString(formData.enabled);
+
+      const updateData: Partial<MinecraftShopItem> = {
+        item_id: formData.item_id!,
+        name: formData.name,
+        enabled: isEnabled,
+        expires_at: expiry || null,
+        quantity: Number(formData.quantity || -1),
+        buy: !formData.buy ? 0 : Number(formData.buy),
+        sell: !formData.sell ? 0 : Number(formData.sell),
+        nbt: formData.nbt ? JSON.parse(formData.nbt) : {},
+      };
+
+      if (!itemId) {
+        res.status(400).json({ error: 'item_id is required' });
+        return;
+      }
+
+      if (!shopId) {
+        res.status(400).json({ error: 'shop_id is required' });
+        return;
+      }
+
+      if (variantId === undefined || variantId === null || variantId.trim().length === 0) {
+        // new item. need to create a new variant ID
+        updateData.variant_id = calculateVariantId(itemId, updateData.nbt);
+        variantId = updateData.variant_id;
+      }
+
+
+      const client = new MinecraftShopsMongoClient();
+      const updatedItem = await client.updateShopItem(shopId, variantId, updateData);
+
+      if (!updatedItem) {
+        res.status(404).json({ error: 'Shop Item Not Found' });
+        return;
+      }
+
+
+      res.redirect(`/minecraft/shop/${shopId}/items`);
 
     } catch (error: any) {
       // this.logger.error(METHOD, error);

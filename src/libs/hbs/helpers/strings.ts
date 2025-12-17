@@ -2,6 +2,29 @@ import moment, { unix } from 'moment-timezone';
 import Reflection from '../../Reflection';
 
 export default {
+  substr: function (this: any, ...args: any[]): string {
+    const [value, start, length] = Reflection.getArguments(args, ['value', 'start', 'length'], ['', 0, undefined]);
+    // support negative start like: substr(value, -5)
+    // and negative length like: substr(value, 0, -3)
+    // example: substr("Hello, world!", -6, 5) => "world"
+
+    if (typeof value !== 'string') return '';
+    let actualStart = start;
+    if (start < 0) {
+      actualStart = value.length + start;
+      if (actualStart < 0) actualStart = 0;
+    }
+    if (length === undefined) {
+      return value.substring(actualStart);
+    } else {
+      let actualLength = length;
+      if (length < 0) {
+        actualLength = value.length - actualStart + length;
+        if (actualLength < 0) actualLength = 0;
+      }
+      return value.substring(actualStart, actualStart + actualLength);
+    }
+  },
   json: function (this: any, ...args: any[]): string {
     const [object] = Reflection.getArguments(args, ['object']);
     if (object === undefined) return 'undefined';

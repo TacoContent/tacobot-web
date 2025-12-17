@@ -1,0 +1,8 @@
+{{!-- 
+  Renders a Minecraft item icon.
+  Expects:
+    - item_id: The Minecraft item ID (string).
+    - size: The size of the icon in pixels (number, optional, default: 32).
+--}}
+
+<img src="/minecraft/item/{{this.item_id}}/image" alt="{{this.item_id}}" width="{{or this.size 32}}px" height="{{or this.size 32}}px" class="minecraft-item-icon" />

@@ -1,50 +1,153 @@
 <div class="card {{#unless this.enabled}}border-secondary bg-light-subtle{{/unless}} text-start">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <div class="text-truncate me-2">
-      <h5 class="card-title mb-0 text-truncate">{{this.item_id}}</h5>
-      {{#if this.metadata.name}}<small class="text-muted">{{this.metadata.name}}</small>{{/if}}
+  <div class="card-header justify-content-between align-items-center">
+    <div class="float-end">
+      {{#if this.enabled}}<span class="badge bg-success text-uppercase">Enabled</span>{{else}}<span class="badge bg-secondary text-uppercase">Disabled</span>{{/if}}
     </div>
-    <div class="text-end">
-      {{#if this.enabled}}<span class="badge bg-success">Enabled</span>{{else}}<span class="badge bg-secondary">Disabled</span>{{/if}}
+    <div class="shop-item-icon float-start me-2">
+      {{> minecraft/shop/item/icon item_id=this.item_id size=48}}
+    </div>
+    <div class="text-truncate me-2">
+      {{#if this.name}}
+      <h5 class="card-title mb-0 text-truncate">{{this.name}}</h5>
+      <small class="text-muted">{{this.item_id}}</small>
+      {{else}}
+      <h5 class="card-title mb-0 text-truncate">{{this.item_id}}</h5>
+      {{/if}}
     </div>
   </div>
 
   <div class="card-body">
-    <div class="row">
+    <div class="row mb-3">
       <div class="col">
-
-        <p class="mb-1"><strong>Variant:</strong> <code class="text-monospace">{{#if this.variant_id}}{{this.variant_id}}{{else}}{{@key}}{{/if}}</code></p>
-        <p class="mb-1"><strong>Quantity:</strong> {{#if (eq this.quantity -1)}}Unlimited{{else}}{{this.quantity}}{{/if}}</p>
-        <p class="mb-1"><strong>Buy:</strong> {{#if (eq this.buy -1)}}N/A{{else if (eq this.buy 0)}}Free{{else}}{{this.buy}}{{/if}}</p>
-        <p class="mb-0"><strong>Sell:</strong> {{#if (eq this.sell 0)}}N/A{{else}}{{this.sell}}{{/if}}</p>
+        <div class="input-group">
+          <div class="input-group-text">Item ID</div>
+          {{> code value=this.item_id copy=true spoiler=false}}
+        </div>
       </div>
     </div>
+    <div class="row mb-3">
+      <div class="col">
+        <div class="input-group">
+          <div class="input-group-text">Variant</div>
+          {{> code value=(or this.variant_id @key) display=(or (substr this.variant_id -8) (substr @key -8)) copy=true spoiler=false}}
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col">
+        <div class="input-group">
+          <div class="input-group-text">Expires</div>
+          <div class="form-control">{{> date date=this.expires_at unknown="Never"}}</div>
+          <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col">
+        <div class="input-group">
+          <div class="input-group-text">Quantity</div>
+          <div class="form-control">{{#if (eq this.quantity -1)}}Unlimited{{else}}{{this.quantity}}{{/if}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-6">
+        <div class="input-group">
+          <div class="input-group-text">Buy</div>
+          <div class="form-control">{{#if (eq this.buy -1)}}N/A{{else if (eq this.buy 0)}}Free{{else}}{{this.buy}}{{/if}}</div>
+          <div class="input-group-text">🌮</div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="input-group">
+          <div class="input-group-text">Sell</div>
+          <div class="form-control">{{#if (eq this.sell 0)}}N/A{{else}}{{this.sell}}{{/if}}</div>
+          <div class="input-group-text">🌮</div>
+        </div>
+      </div>
+    </div>
+
     <div class="row">
       <div class="col">
-        {{#if this.nbt}}
-          <div class="card mb-2 text-start">
-            <div class="card-body p-2 small mono">
-{{> highlight value=(jsonPretty this.nbt)}}
+        {{~#if this.nbt~}}
+          <div class="card text-start">
+            <div class="card-header" data-bs-toggle="collapse" href="#nbtdata-{{this.variant_id}}" role="button" aria-expanded="false">
+              <span class="card-title text-uppercase">
+                <span>NBT</span>
+                <span class="collapse-icon">
+                  <i class="fas fa-caret-down down"></i>
+                  <i class="fas fa-caret-up up"></i>
+                </span>
+              </span>
+            </div>
+            <div class="card-body mono small p-0 pb-1 collapse" id="nbtdata-{{this.variant_id}}">
+              {{~> highlight value=(jsonPretty this.nbt)~}}
             </div>
           </div>
-        {{/if}}
-
-        {{#if this.expires_at}}
-          <div class="text-muted small">Expires: {{> date date=this.expires_at unknown="Never"}}</div>
-        {{/if}}
-        {{#if this.created_at}}
-          <div class="text-muted small">Posted: {{> date date=this.created_at unknown="UNKNOWN"}}</div>
-        {{/if}}
+        {{~/if~}}
       </div>
     </div>
+
+    {{!-- #if (and this.created_by this.created_at)}}
+    <div class="row mb-3">
+      <div class="col">
+        <div class="input-group">
+          <div class="input-group-text">Created By</div>
+          <div class="form-control">{{> discord/user user=this.created_by guild=this.guild_id}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col">
+        <div class="input-group">
+          <div class="input-group-text">Created At</div>
+          <div class="form-control">{{> date date=this.created_at unknown="UNKNOWN"}}</div>
+          <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
+        </div>
+      </div>
+    </div>
+    {{/if}}
+    {{#if (and this.updated_by this.updated_at)}}
+    <div class="row mb-3">
+      <div class="col">
+        <div class="input-group">
+          <div class="input-group-text">Updated By</div>
+          <div class="form-control">{{> discord/user user=this.updated_by guild=this.guild_id}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col">
+        <div class="input-group">
+          <div class="input-group-text">Updated At</div>
+          <div class="form-control">{{> date date=this.updated_at unknown="UNKNOWN"}}</div>
+          <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
+        </div>
+      </div>
+    </div>
+    {{/if --}}
+
+
   </div>
 
-  <div class="card-footer text-end">
-    <a href="/minecraft/shop/{{shopId}}/items/{{#if this.variant_id}}{{this.variant_id}}{{else}}{{@key}}{{/if}}/edit" class="btn btn-sm btn-secondary">Edit</a>
-    <form method="POST" action="/minecraft/shop/items/delete" class="d-inline-block ms-1">
-      <input type="hidden" name="shop_id" value="{{shopId}}" />
-      <input type="hidden" name="variant_id" value="{{#if this.variant_id}}{{this.variant_id}}{{else}}{{@key}}{{/if}}" />
-      <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-    </form>
+  <div class="card-footer">
+    <div class="float-end">
+      <a href="/minecraft/shop/{{shopId}}/item/{{#if this.variant_id}}{{this.variant_id}}{{else}}{{@key}}{{/if}}/edit" class="btn btn-sm btn-primary">Edit<i class="fas fa-edit ms-1"></i></a>
+      {{!-- <form method="POST" action="/minecraft/shop/items/delete" class="d-inline-block ms-1">
+        <input type="hidden" name="shop_id" value="{{shopId}}" />
+        <input type="hidden" name="variant_id" value="{{#if this.variant_id}}{{this.variant_id}}{{else}}{{@key}}{{/if}}" />
+        <button type="submit" class="btn btn-sm btn-danger">Delete<i class="fas fa-trash ms-1"></i></button>
+      </form> --}}
+    </div>
+    <div class="float-start">
+      <form method="POST" action="/minecraft/shop/items/toggle" class="d-inline-block">
+        <input type="hidden" name="shop_id" value="{{shopId}}" />
+        <input type="hidden" name="variant_id" value="{{#if this.variant_id}}{{this.variant_id}}{{else}}{{@key}}{{/if}}" />
+        <input type="hidden" name="enabled" value="{{not this.enabled}}" />
+        <button type="submit" class="btn btn-sm {{#if this.enabled}}btn-warning{{else}}btn-success{{/if}}">{{#if this.enabled}}Disable<i class="fas fa-square-xmark ms-1"></i>{{else}}Enable<i class="fas fa-square-check ms-1"></i>{{/if}}</button>
+    </div>
+    <div class="clearfix"></div>
   </div>
 </div>
