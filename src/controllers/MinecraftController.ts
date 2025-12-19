@@ -9,6 +9,7 @@ import moment from 'moment';
 import MinecraftItemsMongoClient from '../libs/mongo/MinecraftItems';
 import MinecraftShopItem from '../models/MinecraftShopItem';
 import MinecraftUserStorageMongoClient from '../libs/mongo/MinecraftUserStorage';
+import MinecraftItemEntry from '../models/MinecraftItemEntry';
 export default class MinecraftController {
   private logger = new LogsMongoClient();
   private MODULE = this.constructor.name;
@@ -39,7 +40,7 @@ export default class MinecraftController {
     try {
       const itemId = req.params.id;
       const client = new MinecraftItemsMongoClient();
-      const item = await client.get(itemId);
+      const item: MinecraftItemEntry | null = await client.get(itemId);
 
       if (!item) {
         res.status(404).json({ error: 'Item Not Found' });
@@ -50,7 +51,7 @@ export default class MinecraftController {
       res.writeHead(200, {
         // add the file name to the content-disposition so browsers can download with the correct name
         'Content-Disposition': `inline; filename="${item.name}.png"`,
-        'Content-Type': 'image/png',
+        'Content-Type': item.content_type ||'image/png',
         'Content-Length': assetBuffer.length
       });
       res.end(assetBuffer);
