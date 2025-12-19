@@ -792,11 +792,11 @@ class DiscordRoleLoader extends TemplateLoader {
       });
       if (Array.isArray(response)) {
         response.forEach(role => {
-          if (role && role.id && role.guild_id) {
+          if (role && role.role_id && role.guild_id) {
             // add the cssColor property for color rendering
             role.cssColor = this.roleColorToCssValue(role.color);
             // cache by guild/role
-            const cacheKey = `${role.guild_id.toString().trim()}/${role.id.toString().trim()}`;
+            const cacheKey = `${role.guild_id.toString().trim()}/${role.role_id.toString().trim()}`;
             this.cache.set(cacheKey, role);
           }
         });
@@ -811,7 +811,7 @@ class DiscordRoleLoader extends TemplateLoader {
   renderFailure(element, id, gId, reason) {
     $(element).empty().removeClass('loading');
     const tpl = 'discord-user-field';
-    Templates.render($(element), tpl, { id, guild_id: gId, name: reason, displayname: reason, type: 'user' });
+    Templates.render($(element), tpl, { id: id, guild_id: gId, name: reason, displayname: reason, type: 'user' });
     ImageErrorHandler.register($('img[data-img-error]', element));
     $('.role-icon-label', element).remove();
   }
@@ -886,7 +886,7 @@ class DiscordRoleLoader extends TemplateLoader {
     elements.each((index, element) => {
       const roleId = $(element).data('discord-role')?.toString().trim();
       const gId = $(element).data('discord-role-guild')?.toString().trim();
-      const role = roles.find(r => r && r.id && r.id.toString().trim() === roleId && r.guild_id && r.guild_id.toString().trim() === gId);
+      const role = roles.find(r => r && r.role_id && r.role_id.toString().trim() === roleId && r.guild_id && r.guild_id.toString().trim() === gId);
       $(element).empty().removeClass('loading');
       if (role) {
         Templates.render($(element), 'discord-role-field', role);
