@@ -1,0 +1,88 @@
+{{> Dropdown id=id
+    name=(or name label id)
+    items=false
+    placeholder=(concat "Select " (plural (or maxSelected 1) 'Mod' 'Mods'))
+    multiple=multiple
+    searchable=(eq searchable true)
+    closeOnSelect=true
+    asyncQueryParam="q"
+    asyncAllowEmptyQuery=true
+    asyncEmptyQueryParam="popular"
+    asyncEmptyQueryValue="true"
+    asyncEmptyCacheTtlMs=60000
+    asyncMinChars=0
+    asyncDebounce=300
+    asyncShowLoadingRow=true
+    asyncPendingText="Searching..."
+    asyncErrorFadeMs=2000
+    asyncPreserveStatic=true
+    asyncClearOnQuery=true
+    noResultsText="Zero results" }}
+
+{{#section "scripts"}}
+<script>
+  $(() => {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s]));
+    }
+
+    function modItemTemplate(item) {
+      let iconHtml = '';
+      if (item.icon && item.icon.url) {
+          const iconUrl = item.icon.url;
+          iconHtml = `<img src="${iconUrl}" width="24" height="24" class="rounded me-2" alt="" data-img-error="" />`;
+      } else if (item.icon && item.icon.data) {
+          iconHtml = `<img src="data:${item.icon.content_type};base64,${item.icon.data}" width="24" height="24" class="rounded me-2" alt="" data-img-error="" />`;
+      } else {
+        iconHtml = `<img src="/images/minecraft/items/minecraft_crafting_table.png" width="24" height="24" class="rounded me-2" alt="" data-img-error="" />`;
+      }
+      const name = item.name || item.id || 'Unknown Mod';
+      
+      return `<div class="d-flex align-items-center">
+        ${iconHtml} <span>${escapeHtml(name)}</span>
+      </div>`;
+    }
+
+    whenControlReady("{{id}}", wrap => {
+      
+      wrap.dropdownControl.configureAsync({
+        initialFetchOnMount: true,
+        initialQuery: '',
+        minChars: 0,
+        debounceMs: 300,
+        clearOnQuery: true,
+        showLoading: true,
+        showLoadingRow: true,
+        pendingText: 'Loading roles...',
+        fetcher: async (query, signal) => {
+          const params = new URLSearchParams();
+          if (query) params.set('search', query);
+          const pString = params.toString() ? ('?' + params.toString()) : '';
+          const res = await fetch(`/api/v1/minecraft/items/mods${pString}`, { signal });
+          if (!res.ok) throw new Error('Remote fetch failed');
+          const data = await res.json();
+          
+          const lcQuery = query ? query.toLowerCase() : '';
+          console.log(data);
+          const results = data
+            .filter(g => {
+              if (!lcQuery) return true;
+              if (!g.name) return false;
+              if (g.name && g.name.toLowerCase().includes(lcQuery)) return true;
+              if (g.id && g.id.toLowerCase().includes(lcQuery)) return true;
+              
+              return false;
+            })
+            .map(g => ({
+                value: g.id,
+                html: modItemTemplate(g)
+            }));
+
+          return results;
+        }
+      });
+    });
+  });
+</script>
+{{/section}}

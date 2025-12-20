@@ -35,6 +35,7 @@ export default class MinecraftController {
     }
   }
 
+
   async getItemImageById(req: Request, res: Response, next: NextFunction): Promise<void> {
     const METHOD = Reflection.getCallingMethodName();
     try {

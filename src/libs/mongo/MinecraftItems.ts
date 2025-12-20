@@ -1,4 +1,4 @@
-import MinecraftItemEntry from "../../models/MinecraftItemEntry";
+import MinecraftItemEntry, { MinecraftMod } from "../../models/MinecraftItemEntry";
 import PagedResults from "../../models/PagedResults";
 import DatabaseMongoClient from "./Database";
 
@@ -24,14 +24,66 @@ export default class MinecraftItemsMongoClient extends DatabaseMongoClient<Minec
     }
 
     const total = await collection.countDocuments(query);
-    const items = await collection.find(query).skip(skip).limit(take).toArray();
+
+    // Use aggregation and opt in to disk use for sorts that could exceed the server memory limit.
+    // Long-term: add an index on { id: 1, name: 1 } and/or other searchable fields to avoid external sorting.
+    const pipeline = [
+      { $match: query },
+      { $sort: { id: 1, name: 1 } },
+      { $skip: skip },
+      { $limit: take }
+    ];
+    const items = await collection.aggregate<MinecraftItemEntry>(pipeline, { allowDiskUse: true }).toArray();
 
     return new PagedResults<MinecraftItemEntry>({
-      items: items,
+      items,
       totalItems: total,
       currentPage: Math.floor(skip / take) + 1,
       pageSize: take,
     });
+  }
+
+  async getMods(search: string): Promise<MinecraftMod[]> {
+
+    /*
+    id: 'aether:nature_staff',
+    asset: 'aether_nature_staff.png',
+    name: 'Nature Staff',
+    source: 'aether-1.21.1-1.5.10-neoforge.jar',
+    mod: {
+        id: 'aether',
+        version: '1.5.10',
+        name: 'The Aether'
+    }
+    */
+    const collection = await this.getCollection();
+    const regex = new RegExp(search, 'i'); // case-insensitive search
+
+    // Find distinct mods matching the search term in either mod id or mod name
+    // return only mod id, name, version, and icon
+    const mods = await collection.aggregate<MinecraftMod>([
+      { $match: { 
+          mod: { $ne: null },
+          $or: [
+            { "mod.id": regex },
+            { "mod.name": regex }
+          ]
+        } 
+      },
+      { $group: { 
+          _id: "$mod.id",
+          id: { $first: "$mod.id" },
+          name: { $first: "$mod.name" },
+          version: { $first: "$mod.version" },
+          icon: { $first: "$mod.icon" }
+        } 
+      },
+      { $project: { _id: 0, id: 1, name: 1, version: 1, icon: 1 } },
+      { $sort: { id: 1 } }
+    ]).toArray();
+
+    return mods;
+    
   }
 
   async get(id: string): Promise<MinecraftItemEntry | null> {
@@ -42,16 +94,23 @@ export default class MinecraftItemsMongoClient extends DatabaseMongoClient<Minec
 
   async search(term: string, max: number = 25): Promise<MinecraftItemEntry[]> {
     const collection = await this.getCollection();
-    const items = await collection.find({
-      $or: [
-        { id: { $eq: term } },
-        { name: { $eq: term } },
-        { name: { $regex: term, $options: 'i' } },
-        { id: { $regex: term, $options: 'i' } },
-        { name: { $regex: term, $options: 'i' } },
-        { source: { $regex: term, $options: 'i' } }
-      ]
-    }).sort({ id: 1, name: 1 }, "asc").limit(max).toArray();
+    const regex = new RegExp(term, 'i');
+    const pipeline = [
+      { $match: {
+          $or: [
+            { id: term },
+            { name: term },
+            { name: { $regex: regex } },
+            { id: { $regex: regex } },
+            { source: { $regex: regex } }
+          ]
+        }
+      },
+      { $sort: { id: 1, name: 1 } },
+      { $limit: max }
+    ];
+
+    const items = await collection.aggregate<MinecraftItemEntry>(pipeline, { allowDiskUse: true }).toArray();
     return items;
   }
 }

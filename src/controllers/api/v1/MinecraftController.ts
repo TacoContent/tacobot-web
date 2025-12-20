@@ -46,4 +46,33 @@ export default class MinecraftController {
     const MODULE = Reflection.getCallingMethodName();
     return;
   }
+
+
+  async getMods(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const search = req.query.search as string || '';
+
+      const client = new MinecraftItemsMongoClient();
+      const mods = await client.getMods(search);
+
+      // add minecraft "core" to the start since it doesnt have a mod entry
+      mods.unshift({
+        id: 'minecraft',
+        name: 'Minecraft',
+        version: '',
+        icon: {
+          content_type: 'image/png',
+          url: '/images/minecraft/items/minecraft_grass_block.png' // assuming you have an icon for Minecraft core
+        }
+      });
+
+      res.json(mods);
+
+    } catch (error: any) {
+      // this.logger.error(METHOD, error);
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
 }
