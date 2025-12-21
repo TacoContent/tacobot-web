@@ -37,4 +37,6 @@ router.get('/api/v1/minecraft/users/:username', async (req: Request, res: Respon
 router.get('/api/v1/minecraft/items', minecraftController.getItems.bind(minecraftController));
 router.get('/api/v1/minecraft/item/:itemId', minecraftController.getItemById.bind(minecraftController));
 
+router.get('/api/v1/minecraft/items/mods', minecraftController.getMods.bind(minecraftController));
+
 export default router;

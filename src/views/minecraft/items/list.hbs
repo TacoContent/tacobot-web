@@ -6,7 +6,33 @@
       <div class="col"></div>
       <div class="col">
         {{#> search id="search" name="search" placeholder="Search by Item ID or Item Name" }}
+          {{!-- <div class="row mt-2">
+            <div class="col-6 d-flex justify-content-start">
+              <div class="justify-content-start">
+                {{> controls/MinecraftModSelector id="modFilter" name="modFilter" placeholder="Select a Mod to filter items" formControl=false}}
+              </div>
+            </div>
+          
+        </div> --}}
         {{/search}}
+        {{#section 'scripts'}}
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('search-form');
+            if (!form) return;
+
+            form.addEventListener('submit', () => {
+              elements = [
+                'modFilter',
+              ];
+              for (const id of elements) {
+                const element = document.getElementById(id);
+                if (!element) continue;
+              }
+            });
+          });
+        </script>
+        {{/section}}
       </div>
       <div class="col"></div>
     </div>

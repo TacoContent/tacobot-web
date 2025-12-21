@@ -1,5 +1,18 @@
 import { Document } from 'mongodb';
 
+export interface MinecraftModIcon {
+  data?: string; // base64 encoded image data
+  content_type: string; // e.g., 'image/png'
+  url?: string;
+}
+
+export interface MinecraftMod {
+  id: string;
+  version: string;
+  name: string;
+  icon?: MinecraftModIcon;
+}
+
 export default class MinecraftItemEntry implements Document {
   _id?: string = undefined;
   id: string = '';
@@ -7,7 +20,7 @@ export default class MinecraftItemEntry implements Document {
   name: string = '';
   source: string = '';
   asset_b64: string = '';
-  mod: any = null;
+  mod?: MinecraftMod | null = null;
   model: any = null;
   mcmeta: any = null;
   content_type: string = 'image/png';
