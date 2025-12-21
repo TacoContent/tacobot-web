@@ -33,7 +33,6 @@ class DiscordUsersMongoClient extends DatabaseMongoClient<DiscordUserEntry> {
           $or: [
             { username: { "$regex": search, $options: 'i' } },
             { discriminator: { "$regex": search, $options: 'i' } },
-            { displayname: { "$regex": search, $options: 'i' } },
             { display_name: { "$regex": search, $options: 'i' } },
             { user_id: { "$regex": search, $options: 'i' } },
           ]
