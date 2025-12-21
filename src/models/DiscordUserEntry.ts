@@ -12,6 +12,7 @@ export default class DiscordUserEntry implements Document {
   timestamp: number = 0;
   status?: string | undefined | null;
   displayname: string = '';
+  display_name: string = '';
   username: string = '';
   discriminator: string = '';
 
@@ -21,5 +22,13 @@ export default class DiscordUserEntry implements Document {
 
   constructor(data: Partial<DiscordUserEntry> = {}) {
     Object.assign(this, data);
+
+    // Ensure both displayname and display_name are set
+    // until data migration happens
+    if (data.display_name && !data.displayname) {
+      this.displayname = data.display_name;
+    } else if (data.displayname && !data.display_name) {
+      this.display_name = data.displayname;
+    }
   }
 }
