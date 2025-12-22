@@ -10,6 +10,8 @@ import MinecraftItemsMongoClient from '../libs/mongo/MinecraftItems';
 import MinecraftShopItem from '../models/MinecraftShopItem';
 import MinecraftUserStorageMongoClient from '../libs/mongo/MinecraftUserStorage';
 import MinecraftItemEntry from '../models/MinecraftItemEntry';
+import { MinecraftUser } from '../libs/tacobot';
+import MinecraftUserEntry from '../models/MinecraftUserEntry';
 export default class MinecraftController {
   private logger = new LogsMongoClient();
   private MODULE = this.constructor.name;
@@ -104,6 +106,48 @@ export default class MinecraftController {
         pager: pagedResults.getPager(),
       });
 
+    } catch (error: any) {
+      // this.logger.error(METHOD, error);
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async addToWhitelist(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const userData = req.body as MinecraftUserEntry;
+
+      // the required fields: guild_id, username, uuid, user_id
+      if (!userData) {
+        res.status(400).json({ error: 'Request body is required' });
+        return;
+      }
+
+      if (!userData.guild_id || userData.guild_id.trim().length === 0) {
+        res.status(400).json({ error: 'guild_id is required' });
+        return;
+      }
+      if (!userData.username || userData.username.trim().length === 0) {
+        res.status(400).json({ error: 'username is required' });
+        return;
+      }
+      if (!userData.uuid || userData.uuid.trim().length === 0) {
+        res.status(400).json({ error: 'uuid is required' });
+        return;
+      }
+      if (!userData.user_id || userData.user_id.trim().length === 0) {
+        res.status(400).json({ error: 'user_id is required' });
+        return;
+      }
+      
+      const client = new MinecraftUsersMongoClient();
+      const result = await client.addToWhitelist(userData);
+      if (!result.acknowledged) {
+        res.status(500).json({ error: 'Failed to add user to whitelist' });
+        return;
+      }
+      res.redirect('/minecraft/whitelist');
     } catch (error: any) {
       // this.logger.error(METHOD, error);
       console.error(error);

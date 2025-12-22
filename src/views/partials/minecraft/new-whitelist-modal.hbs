@@ -15,7 +15,7 @@
     <div class="col">
       <div class="mb-3">
         <label for="add-wl-guild" class="form-label">Guild</label>
-        {{> controls/GuildSelector id="add-wl-guild" name="guildId" required=true multiple=false formControl=true value=this.guild_id}}
+        {{> controls/GuildSelector id="add-wl-guild" name="guild_id" required=true multiple=false formControl=true value=this.guild_id}}
         {{!-- <input type="text" class="form-control" id="add-wl-guild" name="guildId" placeholder="Guild ID" /> --}}
       </div>
       <div class="mb-3">
@@ -25,8 +25,8 @@
       </div>
       <div class="mb-3">
         <label for="add-wl-username" class="form-label">Minecraft Username</label>
-        <input type="text" class="form-control" id="add-wl-username" name="minecraftUsername" placeholder="Notch" autocomplete="off" value="{{this.minecraftUsername}}" />
-        <input type="hidden" id="add-wl-uuid" name="minecraftUuid" value="{{this.minecraftUuid}}" />
+        <input type="text" class="form-control" id="add-wl-username" name="username" placeholder="Notch" autocomplete="off" value="{{this.username}}" />
+        <input type="hidden" id="add-wl-uuid" name="uuid" value="{{this.uuid}}" />
       </div>
     </div>
   </div>

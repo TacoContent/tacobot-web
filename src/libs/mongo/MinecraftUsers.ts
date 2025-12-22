@@ -153,4 +153,10 @@ export default class MinecraftUsersMongoClient extends DatabaseMongoClient<Minec
       pageSize: take,
     });
   }
+
+  async addToWhitelist(entry: MinecraftUserEntry): Promise<InsertOneResult<MinecraftUserEntry>> {
+    const collection = await this.getCollection();
+    entry.whitelist = true
+    return await collection.insertOne(entry);
+  }
 }

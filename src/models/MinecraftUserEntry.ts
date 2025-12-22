@@ -13,7 +13,7 @@ export default class MinecraftUserEntry implements Document {
   guild_id: string = '';
   username: string = '';
   uuid: string = '';
-  whitelisted: boolean = false;
+  whitelist: boolean = false;
   op: MinecraftUserOpEntry | undefined | null = undefined
 
   constructor(data: Partial<MinecraftUserEntry> = {}) {
