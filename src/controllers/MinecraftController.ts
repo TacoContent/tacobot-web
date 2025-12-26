@@ -12,6 +12,7 @@ import MinecraftUserStorageMongoClient from '../libs/mongo/MinecraftUserStorage'
 import MinecraftItemEntry from '../models/MinecraftItemEntry';
 import { MinecraftUser } from '../libs/tacobot';
 import MinecraftUserEntry from '../models/MinecraftUserEntry';
+import Pager from '../models/Pager';
 export default class MinecraftController {
   private logger = new LogsMongoClient();
   private MODULE = this.constructor.name;
@@ -155,6 +156,101 @@ export default class MinecraftController {
     }
   }
 
+  async enableWhitelist(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const client = new MinecraftUsersMongoClient();
+      if (!req.body) {
+        res.status(400).json({ error: 'Request body is required' });
+        return;
+      }
+      // if req.body is not a dictionary/object, return 400
+      if (typeof req.body !== 'object') {
+        res.status(400).json({ error: 'Invalid request body' });
+        return;
+      }
+      const user = MinecraftUserEntry.from(req.body);
+      if (!user) {
+        res.status(400).json({ error: 'Invalid user data' });
+        return;
+      }
+      // check the required fields
+      if (!user.guild_id || user.guild_id.trim().length === 0) {
+        res.status(400).json({ error: 'guild_id is required' });
+        return;
+      }
+      if (!user.uuid || user.uuid.trim().length === 0) {
+        res.status(400).json({ error: 'uuid is required' });
+        return;
+      }
+      if (!user.user_id || user.user_id.trim().length === 0) {
+        res.status(400).json({ error: 'user_id is required' });
+        return;
+      }
+      const result = await client.setWhitelistStatus(user, true);
+      if (!result.status) {
+        res.json({ message: 'Status change failed.', whitelist: result.whitelist });
+      } else {
+        res.json({ message: 'User added to whitelist', whitelist: true });
+      }
+    } catch (error: any) {
+      // this.logger.error(METHOD, error);
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async disableWhitelist(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const METHOD = Reflection.getCallingMethodName();
+    try {
+      const client = new MinecraftUsersMongoClient();
+      // the data comes from form post
+      console.log("form data:");
+      console.log(req.body);
+
+
+      if (!req.body) {
+        res.status(400).json({ error: 'Request body is required' });
+        return;
+      }
+      // if req.body is not a dictionary/object, return 400
+      if (typeof req.body !== 'object') {
+        res.status(400).json({ error: 'Invalid request body' });
+        return;
+      }
+      const user = MinecraftUserEntry.from(req.body);
+      if (!user) {
+        res.status(400).json({ error: 'Invalid user data' });
+        return;
+      }
+
+      // check the required fields
+      if (!user.guild_id || user.guild_id.trim().length === 0) {
+        res.status(400).json({ error: 'guild_id is required' });
+        return;
+      }
+      if (!user.uuid || user.uuid.trim().length === 0) {
+        res.status(400).json({ error: 'uuid is required' });
+        return;
+      }
+      if (!user.user_id || user.user_id.trim().length === 0) {
+        res.status(400).json({ error: 'user_id is required' });
+        return;
+      }
+
+      const result = await client.setWhitelistStatus(user, false);
+      if (!result.status) {
+        res.json({ message: 'Status change failed.', whitelist: result.whitelist });
+      } else {
+        res.json({ message: 'User removed from whitelist', whitelist: false });
+      }
+    } catch (error: any) {
+      // this.logger.error(METHOD, error);
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
   async listWorlds(req: Request, res: Response, next: NextFunction): Promise<void> {
     const METHOD = Reflection.getCallingMethodName();
     try {
@@ -244,11 +340,13 @@ export default class MinecraftController {
       const client = new MinecraftUserStorageMongoClient();
       const userStorage = await client.getUserStorage(guildId, userId, uuid, (page - 1) * pageSize, pageSize);
 
+
+
       res.render('minecraft/storage/user', {
         ...res.locals,
         title: 'Minecraft User Storage',
         slots: userStorage ? userStorage.slots : 0,
-        pager: userStorage ? userStorage.items?.getPager() : null,
+        pager: userStorage ? userStorage.items?.getPager() : Pager.empty(),
         items: userStorage ? userStorage.items?.items : [],
         guildId: guildId,
         userId: userId,

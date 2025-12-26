@@ -54,4 +54,13 @@ export default class PagedResults<T> {
       hasNext: this.hasNext,
     });
   }
+
+  static empty<T>(): PagedResults<T> {
+    return new PagedResults<T>({
+      items: [],
+      totalItems: 0,
+      currentPage: 1,
+      pageSize: 10,
+    });
+  }
 }

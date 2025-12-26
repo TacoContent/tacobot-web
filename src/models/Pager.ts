@@ -13,4 +13,8 @@ export default class Pager {
   constructor(data: Partial<Pager> = {}) {
     Object.assign(this, data);
   }
+
+  static empty(): Pager {
+    return new Pager();
+  }
 }

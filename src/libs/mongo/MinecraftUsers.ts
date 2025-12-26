@@ -159,4 +159,25 @@ export default class MinecraftUsersMongoClient extends DatabaseMongoClient<Minec
     entry.whitelist = true
     return await collection.insertOne(entry);
   }
+
+  async setWhitelistStatus(entry: Partial<MinecraftUserEntry>, enabled: boolean): Promise<SetWhitelistResult> {
+    const collection = await this.getCollection();
+    const filter: any = {
+      user_id: entry.user_id,
+      uuid: entry.uuid,
+      guild_id: entry.guild_id,
+    };
+    const update = {
+      $set: {
+        whitelist: enabled,
+      }
+    };
+    const result = await collection.updateOne(filter, update);
+    return { status: result.modifiedCount > 0, whitelist: enabled };
+  };
+}
+
+export interface SetWhitelistResult {
+  status: boolean;
+  whitelist: boolean;
 }

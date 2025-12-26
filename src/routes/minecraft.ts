@@ -10,6 +10,9 @@ router.get('/minecraft/ops', ui.allow, minecraftController.listOps.bind(minecraf
 router.get('/minecraft/whitelist', ui.allow, minecraftController.listWhitelist.bind(minecraftController));
 router.post('/minecraft/whitelist/add', ui.allow, minecraftController.addToWhitelist.bind(minecraftController));
 
+router.post('/minecraft/whitelist/enable', ui.allow, minecraftController.enableWhitelist.bind(minecraftController));
+router.post('/minecraft/whitelist/disable', ui.allow, minecraftController.disableWhitelist.bind(minecraftController));
+
 router.get('/minecraft/worlds', ui.allow, minecraftController.listWorlds.bind(minecraftController));
 
 router.get('/minecraft/storage/guild/:guildId/user/:userId/uuid/:uuid', ui.allow, minecraftController.listUserStorage.bind(minecraftController));

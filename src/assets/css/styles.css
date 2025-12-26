@@ -393,9 +393,24 @@ pre code.hljs {
   100% { opacity: 0; }
 }
 
-@-webkit-keyframes fadeout {
-    0% { opacity: 1; }
-  100% { opacity: 0; }
+/* Ensure row background utility classes apply to table cells (override Bootstrap table cell backgrounds) */
+.table tr.bg-success-subtle > td,
+.table tr.bg-success-subtle > th {
+  background-color: rgba(25, 135, 84, 0.08) !important; /* green subtle */
+}
+
+.table tr.bg-danger-subtle > td,
+.table tr.bg-danger-subtle > th {
+  background-color: rgba(220, 53, 69, 0.08) !important; /* red subtle */
+}
+
+.table tr.bg-success-subtle {
+  transition: background-color .15s ease;
+}
+
+.table tr.bg-danger-subtle {
+  transition: background-color .15s ease;
+}
 }
 
 @view-transition {

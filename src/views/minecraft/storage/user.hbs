@@ -3,6 +3,13 @@
   items: PagedResult<MinecraftUserStorageItem> - The list of storage items
 --}}
 
+<div class="me-2 float-end pe-none">
+  <div class="badge bg-success-subtle text-white p-2 fs-2">
+    {{#if (gt pager.totalItems 0)}}{{pager.totalItems}}{{else}}0{{/if}} / {{#if (eq slots -1)}}∞{{else}}{{slots}}{{/if}}
+  </div>
+</div>
+
+
 <div class="container-x mt-4 text-start">
   <div class="justify-content-center">
     <div class="row mb-3">
@@ -21,11 +28,18 @@
   </div>
 
   <div class="row">
-  {{#each items}}
-      <div class="col-md-6 mb-4">
-        {{> minecraft/storage/item}}
+    {{#if (eq items.length 0)}}
+      <div class="col-12">
+        <div class="alert alert-info" role="alert">
+          No storage items found.
+        </div>
       </div>
-  {{/each}}
+    {{/if}}
+    {{#each items}}
+      <div class="col-md-6 mb-4">
+        {{> minecraft/storage/item }}
+      </div>
+    {{/each}}
   </div>
   <div class="d-flex justify-content-center">
   {{> pager this.pager}}

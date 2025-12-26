@@ -13,4 +13,11 @@ export default class MinecraftUserStoragePagedItems {
       this.items = params.items;
     }
   } 
+
+  static empty(): MinecraftUserStoragePagedItems {
+    return new MinecraftUserStoragePagedItems({
+      slots: 0,
+      items: PagedResults.empty<MinecraftUserStorageItem>()
+    });
+  }
 }

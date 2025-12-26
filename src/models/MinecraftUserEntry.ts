@@ -19,4 +19,7 @@ export default class MinecraftUserEntry implements Document {
   constructor(data: Partial<MinecraftUserEntry> = {}) {
     Object.assign(this, data);
   }
+  static from(data: Partial<MinecraftUserEntry>): MinecraftUserEntry {
+    return new MinecraftUserEntry(data);
+  }
 }

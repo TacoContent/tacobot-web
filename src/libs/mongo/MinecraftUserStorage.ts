@@ -21,7 +21,7 @@ export default class MinecraftUserStorageMongoClient extends DatabaseMongoClient
 
     const item = await collection.findOne(filter);
     if (!item) {
-      return new MinecraftUserStoragePagedItems();
+      return MinecraftUserStoragePagedItems.empty();
     }
 
     const totalItems = Object.keys(item.storage).length;
@@ -34,7 +34,7 @@ export default class MinecraftUserStorageMongoClient extends DatabaseMongoClient
       slots: item.slots,
       items: new PagedResults<MinecraftUserStorageItem>({
         totalItems: totalItems,
-        items: filteredItems,
+        items: filteredItems || [],
         currentPage: Math.floor(skip / take) + 1,
         pageSize: take
       })
