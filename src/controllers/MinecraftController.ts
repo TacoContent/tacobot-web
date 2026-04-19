@@ -141,6 +141,13 @@ export default class MinecraftController {
         res.status(400).json({ error: 'user_id is required' });
         return;
       }
+
+      // if uuid is in a format without dashes, add the dashes in the correct places
+      if (userData.uuid && /^[0-9a-fA-F]{32}$/.test(userData.uuid)) {
+        // before: 1b313cdd7465422795aaca5503beba85
+        // after: 1b313cdd-7465-4227-95aa-ca5503beba85
+        userData.uuid = userData.uuid.replace(/^([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{12})$/, '$1-$2-$3-$4-$5');
+      }
       
       const client = new MinecraftUsersMongoClient();
       const result = await client.addToWhitelist(userData);
